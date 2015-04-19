@@ -1,0 +1,35 @@
+<?php
+
+namespace xMLM;
+
+class Model_Kit extends \xShop\Model_Item {
+	
+	function init(){
+		parent::init();
+
+		// only items with specifications named PV, BV and RP
+		$specification = $this->add('xShop\Model_Specification');
+		$specification->addCondition('name','PV');
+		$spec_assos_j1 = $this->join('xshop_item_spec_ass.item_id',null,null,'pv_j');
+		$spec_assos_j1->addField('pv_specification_id','specification_id');
+		$spec_assos_j1->addField('pv_value','value')->display(array('form'=>'Readonly'));
+		$this->addCondition('pv_specification_id',$specification->fieldQuery('id'));
+
+		$specification = $this->add('xShop\Model_Specification');
+		$specification->addCondition('name','BV');
+		$spec_assos_j2 = $this->join('xshop_item_spec_ass.item_id',null,null,'bv_j');
+		$spec_assos_j2->addField('bv_specification_id','specification_id');
+		$spec_assos_j2->addField('bv_value','value')->display(array('form'=>'Readonly'));
+		$this->addCondition('bv_specification_id',$specification->fieldQuery('id'));
+
+		$specification = $this->add('xShop\Model_Specification');
+		$specification->addCondition('name','RP');
+		$spec_assos_j3 = $this->join('xshop_item_spec_ass.item_id',null,null,'rp_j');
+		$spec_assos_j3->addField('rp_specification_id','specification_id');
+		$spec_assos_j3->addField('rp_value','value')->display(array('form'=>'Readonly'));
+		$this->addCondition('rp_specification_id',$specification->fieldQuery('id'));
+
+		$this->addField('purchase_points_required')->mandatory(true);
+
+	}
+}
