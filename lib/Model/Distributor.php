@@ -22,15 +22,15 @@ class Model_Distributor extends \Model_Document {
 
 
 		$user_j = $this->join('users','user_id');
-		$user_j->addField('username')->sortable(true)->group('b~6~Customer Loign');
+		$user_j->addField('username')->sortable(true)->group('b~6~Distributor Loign');
 		$user_j->addField('password')->type('password')->group('b~6');
-		$user_j->addField('name')->group('a~6~Basic Info')->mandatory(true);
-		$user_j->addField('email')->sortable(true)->group('a~6');
+		$user_j->addField('name')->group('a~4~Basic Info')->mandatory(true);
+		$user_j->addField('email')->sortable(true)->group('a~4');
 
 		$customer_j = $user_j->join('xshop_memberdetails.users_id');
 		$customer_j->addField('users_id')->system(true);
-		$customer_j->addField('mobile_number');
-		$customer_j->addField('address');
+		$customer_j->addField('mobile_number')->group('a~4');
+		$customer_j->addField('address')->type('text')->group('a~12');
 		$customer_j->addField('is_active')->type('boolean');
 
 

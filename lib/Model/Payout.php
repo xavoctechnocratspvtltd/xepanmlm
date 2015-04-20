@@ -7,7 +7,7 @@ class Model_Payout extends \SQL_Model {
 
 	function init(){
 		parent::init();
-		$this->hasOne('Distributor','distributor_id');
+		$this->hasOne('xMLM/Distributor','distributor_id');
 
 		$this->addField('session_left_pv');
 		$this->addField('session_right_pv');

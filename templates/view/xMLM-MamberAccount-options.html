@@ -1,0 +1,36 @@
+<div id='{$_name}' class='epan-component-options' component_type="{$component_type}">
+	<h3>{$component_type_name}</h3>
+	<div class='xepan-collasp-header'>
+		<table class="table table-condensed table-hover">
+			<tbody>
+				<tr>
+					<td style="width:100%" class='text-center'>
+						Option Title</b>
+					</td>
+					<td>
+						<input type='text' value='' id='input_option_b' />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+// ========== OPTION TO COMPONENT EFFECT ==============
+//
+// $(your_option_html_element).click(function(event,ui){
+		// 		$(current_selected_component).what to do ???
+// })
+$('#input_option_b').change(function(event) {
+	$(current_selected_component).find('b').text($('#input_option_b').val());
+});
+var {$component_type}_options = {
+show: function (){
+// ===== THIS CODE RUNS EVERY TIME YOU DOUBLE CLICK YOUR COMPONENT
+// TO TAKE VALUES FROM COMPONENT AND FILL OPTIONS
+//
+// $(your_option_html_element).text($(current_selected_component).css('border'));
+$('#input_option_b').val($(current_selected_component).find('b').text());
+}
+}
+</script>
