@@ -38,9 +38,14 @@ class Model_Distributor extends \Model_Document {
 		$this->addCondition('type',50);
 
 		// Other technical fields for MLM purpose here
-		$this->hasOne('xMLM/Kit','kit_item_id');
+		$this->hasOne('xMLM/Kit','kit_item_id')->mandatory(true);
+		
+		$this->hasOne('xMLM/Distributor','left_id');
+		$this->hasOne('xMLM/Distributor','right_id');
 
+		$this->addField('Leg')->setValueList(array('A'=>'Left','B'=>'Right'))->mandatory(true);
 		$this->addField('Path')->type('text')->system(true);
+
 		$this->addField('session_left_pv');
 		$this->addField('session_right_pv');
 
@@ -48,16 +53,35 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('total_right_pv');
 
 		$this->addField('carried_amount')->type('money');
-
+		$this->addField('credit_amount')->type('money');
 		$this->addField('temp')->system(true);
+		$this->addField('greened_on')->type('datetime')->defaultValue(null);
 
 		$this->hasMany('xMLM/Sponsor','sponsor_id',null,'SponsoredDistributors');
 		$this->hasMany('xMLM/Introducer','introducer_id',null,'IntroducedDistributors');
-		// $this->debug();
+		$this->hasMany('xMLM/CreditMovement','distributor_id');
+
+		$this->addHook('beforeSave',array($this,'beforeSaveDistributor'));
+		$this->addHook('afterSave',array($this,'afterSaveDistributor'));
+
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function updateSelfPath(){
+	function beforeSaveDistributor(){
+		if(!$this->loaded()){
+			$sponsor = $this->sponsor();
+			$this['path'] = $sponsor->path() . $this['Leg'];
+			$this->memorize('leg',$this['Leg']);
+		}
+	}
 
+	function afterSaveDistributor($obj,$new_id){
+		if($leg = $this->recall('leg',false)){
+			$sponsor = $this->sponsor();
+			$sponsor[($leg=='A'?'left':'right').'_id'] = $new_id;
+			$sponsor->save();
+			$this->forget('leg');
+		}
 	}
 
 	function markGreen(){
@@ -66,6 +90,14 @@ class Model_Distributor extends \Model_Document {
 
 	function markRed(){
 
+	}
+
+	function sponsor(){
+		return $this->ref('sponsor_id');
+	}
+
+	function path(){
+		return $this['path'];
 	}
 
 
