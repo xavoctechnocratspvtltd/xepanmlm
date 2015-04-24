@@ -63,8 +63,15 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('session_left_pv')->defaultValue(0);
 		$this->addField('session_right_pv')->defaultValue(0);
 
+
 		$this->addField('total_left_pv')->defaultValue(0);
 		$this->addField('total_right_pv')->defaultValue(0);
+
+		$this->addField('session_left_bv')->defaultValue(0);
+		$this->addField('session_right_bv')->defaultValue(0);
+		
+		$this->addField('total_left_bv')->defaultValue(0);
+		$this->addField('total_right_bv')->defaultValue(0);
 
 		$this->addField('carried_amount')->type('money')->defaultValue(0);
 		$this->addField('credit_purchase_points')->type('money')->defaultValue(0);
@@ -78,6 +85,7 @@ class Model_Distributor extends \Model_Document {
 
 		$this->addHook('beforeSave',array($this,'beforeSaveDistributor'));
 		$this->addHook('afterSave',array($this,'afterSaveDistributor'));
+		$this->addHook('beforeDelete',array($this,'beforeDeleteDistributor'));
 
 		$this->add('Controller_Validator');
 		$this->is(array(
@@ -90,7 +98,6 @@ class Model_Distributor extends \Model_Document {
 	}
 
 	function beforeSaveDistributor(){
-		
 		if($this['password']!=$this['re_password'])
 			throw $this->exception('Passwords Must Match','ValidityCheck')->setField('re_password');
 
@@ -111,12 +118,13 @@ class Model_Distributor extends \Model_Document {
 				throw $this->exception('You do not have rights to add distributor','Growl');
 			}
 
-			$sponsor = $this->sponsor();
-			if($sponsor[($this['Leg']=='A'?'left':'right').'_id']){
-				throw $this->exception('Leg Already Filled','ValidityCheck')->setField('Leg');
+			if($sponsor = $this->sponsor()){
+				if($sponsor[($this['Leg']=='A'?'left':'right').'_id']){
+					throw $this->exception('Leg Already Filled','ValidityCheck')->setField('Leg');
+				}
+				$this['path'] = $sponsor->path() . $this['Leg'];
+				$this->memorize('leg',$this['Leg']);
 			}
-			$this['path'] = $sponsor->path() . $this['Leg'];
-			$this->memorize('leg',$this['Leg']);
 		}
 	}
 
@@ -125,8 +133,17 @@ class Model_Distributor extends \Model_Document {
 				$sponsor = $this->sponsor();
 			$sponsor[($leg=='A'?'left':'right').'_id'] = $this->id;
 			$sponsor->save();
+			if($this['greened_on']){
+				$kit=$this->kit();
+				$this->updateAnsestors($kit->getPV(),$kit->getBV());
+			}
 			$this->forget('leg');
 		}
+	}
+
+	function beforeDeleteDistributor(){
+		if($this['greened_on'] OR $this['left_id'] OR $this['right_id'])
+			throw $this->exception('Cannot Delete','Growl');
 	}
 
 	function creditMovements(){
@@ -168,6 +185,8 @@ class Model_Distributor extends \Model_Document {
 	}
 
 	function updateAnsestors($pv_points,$bv_points){
+		// throw new \Exception("Error Processing Request", 1);
+		
 		$path = $this['path'];
 		$q="
 				UPDATE xmlm_distributors d
@@ -187,7 +206,6 @@ class Model_Distributor extends \Model_Document {
 					total_left_pv = total_left_pv + $pv_points,
 					total_left_bv = total_left_bv + $bv_points
 		";
-
 		$this->api->db->dsql($this->api->db->dsql()->expr($q))->execute();
 
 		$q="
@@ -221,11 +239,15 @@ class Model_Distributor extends \Model_Document {
 	}
 
 	function sponsor(){
-		return $this->ref('sponsor_id');
+		if($this['sponsor_id'])
+			return $this->ref('sponsor_id');
+		return false;
 	}
 
 	function introducer(){
-		return $this->ref('introducer_id');
+		if($this['introducer_id'])
+			return $this->ref('introducer_id');
+		return false;
 	}
 
 	function path(){

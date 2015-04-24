@@ -29,6 +29,13 @@ class Model_Kit extends \xShop\Model_Item {
 		$spec_assos_j3->addField('rp_value','value')->display(array('form'=>'Readonly'));
 		$this->addCondition('rp_specification_id',$specification->fieldQuery('id'));
 
+		$specification = $this->add('xShop\Model_Specification');
+		$specification->addCondition('name','Capping');
+		$spec_assos_j4 = $this->join('xshop_item_spec_ass.item_id',null,null,'cp_j');
+		$spec_assos_j4->addField('cap_specification_id','specification_id');
+		$spec_assos_j4->addField('cap_value','value')->display(array('form'=>'Readonly'))->caption('Capping')->type('money');
+		$this->addCondition('cap_specification_id',$specification->fieldQuery('id'));
+
 		$this->addField('purchase_points_required')->mandatory(true);
 
 	}
@@ -36,4 +43,18 @@ class Model_Kit extends \xShop\Model_Item {
 	function requiredPurchasePoints(){
 		return $this['sale_price'];
 	}
+
+	function getPV(){
+		return $this->specification('PV');
+	}
+
+	function getBV(){
+		return $this->specification('BV');
+	}
+
+	function getRP(){
+		return $this->specification('RP');
+	}
+
+
 }

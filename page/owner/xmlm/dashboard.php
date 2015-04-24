@@ -39,9 +39,9 @@ class page_xMLM_page_owner_xmlm_dashboard extends page_xMLM_page_owner_xmlm_main
         $credit_col = $cols->addColumn(4);
         $introducer_col = $cols->addColumn(4);
 
-        $sponsor_col->add('View')->set('Sponsor: '. $distributor['sponsor'])->addClass($distributor->sponsor()->get('greened_on')?'atk-effect-success':'atk-effect-danger');
+        $sponsor_col->add('View')->set('Sponsor: '. $distributor['sponsor'])->addClass($distributor->sponsor()?$distributor->sponsor()->get('greened_on')?'atk-effect-success':'atk-effect-danger':'');
         $introducer_col->add('View')->set('Introducer: '.$distributor['introducer'])
-            ->addClass($distributor->sponsor()->get('greened_on')?'atk-effect-success':'atk-effect-danger')
+            ->addClass($distributor->introducer()?$distributor->introducer()->get('greened_on')?'atk-effect-success':'atk-effect-danger':'')
             ->addClass('atk-align-right');
         $credit_col->add('View')->set('Credit Balance: '.$distributor['credit_purchase_points'])->addClass('text-center');
 
