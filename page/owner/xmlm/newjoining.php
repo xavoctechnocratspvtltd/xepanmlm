@@ -18,10 +18,15 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		$form=$container->add('Form_Stacked');
 
 		$distributor= $this->add('xMLM/Model_Distributor');
-		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','name','email','mobile_number','address','username','password','re_password','name_of_bank','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age'));
+		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','name','email','mobile_number','pan_no','address','username','password','re_password','name_of_bank','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age'));
 		$form->getElement('kit_item_id')->setEmptyText('Free/Red Entry');
 		$form->addSubmit('Register');			
-		//Controller Added
+		
+
+		if($this->api->stickyGET('sponsor_id')){
+			$form->getElement('sponsor_id')->set($_GET['sponsor_id']);
+			$form->getElement('Leg')->set($_GET['Leg']);
+		}
 		
 		if($form->isSubmitted()){
 			// $pin=$this->add('mBinaryApp/Model_Pin');

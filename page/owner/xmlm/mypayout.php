@@ -4,9 +4,13 @@ class page_xMLM_page_owner_xmlm_mypayout extends page_xMLM_page_owner_xmlm_main{
 	function init(){
 		parent::init();
 
-		$this->add('View_Info')->set('My Payout Here');
+		$container=$this->add('View')->addClass('container');
+		$distributor=$this->add('xMLM/Model_Distributor');
+		$distributor->loadLoggedIn();
 
-		$grid=$this->add('Grid');
+		$cr_view = $container->add('View')->setHTML("My Payouts")->addClass('text-center atk-swatch-green atk-size-exa atk-box');
+
+		$grid=$container->add('Grid');
 		$grid->setModel('xMLM/Payout');
 	}
 }

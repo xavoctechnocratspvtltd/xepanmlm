@@ -1,0 +1,24 @@
+<div id="{$_name}">
+{Tree}
+{/Tree}
+</div>
+{Node}
+	<div class="main_div text-center atk-size-giga {$class}" title="{$title}"><i class="icon icon-user"></i> {username}Username Here{/username}</div>
+	<div><hr/></div>
+	<div class="atk-row">
+		<div class="atk-col-6 atk-align-left">
+			{leftnode}
+				<a href='#join' onclick='$.univ().frameURL("New Joining","index.php?page=xMLM_page_owner_xmlm_newjoining&sponsor_id={$sponsor_id}&Leg=A");'>
+				Join Here
+				</a>
+			{/leftnode}
+		</div>
+		<div class="atk-col-6 atk-align-right">
+			{rightnode}
+				<a href='#join' onclick='$.univ().frameURL("New Joining","index.php?page=xMLM_page_owner_xmlm_newjoining&sponsor_id={$sponsor_id}&Leg=B");'>
+				Join Here
+				</a>
+			{/rightnode}
+		</div>
+	</div>
+{/Node}

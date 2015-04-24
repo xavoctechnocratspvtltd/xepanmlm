@@ -26,12 +26,14 @@ class Model_Distributor extends \Model_Document {
 		$user_j = $this->join('users','user_id');
 		$user_j->addField('username')->sortable(true)->group('b~4~Distributor Login')->mandatory(true);
 		$user_j->addField('password')->type('password')->group('b~4')->mandatory(true);
-		$user_j->addField('name')->group('a~4~Distributor Info')->mandatory(true)->mandatory(true);
-		$user_j->addField('email')->sortable(true)->group('a~4');
+		$user_j->addField('name')->group('a~3~Distributor Info')->mandatory(true)->mandatory(true);
+		$user_j->addField('email')->sortable(true)->group('a~3');
+		$user_j->addField('user_is_active','is_active')->system(true)->defaultValue(true);
 
 		$customer_j = $this->join('xshop_memberdetails','customer_id');
 		$customer_j->addField('users_id')->system(true);
-		$customer_j->addField('mobile_number')->group('a~4');
+		$customer_j->addField('mobile_number')->group('a~3');
+		$this->addField('pan_no')->group('a~3');
 		$customer_j->addField('address')->type('text')->group('a~12');
 		$customer_j->addField('is_active')->type('boolean')->defaultValue(true);
 
@@ -222,6 +224,10 @@ class Model_Distributor extends \Model_Document {
 		return $this->ref('sponsor_id');
 	}
 
+	function introducer(){
+		return $this->ref('introducer_id');
+	}
+
 	function path(){
 		return $this['path'];
 	}
@@ -230,6 +236,10 @@ class Model_Distributor extends \Model_Document {
 		if($this['kit_item_id'])
 			return $this->ref('kit_item_id');
 		return false;
+	}
+
+	function isInDown($downline_distributor){
+		return strpos($downline_distributor['path'], $this['path']) !== false;
 	}
 
 
