@@ -4,16 +4,22 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 	function init(){
 		parent::init();
 
-		$this->add('View_Info')->set('New Joining Here');
+		$container=$this->add('View')->addClass('container');
+
+		$distributor=$this->add('xMLM/Model_Distributor');
+		$distributor->loadLoggedIn();
+		$credits = $distributor['credit_purchase_points'];
+		$cr_view = $container->add('View')->setHTML("New Joining <small>[$credits Credits]</small>")->addClass('text-center atk-swatch-blue atk-size-exa atk-box');
 		// if(!$this->add('xMLM/Model_Configuration')->tryLoadAny()->get('new_joining_on')){
 		// 	$this->add('View_Error')->set('Joining Stopped By Admin ...');
 		// 	return;
 		// }
 		
-		$form=$this->add('Form_Stacked');
+		$form=$container->add('Form_Stacked');
 
 		$distributor= $this->add('xMLM/Model_Distributor');
 		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','name','email','mobile_number','address','username','password','re_password','name_of_bank','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age'));
+		$form->getElement('kit_item_id')->setEmptyText('Free/Red Entry');
 		$form->addSubmit('Register');			
 		//Controller Added
 		
@@ -39,7 +45,7 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 			
 			// $distributor->newJoining($form->getAllFields());
 			$form->save();
-			$form->js(null,$form->js()->reload())->univ()->successMessage('Entry Done')->execute();
+			$form->js(null,array($form->js()->reload(),$cr_view->js()->reload()))->univ()->successMessage('Entry Done')->execute();
 			$form->add('Controller_FormBeautifier');
 		}
 		$form->add('Controller_FormBeautifier');

@@ -11,14 +11,16 @@ class Model_Distributor extends \Model_Document {
 			'allow_edit'=>array()
 			);
 	
+	public $title_field = 'username';
+
 	function init(){
 		parent::init();
 
 		$this->getElement('status')->DefaultValue('unpaid');
 		$this->addField('customer_id')->system(true);
 		$this->addField('user_id')->system(true);
-		$this->hasOne('xMLM/Distributor','sponsor_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
-		$this->hasOne('xMLM/Distributor','introducer_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
+		$this->hasOne('xMLM/Sponsor','sponsor_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
+		$this->hasOne('xMLM/Introducer','introducer_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
 
 
 		$user_j = $this->join('users','user_id');
@@ -40,8 +42,8 @@ class Model_Distributor extends \Model_Document {
 		// Other technical fields for MLM purpose here
 		$this->hasOne('xMLM/Kit','kit_item_id')->defaultValue(null);
 		
-		$this->hasOne('xMLM/Distributor','left_id')->defaultValue(0);
-		$this->hasOne('xMLM/Distributor','right_id')->defaultValue(0);
+		$this->hasOne('xMLM/Left','left_id','username')->defaultValue(0);
+		$this->hasOne('xMLM/Right','right_id','username')->defaultValue(0);
 
 		$this->addField('re_password')->type('password')->group('b~4');
 
@@ -78,8 +80,7 @@ class Model_Distributor extends \Model_Document {
 		$this->add('Controller_Validator');
 		$this->is(array(
 							'username|to_trim|unique',
-							'email|email',
-							'email|unique'
+							'email|email'
 						)
 				);
 
@@ -98,6 +99,7 @@ class Model_Distributor extends \Model_Document {
 				throw $this->exception('You do not have sufficient credits','Growl');
 			}
 			$this['status']='paid';
+			$this['greened_on']=$this['created_at'];
 		}
 
 		if(!$this->loaded()){
@@ -129,12 +131,13 @@ class Model_Distributor extends \Model_Document {
 		return $this->add('xMLM/Model_CreditMovement')->addCondition('distributor_id',$this->id);
 	}
 
-	function consumePurchasePoints($poitns,$narration){
+	function consumePurchasePoints($points,$narration){
 		$this['credit_purchase_points'] = $this['credit_purchase_points'] - $points;
 		$this->save();
 		$credit_movement = $this->creditMovements();
 		$credit_movement['credits'] = $points;
 		$credit_movement['narration'] = $narration;
+		$credit_movement['status'] = 'Consumed';
 		$credit_movement->save();
 	}
 
@@ -148,7 +151,6 @@ class Model_Distributor extends \Model_Document {
 		$kitpoints = $kit->requiredPurchasePoints();
 		if($logged_in_distributor['credit_purchase_points'] < $kitpoints)
 			return false;
-		echo $logged_in_distributor->id;
 		$logged_in_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this->id." [".$this['username']."]");
 		return true;
 	}
