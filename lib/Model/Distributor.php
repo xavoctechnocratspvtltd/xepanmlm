@@ -17,8 +17,8 @@ class Model_Distributor extends \Model_Document {
 		$this->getElement('status')->DefaultValue('unpaid');
 		$this->addField('customer_id')->system(true);
 		$this->addField('user_id')->system(true);
-		$this->hasOne('xMLM/Sponsor','sponsor_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
-		$this->hasOne('xMLM/Introducer','introducer_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
+		$this->hasOne('xMLM/Distributor','sponsor_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
+		$this->hasOne('xMLM/Distributor','introducer_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
 
 
 		$user_j = $this->join('users','user_id');
@@ -38,7 +38,7 @@ class Model_Distributor extends \Model_Document {
 		$this->addCondition('type',50);
 
 		// Other technical fields for MLM purpose here
-		$this->hasOne('xMLM/Kit','kit_item_id')->mandatory(true);
+		$this->hasOne('xMLM/Kit','kit_item_id')->defaultValue(null);
 		
 		$this->hasOne('xMLM/Distributor','left_id')->defaultValue(0);
 		$this->hasOne('xMLM/Distributor','right_id')->defaultValue(0);
@@ -63,7 +63,7 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('total_right_pv')->defaultValue(0);
 
 		$this->addField('carried_amount')->type('money')->defaultValue(0);
-		$this->addField('credit_amount')->type('money')->defaultValue(0);
+		$this->addField('credit_purchase_points')->type('money')->defaultValue(0);
 		$this->addField('temp')->system(true)->defaultValue(0);
 
 		$this->addField('greened_on')->type('datetime')->defaultValue(null);
@@ -87,8 +87,18 @@ class Model_Distributor extends \Model_Document {
 	}
 
 	function beforeSaveDistributor(){
+		
 		if($this['password']!=$this['re_password'])
 			throw $this->exception('Passwords Must Match','ValidityCheck')->setField('re_password');
+
+		// Check For available purchase points
+		if($this->dirty['kit_item_id'] AND $this['kit_item_id'] !==""){
+			$kit=$this->kit();
+			if($kit AND !$this->validateKitPurchasePoints($this->kit())){
+				throw $this->exception('You do not have sufficient credits','Growl');
+			}
+			$this['status']='paid';
+		}
 
 		if(!$this->loaded()){
 			// Its New Entry
@@ -96,9 +106,6 @@ class Model_Distributor extends \Model_Document {
 			if(!$dist and !$this->api->auth->model->isDefaultSuperUser()){
 				throw $this->exception('You do not have rights to add distributor','Growl');
 			}
-
-			// Check For available purchase points
-
 
 			$sponsor = $this->sponsor();
 			if($sponsor[($this['Leg']=='A'?'left':'right').'_id']){
@@ -111,11 +118,39 @@ class Model_Distributor extends \Model_Document {
 
 	function afterSaveDistributor(){
 		if($leg = $this->recall('leg',false)){
-			$sponsor = $this->sponsor();
+				$sponsor = $this->sponsor();
 			$sponsor[($leg=='A'?'left':'right').'_id'] = $this->id;
 			$sponsor->save();
 			$this->forget('leg');
 		}
+	}
+
+	function creditMovements(){
+		return $this->add('xMLM/Model_CreditMovement')->addCondition('distributor_id',$this->id);
+	}
+
+	function consumePurchasePoints($poitns,$narration){
+		$this['credit_purchase_points'] = $this['credit_purchase_points'] - $points;
+		$this->save();
+		$credit_movement = $this->creditMovements();
+		$credit_movement['credits'] = $points;
+		$credit_movement['narration'] = $narration;
+		$credit_movement->save();
+	}
+
+	function validateKitPurchasePoints($kit){
+		if($this->api->auth->model->isBackEndUser() ) return true;
+
+		if(!($logged_in_distributor = $this->add('xMLM/Model_Distributor')->loadLoggedIn())){
+			return false;
+		}
+
+		$kitpoints = $kit->requiredPurchasePoints();
+		if($logged_in_distributor['credit_purchase_points'] < $kitpoints)
+			return false;
+		echo $logged_in_distributor->id;
+		$logged_in_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this->id." [".$this['username']."]");
+		return true;
 	}
 
 	function loadLoggedIn(){
@@ -125,7 +160,52 @@ class Model_Distributor extends \Model_Document {
 		$this->addCondition('user_id',$this->api->auth->model->id);
 		$this->tryLoadAny();
 		if(!$this->loaded()) return false;
-		return true;
+		return $this;
+	}
+
+	function updateAnsestors($pv_points,$bv_points){
+		$path = $this['path'];
+		$q="
+				UPDATE xmlm_distributors d
+				Inner Join 
+				(SELECT 
+					id,
+					path,
+					LEFT('$path',LENGTH(path)) desired,
+					MID('$path',LENGTH(path)+1,1) next_char
+				 FROM xmlm_distributors 
+				 HAVING
+				 next_char = 'A' AND desired=path
+				 ) lefts on lefts.id = d.id
+				SET
+					session_left_pv = session_left_pv + $pv_points,
+					session_left_bv = session_left_bv + $bv_points,
+					total_left_pv = total_left_pv + $pv_points,
+					total_left_bv = total_left_bv + $bv_points
+		";
+
+		$this->api->db->dsql($this->api->db->dsql()->expr($q))->execute();
+
+		$q="
+				UPDATE xmlm_distributors d
+				Inner Join 
+				(SELECT 
+					id,
+					path,
+					LEFT('$path',LENGTH(path)) desired,
+					MID('$path',LENGTH(path)+1,1) next_char
+				 FROM xmlm_distributors 
+				 HAVING
+				 next_char = 'B' AND desired=path
+				 ) rights on rights.id = d.id
+				SET
+					session_right_pv = session_right_pv + $pv_points,
+					session_right_bv = session_right_bv + $bv_points,
+					total_right_pv = total_right_pv + $pv_points,
+					total_right_bv = total_right_bv + $bv_points
+		";
+
+		$this->api->db->dsql($this->api->db->dsql()->expr($q))->execute();
 	}
 
 	function markGreen(){
@@ -142,6 +222,12 @@ class Model_Distributor extends \Model_Document {
 
 	function path(){
 		return $this['path'];
+	}
+
+	function kit(){
+		if($this['kit_item_id'])
+			return $this->ref('kit_item_id');
+		return false;
 	}
 
 

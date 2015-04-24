@@ -20,7 +20,7 @@ class Model_CreditMovement extends \Model_Document {
 		$this->hasOne('xMLM\Distributor','distributor_id')->mandatory(true);
 		$this->addField('credits')->type('money')->mandatory(true);
 
-		$this->addField('action')->enum(array('Purchase','Consumed','Collapsed'))->mandatory(true);
+		$this->addField('action')->enum(array('Purchase','Consumed','Collapsed','Request'))->mandatory(true);
 
 		$this->addField('narration');
 

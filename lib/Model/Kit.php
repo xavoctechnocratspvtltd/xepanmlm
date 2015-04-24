@@ -32,4 +32,8 @@ class Model_Kit extends \xShop\Model_Item {
 		$this->addField('purchase_points_required')->mandatory(true);
 
 	}
+
+	function requiredPurchasePoints(){
+		return $this['sale_price'];
+	}
 }

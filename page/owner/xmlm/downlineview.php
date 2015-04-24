@@ -4,7 +4,7 @@ class page_xMLM_page_owner_xmlm_downlineview extends page_xMLM_page_owner_xmlm_m
 	function init(){
 		parent::init();
 
-		$this->add('View_Info')->set('Downline View Here');
+		$this->add('View')->set('Downline View')->addClass('text-center atk-swatch-green atk-size-exa atk-box');
 		
 		$tabs=$this->add('Tabs');
 		$tab1=$tabs->addTab('Active');
