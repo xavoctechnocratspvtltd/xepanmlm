@@ -18,7 +18,16 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	}
 
 	function page_gen_pay(){
-		$this->add('View')->set('');
+		$form = $this->add('Form');
+		$form->addField('DatePicker','on_date');
+		$form->addField('Checkbox','close_generation');
+		$form->addSubmit('Close');
+
+		if($form->isSubmitted()){
+			$payout_m = $this->add('xMLM/Model_Payout');
+			$payout_m->generatePayout($form['on_date'],$form['close_generation']);
+			$form->js()->univ()->successMessage("Done")->execute();			
+		}
 	}
 
 	function page_old_pays(){

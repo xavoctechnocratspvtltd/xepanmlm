@@ -43,7 +43,8 @@ class Model_Distributor extends \Model_Document {
 
 		// Other technical fields for MLM purpose here
 		$this->hasOne('xMLM/Kit','kit_item_id')->defaultValue(null);
-		
+		$this->addField('capping')->system(true);
+
 		$this->hasOne('xMLM/Left','left_id','username')->defaultValue(0);
 		$this->hasOne('xMLM/Right','right_id','username')->defaultValue(0);
 
@@ -60,6 +61,9 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('Leg')->setValueList(array('A'=>'Left','B'=>'Right'))->mandatory(true);
 		$this->addField('path')->type('text')->system(true);
 
+		$this->addField('session_intros_amount')->defaultValue(0);
+		$this->addField('total_intros_amount')->defaultValue(0);
+
 		$this->addField('session_left_pv')->defaultValue(0);
 		$this->addField('session_right_pv')->defaultValue(0);
 
@@ -67,11 +71,14 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('total_left_pv')->defaultValue(0);
 		$this->addField('total_right_pv')->defaultValue(0);
 
+		$this->addField('session_self_bv')->defaultValue(0);
 		$this->addField('session_left_bv')->defaultValue(0);
 		$this->addField('session_right_bv')->defaultValue(0);
 		
 		$this->addField('total_left_bv')->defaultValue(0);
 		$this->addField('total_right_bv')->defaultValue(0);
+		
+		$this->addField('total_pairs')->defaultValue(0);
 
 		$this->addField('carried_amount')->type('money')->defaultValue(0);
 		$this->addField('credit_purchase_points')->type('money')->defaultValue(0);
@@ -109,6 +116,10 @@ class Model_Distributor extends \Model_Document {
 			}
 			$this['status']='paid';
 			$this['greened_on']=$this['created_at'];
+			$this['capping']=$kit->getCapping();
+			if($this->loaded()){
+				$this->updateAnsestors($kit->getPV(),$kit->getBV());
+			}
 		}
 
 		if(!$this->loaded()){
@@ -130,13 +141,16 @@ class Model_Distributor extends \Model_Document {
 
 	function afterSaveDistributor(){
 		if($leg = $this->recall('leg',false)){
-				$sponsor = $this->sponsor();
+			$sponsor = $this->sponsor();
 			$sponsor[($leg=='A'?'left':'right').'_id'] = $this->id;
 			$sponsor->save();
 			if($this['greened_on']){
 				$kit=$this->kit();
 				$this->updateAnsestors($kit->getPV(),$kit->getBV());
+				$introducer = $this->introducer();
+				$introducer->addSessionIntro($kit->getIntro());
 			}
+			$this->welcomeDistributor();
 			$this->forget('leg');
 		}
 	}
@@ -144,6 +158,10 @@ class Model_Distributor extends \Model_Document {
 	function beforeDeleteDistributor(){
 		if($this['greened_on'] OR $this['left_id'] OR $this['right_id'])
 			throw $this->exception('Cannot Delete','Growl');
+	}
+
+	function welcomeDistributor(){
+
 	}
 
 	function creditMovements(){
@@ -161,20 +179,27 @@ class Model_Distributor extends \Model_Document {
 	}
 
 	function validateKitPurchasePoints($kit){
-		if($this->api->auth->model->isBackEndUser() ) return true;
+		if($this->api->auth->model->isBackEndUser() ){
+			// throw new \Exception("Is BackEnd User", 1);
+			return true;	
+		} 
 
 		if(!($logged_in_distributor = $this->add('xMLM/Model_Distributor')->loadLoggedIn())){
+			// throw new \Exception("Distributor not loggedin", 1);
 			return false;
 		}
 
 		$kitpoints = $kit->requiredPurchasePoints();
-		if($logged_in_distributor['credit_purchase_points'] < $kitpoints)
+		if($logged_in_distributor['credit_purchase_points'] < $kitpoints){
+			// throw new \Exception("Not sufficient credit points", 1);
 			return false;
+		}
 		$logged_in_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this->id." [".$this['username']."]");
 		return true;
 	}
 
 	function loadLoggedIn(){
+		
 		if($this->loaded()) $this->unload();
 		if(!$this->api->auth->isLoggedIn()) return false;
 		
@@ -228,6 +253,11 @@ class Model_Distributor extends \Model_Document {
 		";
 
 		$this->api->db->dsql($this->api->db->dsql()->expr($q))->execute();
+	}
+
+	function addSessionIntro($intro_amount){
+		$this['session_intros_amount'] = $this['session_intros_amount'] + $intro_amount;
+		$this->save();
 	}
 
 	function markGreen(){

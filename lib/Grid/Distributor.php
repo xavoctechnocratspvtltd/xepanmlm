@@ -20,11 +20,11 @@ class Grid_Distributor extends \Grid{
 			$form->addSubmit("Pay Now");
 			if($form->isSubmitted()){
 				
-				$current_distributor = $this->add('xMLM/Model_Distributor')->loadLoggedIn();
+				$current_distributor = $p->add('xMLM/Model_Distributor')->loadLoggedIn();
 				if($current_distributor['password'] != $form['your_password'])
 					$form->displayError('your_password','Password is not correct');
 
-				$distributor = $this->add('xMLM/Model_Distributor')->load($_GET['red_distributor_id']);
+				$distributor = $p->add('xMLM/Model_Distributor')->load($_GET['red_distributor_id']);
 				
 				if($distributor['kit_item_id'])
 					$form->displayError('kit','Distributor is Already assigned a kit');

@@ -5,7 +5,7 @@ namespace xMLM;
 class View_Tree extends \View {
 	
 	public $start_id=null;
-	public $level=4;
+	public $level=5;
 
 	function init(){
 		parent::init();

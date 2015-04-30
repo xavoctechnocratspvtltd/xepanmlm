@@ -7,19 +7,19 @@ class page_xMLM_page_owner_xmlm_dashboard extends page_xMLM_page_owner_xmlm_main
         $distributor=$this->add('xMLM/Model_Distributor');
         
         $distributor->addExpression('total_left')->set(function($m,$q){
-            return $this->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'A','%'))->count();
+            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'A','%'))->count();
         });
 
         $distributor->addExpression('total_right')->set(function($m,$q){
-            return $this->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->count();
+            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->count();
         });
 
         $distributor->addExpression('green_left')->set(function($m,$q){
-            return $this->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'A','%'))->addCondition('greened_on','<>',null)->count();
+            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'A','%'))->addCondition('greened_on','<>',null)->count();
         });
 
         $distributor->addExpression('green_right')->set(function($m,$q){
-            return $this->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->addCondition('greened_on','<>',null)->count();
+            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->addCondition('greened_on','<>',null)->count();
         });
 
         $distributor->loadLoggedIn();

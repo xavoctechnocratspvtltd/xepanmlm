@@ -10,7 +10,7 @@ class page_xMLM_page_owner_kits extends page_xMLM_page_owner_main {
 		$this->app->layout->template->trySetHTML('page_title','<i class="fa fa-dashboard icon-gauge"></i> Kit Management');
 		
 		$crud = $this->add('CRUD');
-		$crud->setModel('xMLM/Kit',array('name','code','created_at','sale_price','pv_value','bv_value','rp_value','cap_value','is_publish'));
+		$crud->setModel('xMLM/Kit',array('name','code','created_at','sale_price','pv_value','bv_value','rp_value','cap_value','intro_value','is_publish'));
 		$crud->addClass('kitcrud');
 		// $crud->js('kit')->univ()->alert('cal');
 

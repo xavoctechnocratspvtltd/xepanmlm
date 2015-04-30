@@ -17,5 +17,9 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
 		}
 
+		$this->add('H2')->set('Business Volume Slab');
+
+		$this->add('CRUD')->setModel('xMLM/BVSlab',array('name','percentage'));
+
 	}
 }

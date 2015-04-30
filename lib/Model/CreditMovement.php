@@ -5,7 +5,7 @@ namespace xMLM;
 class Model_CreditMovement extends \Model_Document {
 	public $table ="xmlm_credits";
 
-	public $status = array('Purchase','Consumed','Collapsed','Canceled','Request');
+	public $status = array('approved','Purchase','Consumed','Collapsed','Canceled','Request');
 	public $root_document_name = 'xMLM\CreditMovement';
 
 	public $actions=array(
