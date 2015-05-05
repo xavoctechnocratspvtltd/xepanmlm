@@ -45,6 +45,7 @@ class Grid_Distributor extends \Grid{
 		if($this->hasColumn('introducer')) $this->removeColumn('introducer');
 		if($this->hasColumn('left')) $this->removeColumn('left');
 		if($this->hasColumn('right')) $this->removeColumn('right');
+		if($this->hasColumn('kit_item')) $this->removeColumn('kit_item');
 
 		return $m;
 	}
@@ -58,7 +59,9 @@ class Grid_Distributor extends \Grid{
 		else
 			$name_class="atk-clear-fix atk-effect-danger atk-size-mega";
 
-		$name = "<br/><div class='$name_class'>".$this->model['name']."</div>";
+		$name = "<br/><div class='$name_class'>".$this->model['name'].
+				"<br/><small>". $this->model['kit_item'] ."</small>".
+				"</div>";
 
 		$left = "<div class='atk-size-micro atk-move-left'>A: ".$this->model['left']."</div>";
 		$right = "<div class='atk-size-micro atk-move-right'>B: ".$this->model['right']."</div>";

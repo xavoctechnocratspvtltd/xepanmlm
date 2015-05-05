@@ -4,14 +4,20 @@ namespace xMLM;
 
 class View_Tree extends \View {
 	
+	public $start_distributor=null;
 	public $start_id=null;
-	public $level=5;
+	public $level=4;
 
 	function init(){
 		parent::init();
 		$distributor=$this->add('xMLM/Model_Distributor');
 		$distributor->loadLoggedIn();
 		
+		
+		if($_GET['start_id']){
+			$this->start_id = $_GET['start_id'];
+		}
+
 		if(!$this->start_id){
 			$this->start_id = $distributor->id;
 		}else{
@@ -19,17 +25,21 @@ class View_Tree extends \View {
 				$this->start_id = $distributor->id;				
 		}
 
+		$this->start_distributor = $this->add('xMLM/Model_Distributor')->load($this->start_id);
+
 	}
 	
 	function renderModel($model,$level){
 		$output="";
+		$reload_js = $this->js()->reload(array('start_id'=>$model->id));
 		$t=$this->template->cloneRegion('Node');
-		$t->set('username',$model['username']);
+		$t->setHTML('username','<a href="#xepan" onclick="'.$reload_js->render().'">'.$model['username'].'</a>');
 		$t->set('class',$model['greened_on']?'atk-effect-success':'atk-effect-danger');
 		$t->set('title',
 				$model['name'].
 				"<br/>Jn: ". date("d M Y", strtotime($model['created_at'])). 
 				"<br/>Kit: ". $model['kit_item'] .
+				"<br/>Intro: ". $model['introducer'] .
 				"<br/><table border=1>
 					<tr>
 						<th> Session </th><th> Left </th><th> Right </th>
@@ -40,7 +50,9 @@ class View_Tree extends \View {
 					<tr>
 						<th>BV</th><td>".$model['session_left_bv']."</td><td>".$model['session_right_bv']."</td>
 					</tr>
-					</table>"
+					</table>
+					<div class='atk-box-small atk-swatch-green'>Session Intros: ".$model['session_intros_amount']." /-</div>
+					"
 				);
 
 		if($model['left_id'] and $level-1 > 0){
@@ -48,9 +60,9 @@ class View_Tree extends \View {
 		}else{
 			$t->trySet('sponsor_id',$model->id);
 			if($model['left_id'])
-				$t->trySet('leftnode','more');
+				$t->trySetHTML('leftnode','<i class="icon-down-circled2 atk-size-mega"></i>');
 			else
-				$t->trySet('leftnode','empty');
+				$t->trySetHTML('leftnode','<i class="icon-user atk-size-mega"></i>');
 			// $t->tryDel('leftnode');
 		}
 
@@ -59,9 +71,9 @@ class View_Tree extends \View {
 		}else{
 			$t->trySet('sponsor_id',$model->id);
 			if($model['right_id'])
-				$t->trySet('rightnode','more');
+				$t->trySetHTML('rightnode','<i class="icon-down-circled2 atk-size-mega"></i>');
 			else
-				$t->trySet('rightnode','empty');
+				$t->trySetHTML('rightnode','<i class="icon-user atk-size-mega"></i>');
 			// $t->tryDel('rightnode');
 		}
 
@@ -70,8 +82,14 @@ class View_Tree extends \View {
 	}
 
 	function render(){
+		$reload_parent_js = $this->js('click')->reload(array('start_id'=>$this->start_distributor['sponsor_id']));
+
 		$r=$this->renderModel($this->add('xMLM/Model_Distributor','d')->load($this->start_id),$this->level);
         $this->template->setHTML('Tree',$r);
+        if($this->start_distributor['sponsor_id'])
+	        $this->template->setHTML('ParentURL',$reload_parent_js->render());
+	    else
+	    	$this->template->del('Parent');
         $this->template->del('Node');
         $this->js(true)->_selector('.main_div')->xtooltip();
 		return parent::render();

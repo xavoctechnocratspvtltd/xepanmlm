@@ -14,8 +14,9 @@ class Model_Configuration extends \SQL_Model {
 		$this->addField('other_charge')->caption('Other Charge in %');
 		$this->addField('welcome_letter')->type('text')->display(array('form'=>'RichText'));
 
-		// $this->addField('required_tail')->type('boolean')->defaultValue(true);
-		// $this->addField('allow_extreme_left_right')->type('boolean')->defaultValue(true);
+		$this->addField('tail_pv')->defaultValue(0);
+		$this->addField('minimum_payout_amount')->defaultValue(0);
+		$this->addField('include_generation')->type('boolean')->defaultValue(true);
 		$this->addField('trimming_applicable')->type('boolean')->defaultValue(true);
 
 	}

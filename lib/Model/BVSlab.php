@@ -13,7 +13,7 @@ class Model_BVSlab extends \Model_Document {
 		$this->addField('name')->type('int')->caption("Total Business volume");
 		$this->addField('percentage')->type('int');
 
-		$this->setOrder('name','desc');
+		$this->setOrder('name');
 
 	}
 

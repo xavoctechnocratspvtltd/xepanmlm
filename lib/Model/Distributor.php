@@ -112,13 +112,15 @@ class Model_Distributor extends \Model_Document {
 		if($this->dirty['kit_item_id'] AND $this['kit_item_id'] !==""){
 			$kit=$this->kit();
 			if($kit AND !$this->validateKitPurchasePoints($this->kit())){
-				throw $this->exception('You do not have sufficient credits','Growl');
+				throw $this->exception($this->newInstance()->loadLoggedIn()->get('name').' :: You do not have sufficient credits','Growl');
 			}
 			$this['status']='paid';
 			$this['greened_on']=$this['created_at'];
 			$this['capping']=$kit->getCapping();
 			if($this->loaded()){
 				$this->updateAnsestors($kit->getPV(),$kit->getBV());
+				$introducer = $this->introducer();
+				$introducer->addSessionIntro($kit->getIntro());
 			}
 		}
 
@@ -178,18 +180,36 @@ class Model_Distributor extends \Model_Document {
 		$credit_movement->save();
 	}
 
-	function validateKitPurchasePoints($kit){
+	function updateKit($kit, $from_distributor=false){
+		if(!$from_distributor) $from_distributor = $this->add('xMLM/Model_Distributor')->loadLoggedIn();
+
+	}
+
+	function validateKitPurchasePoints($kit, $from_distributor=false){
+		$kitpoints = $kit->requiredPurchasePoints();
+
 		if($this->api->auth->model->isBackEndUser() ){
 			// throw new \Exception("Is BackEnd User", 1);
 			return true;	
 		} 
+
+		if($from_distributor){
+			if(!$from_distributor instanceof \xMLM\Model_Distributor){
+				return false;
+			}
+
+			if($from_distributor['credit_purchase_points'] < $kitpoints){
+				return false;		
+			}
+			$from_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this->id." [".$this['username']."]");
+			return true;
+		}
 
 		if(!($logged_in_distributor = $this->add('xMLM/Model_Distributor')->loadLoggedIn())){
 			// throw new \Exception("Distributor not loggedin", 1);
 			return false;
 		}
 
-		$kitpoints = $kit->requiredPurchasePoints();
 		if($logged_in_distributor['credit_purchase_points'] < $kitpoints){
 			// throw new \Exception("Not sufficient credit points", 1);
 			return false;
@@ -198,8 +218,12 @@ class Model_Distributor extends \Model_Document {
 		return true;
 	}
 
+	function login(){
+		$this->api->auth->login($this['username']);
+	}
+
 	function loadLoggedIn(){
-		
+
 		if($this->loaded()) $this->unload();
 		if(!$this->api->auth->isLoggedIn()) return false;
 		
@@ -294,5 +318,8 @@ class Model_Distributor extends \Model_Document {
 		return strpos($downline_distributor['path'], $this['path']) !== false;
 	}
 
+	function loadRoot(){
+		return $this->loadBy('path','0');	
+	}
 
 }
