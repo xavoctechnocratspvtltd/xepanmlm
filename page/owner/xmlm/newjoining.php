@@ -18,7 +18,7 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		$form=$container->add('Form_Stacked');
 
 		$distributor= $this->add('xMLM/Model_Distributor');
-		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','name','email','mobile_number','pan_no','address','username','password','re_password','name_of_bank','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age'));
+		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','block_no','building_no','landmark','pin_code','state_id','district_id','username','password','re_password','bank_id','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age','nominee_email'));
 		$form->getElement('kit_item_id')->setEmptyText('Free/Red Entry');
 		$form->addSubmit('Register');			
 		

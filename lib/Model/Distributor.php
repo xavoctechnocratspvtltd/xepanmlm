@@ -26,15 +26,27 @@ class Model_Distributor extends \Model_Document {
 		$user_j = $this->join('users','user_id');
 		$user_j->addField('username')->sortable(true)->group('b~4~Distributor Login')->mandatory(true);
 		$user_j->addField('password')->type('password')->group('b~4')->mandatory(true);
-		$user_j->addField('name')->group('a~3~Distributor Info')->mandatory(true)->mandatory(true);
-		$user_j->addField('email')->sortable(true)->group('a~3');
+		$user_j->addField('name')->mandatory(true)->mandatory(true)->system(true);
+			$this->addField('first_name')->group('a~4~Distributor Info')->mandatory(true)->mandatory(true);
+			$this->addField('last_name')->group('a~4')->mandatory(true)->mandatory(true);
+			$this->addField('date_of_birth')->type('date')->group('a~4')->mandatory(true)->mandatory(true);
+		$user_j->addField('email')->sortable(true)->group('a~4');
 		$user_j->addField('user_is_active','is_active')->system(true)->defaultValue(true);
 
 		$customer_j = $this->join('xshop_memberdetails','customer_id');
 		$customer_j->addField('users_id')->type('int')->system(true);
-		$customer_j->addField('mobile_number')->group('a~3');
-		$this->addField('pan_no')->group('a~3');
-		$customer_j->addField('address')->type('text')->group('a~12');
+		$customer_j->addField('mobile_number')->group('a~4');
+		$this->addField('pan_no')->group('a~4');
+		$customer_j->addField('address')->type('text')->group('a~12')->system(true);
+			
+			$this->addField('block_no')->group('a~4');
+			$this->addField('landmark')->group('a~4');
+			$this->addField('building_no')->group('a~4');
+			$this->addField('pin_code')->group('a~4');
+
+			$this->hasOne('xMLM/State','state_id')->group('a~4');
+			$this->hasOne('xMLM/District','district_id')->group('a~4');
+
 		$customer_j->addField('is_active')->type('boolean')->defaultValue(true);
 
 
@@ -50,12 +62,14 @@ class Model_Distributor extends \Model_Document {
 
 		$this->addField('re_password')->type('password')->group('b~4');
 
-		$this->addField('name_of_bank')->group('e~6~Bank Info');//->system(true);
+		$this->hasOne('xMLM/Bank','bank_id')->group('e~6~Bank Info');//->system(true);
+		
 		$this->addField('IFCS_Code')->group('e~6~bl');//->system(true);
 		$this->addField('account_no')->group('e~6');//->system(true);
 		$this->addField('branch_name')->group('e~6~bl');//->system(true);
 		$this->addField('nominee_name')->group('f~6~Nominee Details');//->system(true);
-		$this->addField('relation_with_nominee')->group('f~4');//->system(true);
+		$this->addField('relation_with_nominee')->enum(array('Father', 'Mother', 'Spouse', 'Sibling', 'Friend', 'Son', 'Daughter'))->group('f~2');//->system(true);
+		$this->addField('nominee_email')->group('f~2');//->system(true);
 		$this->addField('nominee_age')->group('f~2');//->system(true);
 
 		$this->addField('Leg')->setValueList(array('A'=>'Left','B'=>'Right'))->mandatory(true);
@@ -107,6 +121,23 @@ class Model_Distributor extends \Model_Document {
 	function beforeSaveDistributor(){
 		if($this['password']!=$this['re_password'])
 			throw $this->exception('Passwords Must Match','ValidityCheck')->setField('re_password');
+
+
+		$mobile_number = $this['mobile_number'];
+		if($this['mobile_number'] AND preg_match('/^\d{10}$/', $mobile_number)){
+		}else{
+			throw $this->exception('Mobile Number must be 10 digit long only '. $mobile_number,'ValidityCheck')->setField('mobile_number');
+		}
+
+		$diff = $this->api->my_date_diff($this->api->today,$this['date_of_birth']);
+		if($diff['years']<18)
+			throw $this->exception('Applicant must be above 18','ValidityCheck')->setField('date_of_birth');
+
+
+		// throw new \Exception("Error Processing Request", 1);
+		
+
+		$this['name'] = $this['first_name'].' '. $this['last_name'];
 
 		// Check For available purchase points
 		if($this->dirty['kit_item_id'] AND $this['kit_item_id'] !==""){
