@@ -1,8 +1,8 @@
 <?php
 
 class page_xMLM_page_tests_joining extends page_xMLM_page_tests_base {
-    public $title = 'Joining Testing';
 
+    public $title = 'Joining Testing';
     public $proper_responses=array(
         "Test_empty"=>'',
         "Test_configTest"=>array('admin_charge'=>10,'other_charge'=>null,'tail_pv'=>500,'minimum_payout_amount'=>500,'include_generation'=>0),
