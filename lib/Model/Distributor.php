@@ -17,8 +17,8 @@ class Model_Distributor extends \Model_Document {
 		parent::init();
 
 		$this->getElement('status')->DefaultValue('unpaid');
-		$this->addField('customer_id')->system(true);
-		$this->addField('user_id')->system(true);
+		$this->addField('customer_id')->type('int')->system(true);
+		$this->addField('user_id')->type('int')->system(true);
 		$this->hasOne('xMLM/Sponsor','sponsor_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
 		$this->hasOne('xMLM/Introducer','introducer_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
 
@@ -31,7 +31,7 @@ class Model_Distributor extends \Model_Document {
 		$user_j->addField('user_is_active','is_active')->system(true)->defaultValue(true);
 
 		$customer_j = $this->join('xshop_memberdetails','customer_id');
-		$customer_j->addField('users_id')->system(true);
+		$customer_j->addField('users_id')->type('int')->system(true);
 		$customer_j->addField('mobile_number')->group('a~3');
 		$this->addField('pan_no')->group('a~3');
 		$customer_j->addField('address')->type('text')->group('a~12');
@@ -43,7 +43,7 @@ class Model_Distributor extends \Model_Document {
 
 		// Other technical fields for MLM purpose here
 		$this->hasOne('xMLM/Kit','kit_item_id')->defaultValue(null);
-		$this->addField('capping')->system(true);
+		$this->addField('capping')->type('int')->system(true);
 
 		$this->hasOne('xMLM/Left','left_id','username')->defaultValue(0);
 		$this->hasOne('xMLM/Right','right_id','username')->defaultValue(0);
@@ -61,24 +61,24 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('Leg')->setValueList(array('A'=>'Left','B'=>'Right'))->mandatory(true);
 		$this->addField('path')->type('text')->system(true);
 
-		$this->addField('session_intros_amount')->defaultValue(0);
-		$this->addField('total_intros_amount')->defaultValue(0);
+		$this->addField('session_intros_amount')->type('money')->defaultValue(0);
+		$this->addField('total_intros_amount')->type('money')->defaultValue(0);
 
-		$this->addField('session_left_pv')->defaultValue(0);
-		$this->addField('session_right_pv')->defaultValue(0);
+		$this->addField('session_left_pv')->type('int')->defaultValue(0);
+		$this->addField('session_right_pv')->type('int')->defaultValue(0);
 
 
-		$this->addField('total_left_pv')->defaultValue(0);
-		$this->addField('total_right_pv')->defaultValue(0);
+		$this->addField('total_left_pv')->type('int')->defaultValue(0);
+		$this->addField('total_right_pv')->type('int')->defaultValue(0);
 
-		$this->addField('session_self_bv')->defaultValue(0);
-		$this->addField('session_left_bv')->defaultValue(0);
-		$this->addField('session_right_bv')->defaultValue(0);
+		$this->addField('session_self_bv')->type('int')->defaultValue(0);
+		$this->addField('session_left_bv')->type('int')->defaultValue(0);
+		$this->addField('session_right_bv')->type('int')->defaultValue(0);
 		
-		$this->addField('total_left_bv')->defaultValue(0);
-		$this->addField('total_right_bv')->defaultValue(0);
+		$this->addField('total_left_bv')->type('int')->defaultValue(0);
+		$this->addField('total_right_bv')->type('int')->defaultValue(0);
 		
-		$this->addField('total_pairs')->defaultValue(0);
+		$this->addField('total_pairs')->type('int')->defaultValue(0);
 
 		$this->addField('carried_amount')->type('money')->defaultValue(0);
 		$this->addField('credit_purchase_points')->type('money')->defaultValue(0);
@@ -160,6 +160,20 @@ class Model_Distributor extends \Model_Document {
 	function beforeDeleteDistributor(){
 		if($this['greened_on'] OR $this['left_id'] OR $this['right_id'])
 			throw $this->exception('Cannot Delete','Growl');
+	}
+
+	function forceDelete(){
+		if(!isset($this->api->deleted_distributor)) $this->api->deleted_distributor =array();
+		if(in_array($this->id, $this->api->deleted_distributor)) return;
+		
+		if($this['sponsor_id'])	$this->newInstance()->tryLoad($this['sponsor_id'])->forceDelete();
+		if($this['introducer_id']) $this->newInstance()->tryLoad($this['introducer_id'])->forceDelete();
+		if($this['left_id']) $this->newInstance()->tryLoad($this['left_id'])->forceDelete();
+		if($this['right_id']) $this->newInstance()->tryLoad($this['right_id'])->forceDelete();
+
+		$this->api->deleted_distributor[] = $this->id;
+
+		$this->delete();
 	}
 
 	function welcomeDistributor(){
@@ -315,7 +329,10 @@ class Model_Distributor extends \Model_Document {
 	}
 
 	function isInDown($downline_distributor){
-		return strpos($downline_distributor['path'], $this['path']) !== false;
+		$down_path = $downline_distributor['path'];
+		$my_path =$this['path'];
+
+		return strpos($down_path, $my_path) !== false;
 	}
 
 	function loadRoot(){

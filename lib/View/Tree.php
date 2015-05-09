@@ -21,12 +21,12 @@ class View_Tree extends \View {
 		if(!$this->start_id){
 			$this->start_id = $distributor->id;
 		}else{
-			if(!$distributor->isInDown($this->add('xMLM/Model_Distributor')->tryLoad($this->start_id)))
-				$this->start_id = $distributor->id;				
+			if(!$distributor->isInDown($this->add('xMLM/Model_Distributor')->tryLoad($this->start_id))){
+				$this->start_id = $this->add('xMLM/Model_Distributor')->loadRoot()->get('id');				
+			}
 		}
 
 		$this->start_distributor = $this->add('xMLM/Model_Distributor')->load($this->start_id);
-
 	}
 	
 	function renderModel($model,$level){

@@ -35,6 +35,15 @@ class Grid_Distributor extends \Grid{
 			}
 		});
 
+		$this->add('VirtualPage')->addColumn('Tree','Tree',array('icon'=>'users'),$this)->set(function($p){
+			$distributor=$p->add('xMLM/Model_Distributor');
+			$distributor->loadLoggedIn();
+
+			if(!$distributor->loaded())
+		 		$distributor = $distributor->newInstance()->loadRoot();
+			$p->add('xMLM/View_Tree',array('start_id'=>$distributor->id));
+		});
+
 	}
 
 	function setModel($model,$fields=null){

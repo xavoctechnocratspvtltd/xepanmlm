@@ -27,7 +27,14 @@ class page_xMLM_page_tests_joining extends page_xMLM_page_tests_base {
     }
 
     function prepare_rootCheck(){
-        $this->resetDB();
+        try{
+            $this->api->db->beginTransaction();
+            $this->resetDB();
+            $this->api->db->commit();
+        }catch(Exception $e){
+            $this->api->db->rollback();
+            throw $e;
+        }
         return array($this->add('xMLM/Model_Distributor')->loadRoot());
     }
 

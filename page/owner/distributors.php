@@ -13,7 +13,7 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 		$red_tab = $tab->addTab('Unpaid Ids');
 		$green_tab = $tab->addTab('Paid Ids');
 		
-		$crud = $red_tab->add('CRUD');
+		$crud = $red_tab->add('CRUD',array('grid_class'=>'xMLM/Grid_Distributor'));
 		
 		$unpaid_model=$this->add('xMLM/Model_UnpaidIds');
 

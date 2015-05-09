@@ -1,6 +1,12 @@
 <?php
 
 class page_xMLM_page_tests_base extends Page_Tester{
+
+	function init(){
+		// ini_set('memory_limit', '2048M');
+    	// set_time_limit(0);
+		parent::init();
+	}
 	
 	function newJoining($sponsor, $leg, $introducer, $kit=null, $username=null,$password='123',$pan=''){
 		$dist = $this->add('xMLM/Model_Distributor');
@@ -26,9 +32,14 @@ class page_xMLM_page_tests_base extends Page_Tester{
 	function resetDB(){
 		$rd = $root_distributor = $this->add('xMLM/Model_Distributor')->loadRoot();
 		// remove all users
-		$this->api->db->dsql()->table('users')->where('username','not in',array('admin','root'))->delete()->execute();
-		$this->api->db->dsql()->table('xshop_memberdetails')->where($this->api->db->dsql()->orExpr()->where('users_id','<>',$root_distributor['user_id'])->where('users_id',null))->delete()->execute();
-		$this->api->db->dsql()->table('xmlm_distributors')->where('id','<>',$root_distributor->id)->delete()->execute();
+		$this->add('Model_Users')
+			->addCondition('username','<>',array('admin','root'))
+			->each(function($obj){$obj->forceDelete();});
+
+		$this->add('xMLM/Model_Distributor')
+			->addCondition('id','<>',$root_distributor->id)
+			->each(function($obj){$obj->forceDelete();});
+		
 		$this->api->db->dsql()->table('xmlm_payouts')->delete()->execute();
 
 		// reset root distributor
