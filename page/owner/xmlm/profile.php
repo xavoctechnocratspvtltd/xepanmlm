@@ -18,10 +18,18 @@ class page_xMLM_page_owner_xmlm_profile extends page_xMLM_page_owner_xmlm_main{
 		$distributor->getElement('Leg')->display(array('form'=>'Readonly'))->group('top~3');
 
 		$form=$container->add('Form_Stacked');
-		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','name','email','mobile_number','pan_no','address','username','password','re_password','name_of_bank','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age'));
+		// $form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','name','email','mobile_number','pan_no','address','username','password','re_password','name_of_bank','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age'));
+		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','block_no','building_no','landmark','pin_code','state_id','district_id','username','password','re_password','bank_id','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age','nominee_email'));
+		
+		$form->getElement('password')->js(true)->_load('pwstrength-bootstrap-1.2.5.min')->pwstrength();
+		$dob_field = $form->getElement('date_of_birth');
+		$dob_field->options=array('yearRange'=> "1942:2015");
+
 		$form->addSubmit('Update');
 
 		if($form->isSubmitted()){
+			if(strlen($form['password']) < 6)
+				$form->error('password','Legth must be greater than 6');
 			$form->save();
 			$form->js()->univ()->successMessage('Updated Successfully')->execute();
 		}

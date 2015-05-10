@@ -36,7 +36,7 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 			if(strlen($form['password']) < 6)
 				$form->error('password','Legth must be greater than 6');
 
-			$distributor= $this->add('xMLM/Model_Distributor');		
+			// $distributor= $this->add('xMLM/Model_Distributor');		
 			$form->save();
 			$form->js(null,array($form->js()->reload(),$cr_view->js()->reload()))->univ()->successMessage('Entry Done')->execute();
 		}
