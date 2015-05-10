@@ -7,6 +7,6 @@ class Model_PaidIds extends Model_Distributor{
 	function init(){
 		parent::init();
 
-		$this->addCondition('status','paid');
+		$this->addCondition('greened_on','<>',null);
 	}
 }

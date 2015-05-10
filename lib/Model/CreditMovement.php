@@ -21,6 +21,8 @@ class Model_CreditMovement extends \Model_Document {
 		$this->addField('credits')->type('money')->mandatory(true);
 		$this->addField('narration')->mandatory(true);
 
+		$this->add('filestore/Field_Image','attachment_id')->mandatory(true);
+
 		$this->add('Controller_Validator');
 		$this->is(array(
 							'credits|number|>0'
@@ -47,6 +49,10 @@ class Model_CreditMovement extends \Model_Document {
 
 	function distributor(){
 		return $this->ref('distributor_id');
+	}
+
+	function email_authorities(){
+		
 	}
 
 }

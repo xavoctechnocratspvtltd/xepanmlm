@@ -206,6 +206,18 @@ class Model_Payout extends \SQL_Model {
 			// $this->query($q);
 		}
 
+		// Remove all non Effected Distributors 
+		$q="
+			DELETE FROM xmlm_payouts
+			WHERE
+				on_date='$on_date'
+				AND
+				net_amount = 0
+				AND
+				carried_amount = 0
+		";
+		$this->query($q);
+
 
 	}
 

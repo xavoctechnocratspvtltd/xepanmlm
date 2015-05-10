@@ -22,6 +22,7 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		$form->getElement('kit_item_id')->setEmptyText('Free/Red Entry');
 		$form->addSubmit('Register');			
 		
+		$form->getElement('password')->js(true)->_load('pwstrength-bootstrap-1.2.5.min')->pwstrength();
 
 		if($this->api->stickyGET('sponsor_id')){
 			$form->getElement('sponsor_id')->set($_GET['sponsor_id']);
@@ -29,29 +30,13 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		}
 		
 		if($form->isSubmitted()){
-			// $pin=$this->add('mBinaryApp/Model_Pin');
-			// if(($msg=$pin->validatePin($form['distributor_id'],$form['pin']))!==true)
-				// $form->displayError('pin',$msg);
-			
+
+			if(strlen($form['password']) < 6)
+				$form->error('password','Legth must be greater than 6');
 
 			$distributor= $this->add('xMLM/Model_Distributor');		
-			// if((!$distributor->is_available($form['username']))){
-			// 	$form->js()->univ()->errorMessage('Username is already taken, try another')->execute();
-			// 	// $form->displayError('username','Username is already taken, try another');
-			// }
-			
-			
-			// if($distributor->is_available($form['introducer_username'])){		
-			// 	$form->js()->univ()->errorMessage('This Introducer name is not exist')->execute();
-			// }
-
-			// if($form['password']!=$form['re_password'])
-			// 	$form->js()->univ()->errorMessage('Password Looks wrong')->execute();
-			
-			// $distributor->newJoining($form->getAllFields());
 			$form->save();
 			$form->js(null,array($form->js()->reload(),$cr_view->js()->reload()))->univ()->successMessage('Entry Done')->execute();
-			$form->add('Controller_FormBeautifier');
 		}
 		$form->add('Controller_FormBeautifier');
 	}

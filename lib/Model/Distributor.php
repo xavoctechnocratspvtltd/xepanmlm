@@ -44,8 +44,8 @@ class Model_Distributor extends \Model_Document {
 			$this->addField('building_no')->group('a~4');
 			$this->addField('pin_code')->group('a~4');
 
-			$this->hasOne('xMLM/State','state_id')->group('a~4');
-			$this->hasOne('xMLM/District','district_id')->group('a~4');
+			$this->hasOne('xMLM/State','state_id')->group('a~4')->mandatory(true);
+			$this->hasOne('xMLM/District','district_id')->group('a~4')->mandatory(true);
 
 		$customer_j->addField('is_active')->type('boolean')->defaultValue(true);
 
@@ -123,10 +123,11 @@ class Model_Distributor extends \Model_Document {
 			throw $this->exception('Passwords Must Match','ValidityCheck')->setField('re_password');
 
 
-		$mobile_number = $this['mobile_number'];
-		if($this['mobile_number'] AND preg_match('/^\d{10}$/', $mobile_number)){
+		$mobile_number = $this->get('mobile_number');
+
+		if(!$this['mobile_number'] OR preg_match('/^\d{10}$/', $mobile_number)){
 		}else{
-			throw $this->exception('Mobile Number must be 10 digit long only '. $mobile_number,'ValidityCheck')->setField('mobile_number');
+			throw $this->exception('Mobile Number must be 10 digit long only '.preg_match('/^\d{10}$/', $mobile_number). " :: ". $this['username']. " :: " . $this['mobile_number'],'ValidityCheck')->setField('mobile_number');
 		}
 
 		$diff = $this->api->my_date_diff($this->api->today,$this['date_of_birth']);

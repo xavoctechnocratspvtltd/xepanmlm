@@ -77,6 +77,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		if($g_on_date=$this->api->stickyGET('on_date')){
 			$payout_model->addCondition('on_date',$_GET['on_date']);
 		}
+
 		if($g_dist_id = $this->api->stickyGET('distributor_id')){
 			$payout_model->addCondition('distributor_id',$_GET['distributor_id']);
 		}
@@ -87,6 +88,12 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 
 		$payout_grid = $this->add('xMLM/Grid_Payout',array('hide_distributor'=>false,'generation_income'=>$config['include_generation']));
 		$payout_grid->setModel($payout_model);
+
+		$payout_grid->addTotals(array('pair_income','introduction_income','tds','admin_charge','net_amount','carried_amount'));
+		// $payout_grid->addGrandTotals();
+
+		$payout_grid->addPaginator(100);
+		$payout_grid->addSno();
 
 		$payout_grid->add('misc/Export');
 

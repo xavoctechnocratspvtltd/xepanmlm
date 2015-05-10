@@ -9,6 +9,7 @@ class Model_State extends \Model_Table {
 		parent::init();
 
 		$this->addField('name');
-		$this->hasMany('xMLM/Distributor','district_id');
+		$this->hasMany('xMLM/District','state_id');
+		$this->hasMany('xMLM/Distributor','state_id');
 	}
 }
