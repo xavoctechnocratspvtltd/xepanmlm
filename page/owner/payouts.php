@@ -92,7 +92,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$payout_grid->addTotals(array('pair_income','introduction_income','tds','admin_charge','net_amount','carried_amount'));
 		// $payout_grid->addGrandTotals();
 
-		$payout_grid->addPaginator(100);
+		// $payout_grid->addPaginator(100);
 		$payout_grid->addSno();
 
 		$payout_grid->add('misc/Export');

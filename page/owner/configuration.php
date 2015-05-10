@@ -34,5 +34,7 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 		$banks_tab= $tabs->addTab('Banks');
 		$banks_crud= $banks_tab->add('CRUD');
 		$banks_crud->setModel('xMLM/Bank');
+
+		
 	}
 }

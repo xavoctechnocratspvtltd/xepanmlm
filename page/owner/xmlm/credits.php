@@ -53,6 +53,9 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 				$form->displayError('credits','Credit Limit : 5,00,000/-');
 			
 			$form->save();
+
+			$form->model->email_authorities();
+			
 			$form->js(null,array($form->js()->univ()->successMessage("Request Sent"),$grid->js()->reload()))->univ()->reload()->execute();
 		}
 

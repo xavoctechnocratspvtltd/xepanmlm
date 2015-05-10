@@ -23,6 +23,8 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		$form->addSubmit('Register');			
 		
 		$form->getElement('password')->js(true)->_load('pwstrength-bootstrap-1.2.5.min')->pwstrength();
+		$dob_field = $form->getElement('date_of_birth');
+		$dob_field->options=array('yearRange'=> "1942:2015");
 
 		if($this->api->stickyGET('sponsor_id')){
 			$form->getElement('sponsor_id')->set($_GET['sponsor_id']);

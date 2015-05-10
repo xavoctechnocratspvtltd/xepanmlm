@@ -32,16 +32,22 @@ class Model_Distributor extends \Model_Document {
 			$this->addField('date_of_birth')->type('date')->group('a~4')->mandatory(true)->mandatory(true);
 		$user_j->addField('email')->sortable(true)->group('a~4');
 		$user_j->addField('user_is_active','is_active')->system(true)->defaultValue(true);
+		$user_j->addField('user_epan_id','epan_id')->system(true);
+		$this->addCondition('user_epan_id',$this->api->current_website->id);
 
 		$customer_j = $this->join('xshop_memberdetails','customer_id');
 		$customer_j->addField('users_id')->type('int')->system(true);
 		$customer_j->addField('mobile_number')->group('a~4');
+		
+		$customer_j->addField('member_epan_id','epan_id')->system(true);
+		$this->addCondition('member_epan_id',$this->api->current_website->id);
+
 		$this->addField('pan_no')->group('a~4');
 		$customer_j->addField('address')->type('text')->group('a~12')->system(true);
 			
 			$this->addField('block_no')->group('a~4');
-			$this->addField('landmark')->group('a~4');
 			$this->addField('building_no')->group('a~4');
+			$this->addField('landmark')->group('a~4');
 			$this->addField('pin_code')->group('a~4');
 
 			$this->hasOne('xMLM/State','state_id')->group('a~4')->mandatory(true);
@@ -57,8 +63,8 @@ class Model_Distributor extends \Model_Document {
 		$this->hasOne('xMLM/Kit','kit_item_id')->defaultValue(null);
 		$this->addField('capping')->type('int')->system(true);
 
-		$this->hasOne('xMLM/Left','left_id','username')->defaultValue(0);
-		$this->hasOne('xMLM/Right','right_id','username')->defaultValue(0);
+		$this->hasOne('xMLM/Left','left_id')->defaultValue(null);
+		$this->hasOne('xMLM/Right','right_id')->defaultValue(null);
 
 		$this->addField('re_password')->type('password')->group('b~4');
 
@@ -104,6 +110,7 @@ class Model_Distributor extends \Model_Document {
 		$this->hasMany('xMLM/Introducer','introducer_id',null,'IntroducedDistributors');
 		$this->hasMany('xMLM/CreditMovement','distributor_id');
 
+		
 		$this->addHook('beforeSave',array($this,'beforeSaveDistributor'));
 		$this->addHook('afterSave',array($this,'afterSaveDistributor'));
 		$this->addHook('beforeDelete',array($this,'beforeDeleteDistributor'));
@@ -115,13 +122,19 @@ class Model_Distributor extends \Model_Document {
 						)
 				);
 
+
+		// $this->api->auth->addEncryptionHook($this);
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	function beforeSaveDistributor(){
-		if($this['password']!=$this['re_password'])
+
+		if( $this['password'] !== $this['re_password'])
 			throw $this->exception('Passwords Must Match','ValidityCheck')->setField('re_password');
 
+		if($this['pan_no'] and $this['pan_no'][4] != $this['last_name'][0]){
+			throw $this->exception('Pan No Does not looks correct','ValidityCheck')->setField('pan_no');
+		}
 
 		$mobile_number = $this->get('mobile_number');
 
@@ -139,15 +152,17 @@ class Model_Distributor extends \Model_Document {
 		
 
 		$this['name'] = $this['first_name'].' '. $this['last_name'];
+		$this['address'] = "Block No ". $this['block_no'] .", Building No ". $this['building_no']. ", ". $this['landmark'] . ', PIN-'. $this['pin_code'];
 
 		// Check For available purchase points
 		if($this->dirty['kit_item_id'] AND $this['kit_item_id'] !==""){
 			$kit=$this->kit();
 			if($kit AND !$this->validateKitPurchasePoints($this->kit())){
-				throw $this->exception($this->newInstance()->loadLoggedIn()->get('name').' :: You do not have sufficient credits','Growl');
+				throw $this->exception($this->id.' :: You do not have sufficient credits','Growl');
 			}
 			$this['status']='paid';
 			$this['greened_on']=$this['created_at'];
+			$this['is_active']=true;
 			$this['capping']=$kit->getCapping();
 			if($this->loaded()){
 				$this->updateAnsestors($kit->getPV(),$kit->getBV());
@@ -159,7 +174,7 @@ class Model_Distributor extends \Model_Document {
 		if(!$this->loaded()){
 			// Its New Entry
 			$dist= $this->add('xMLM/Model_Distributor')->loadLoggedIn();
-			if(!$dist and !$this->api->auth->model->isDefaultSuperUser()){
+			if(!($dist OR $this->api->auth->model->isDefaultSuperUser())){
 				throw $this->exception('You do not have rights to add distributor','Growl');
 			}
 
@@ -186,6 +201,8 @@ class Model_Distributor extends \Model_Document {
 			}
 			$this->welcomeDistributor();
 			$this->forget('leg');
+
+			$this->api->db->dsql()->table('xshop_memberdetails')->where('id',$this['customer_id'])->set('users_id',$this['user_id'])->update();
 		}
 	}
 
@@ -195,16 +212,56 @@ class Model_Distributor extends \Model_Document {
 	}
 
 	function forceDelete(){
+		if(!$this->loaded())
+			throw $this->exception('Unknown Distributor to delete');
+
 		if(!isset($this->api->deleted_distributor)) $this->api->deleted_distributor =array();
 		if(in_array($this->id, $this->api->deleted_distributor)) return;
 		
-		if($this['sponsor_id'])	$this->newInstance()->tryLoad($this['sponsor_id'])->forceDelete();
-		if($this['introducer_id']) $this->newInstance()->tryLoad($this['introducer_id'])->forceDelete();
-		if($this['left_id']) $this->newInstance()->tryLoad($this['left_id'])->forceDelete();
-		if($this['right_id']) $this->newInstance()->tryLoad($this['right_id'])->forceDelete();
+		$this->creditMovements()->deleteAll();
 
-		$this->api->deleted_distributor[] = $this->id;
+		// Main kisi ki sponsor id kmain to hun .. usme se mujhe hatao ...
+		$i_m_in_left = $this->newInstance()->tryLoadBy('left_id',$this->id);
+		if($i_m_in_left->loaded()){
+			$i_m_in_left['left_id']=null;
+			$i_m_in_left->save();
+		}
 
+		$i_m_in_right = $this->newInstance()->tryLoadBy('right_id',$this->id);
+		if($i_m_in_right->loaded()){
+			$i_m_in_right['right_id']=null;
+			$i_m_in_right->save();
+		}
+
+		
+		$lid= $this['left_id'];
+		$rid = $this['right_id'];
+
+		$this['sponsor_id']=null;
+		$this['introducer_id']=null;
+		$this['left_id']=null;
+		$this['right_id'] = null;
+		$this['greened_on']=null;
+		try{
+			$this->save();
+		}catch(\Exception $e){
+			// echo $this->id;
+			throw $e;
+		}
+		
+		if($lid) {
+			$ld = $this->newInstance()->tryLoad($lid);
+			if($ld->loaded()) $ld->forceDelete();
+		}
+		if($rid){
+			$rd = $this->newInstance()->tryLoad($rid);
+			if($rd->loaded()) $rd->forceDelete();	
+		} 
+		// if($this['sponsor_id'])	$this->newInstance()->tryLoad($this['sponsor_id'])->forceDelete();
+		// if($this['introducer_id']) $this->newInstance()->tryLoad($this['introducer_id'])->forceDelete();
+
+
+		$this->add('xShop/Model_Customer')->load($this['customer_id'])->forceDelete();
 		$this->delete();
 	}
 
@@ -361,10 +418,12 @@ class Model_Distributor extends \Model_Document {
 	}
 
 	function isInDown($downline_distributor){
+		
 		$down_path = $downline_distributor['path'];
 		$my_path =$this['path'];
 
-		return strpos($down_path, $my_path) !== false;
+		$in_down = strpos($down_path, $my_path) !== false;
+		return $in_down;
 	}
 
 	function loadRoot(){

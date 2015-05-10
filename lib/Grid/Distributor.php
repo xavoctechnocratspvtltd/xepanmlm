@@ -37,7 +37,7 @@ class Grid_Distributor extends \Grid{
 
 		$this->add('VirtualPage')->addColumn('Tree','Tree',array('icon'=>'users'),$this)->set(function($p){
 			$distributor=$p->add('xMLM/Model_Distributor');
-			$distributor->loadLoggedIn();
+			$distributor->tryLoad($p->id);
 
 			if(!$distributor->loaded())
 		 		$distributor = $distributor->newInstance()->loadRoot();
@@ -55,6 +55,7 @@ class Grid_Distributor extends \Grid{
 		if($this->hasColumn('left')) $this->removeColumn('left');
 		if($this->hasColumn('right')) $this->removeColumn('right');
 		if($this->hasColumn('kit_item')) $this->removeColumn('kit_item');
+		if($this->hasColumn('status')) $this->removeColumn('status');
 
 		return $m;
 	}

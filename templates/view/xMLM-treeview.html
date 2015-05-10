@@ -1,7 +1,13 @@
 <div id="{$_name}">
+{$Content}
 {Tree}
 {/Tree}
-{Parent}<div class='text-center atk-swatch-blue atk-box-small'><a href="#xepan" onclick="{$ParentURL}">GO UP</a></div>{/Parent}
+{Parent}
+<div class="atk-section atk-move-center">
+	<div class='text-center atk-swatch-blue atk-box-small atk-move-left'><a href="#xepan" onclick="{$MyURL}">My Tree</a></div>
+	<div class='text-center atk-swatch-blue atk-box-small atk-move-right'><a href="#xepan" onclick="{$ParentURL}">Go Up</a></div>
+</div>
+{/Parent}
 </div>
 {Node}
 	<div class="main_div text-center atk-size-giga {$class}" title="{$title}"><i class="icon icon-user"></i> {username}Username Here{/username}</div>

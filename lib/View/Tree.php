@@ -10,23 +10,43 @@ class View_Tree extends \View {
 
 	function init(){
 		parent::init();
-		$distributor=$this->add('xMLM/Model_Distributor');
+		
+		$this->distributor = $distributor=$this->add('xMLM/Model_Distributor');
 		$distributor->loadLoggedIn();
 		
 		
-		if($_GET['start_id']){
+		if($this->api->stickyGET('start_id')){
 			$this->start_id = $_GET['start_id'];
 		}
 
 		if(!$this->start_id){
 			$this->start_id = $distributor->id;
 		}else{
-			if(!$distributor->isInDown($this->add('xMLM/Model_Distributor')->tryLoad($this->start_id))){
-				$this->start_id = $this->add('xMLM/Model_Distributor')->loadRoot()->get('id');				
+			if(!$this->api->auth->model->isBackEndUser()){
+				if(!$distributor->isInDown($this->add('xMLM/Model_Distributor')->tryLoad($this->start_id))){
+					$this->add('View_Error')->set('You are not Authorized to look out of your Tree');
+					$this->start_id = $distributor?$distributor->id: null;
+				}
 			}
 		}
 
 		$this->start_distributor = $this->add('xMLM/Model_Distributor')->load($this->start_id);
+
+		$form = $this->add('Form');
+		$user_field = $form->addField('line','username');
+		$user_field->afterField()->add('Button')->set(array(' ','icon'=>'search'));
+
+		if($form->isSubmitted()){
+			$model = $this->add('xMLM/Model_Distributor')->tryLoadBy('username',$form['username']);
+			if(!$model->loaded())
+				$form->displayError('username','No, User found with this username');
+			if(!$this->api->auth->model->isBackEndUser()){
+				if(!$distributor->isInDown($model)){
+					$form->displayError('username','Looks like, Not in your Downline');
+				}
+			}
+			$this->js()->reload(array('start_id'=>$model->id))->execute();
+		}
 	}
 	
 	function renderModel($model,$level){
@@ -82,16 +102,24 @@ class View_Tree extends \View {
 	}
 
 	function render(){
-		$reload_parent_js = $this->js('click')->reload(array('start_id'=>$this->start_distributor['sponsor_id']));
 
-		$r=$this->renderModel($this->add('xMLM/Model_Distributor','d')->load($this->start_id),$this->level);
-        $this->template->setHTML('Tree',$r);
-        if($this->start_distributor['sponsor_id'])
-	        $this->template->setHTML('ParentURL',$reload_parent_js->render());
-	    else
-	    	$this->template->del('Parent');
-        $this->template->del('Node');
-        $this->js(true)->_selector('.main_div')->xtooltip();
+		if($this->start_id){
+
+			$reload_parent_js = $this->js()->reload(array('start_id'=>$this->start_distributor['sponsor_id']));
+			$distributor_tree_js = $this->js()->reload(array('start_id'=>$this->distributor->id));
+
+			$r=$this->renderModel($this->add('xMLM/Model_Distributor','d')->load($this->start_id),$this->level);
+	        $this->template->setHTML('Tree',$r);
+	        if($this->start_id != $this->distributor->id && $this->start_distributor['sponsor_id']){
+		        $this->template->setHTML('ParentURL',$reload_parent_js->render());
+		        $this->template->setHTML('MyURL',$distributor_tree_js->render());
+	        }
+		    else{
+		    	$this->template->del('Parent');
+		    }
+	        $this->template->del('Node');
+	        $this->js(true)->_selector('.main_div')->xtooltip();
+		}
 		return parent::render();
 	}
 

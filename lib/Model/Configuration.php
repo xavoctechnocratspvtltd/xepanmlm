@@ -18,6 +18,7 @@ class Model_Configuration extends \SQL_Model {
 		$this->addField('minimum_payout_amount')->defaultValue(0);
 		$this->addField('include_generation')->type('boolean')->defaultValue(true);
 		$this->addField('trimming_applicable')->type('boolean')->defaultValue(true);
+		$this->addField('credit_manager_email_id')->defaultValue(true);
 
 	}
 }
