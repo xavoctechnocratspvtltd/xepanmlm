@@ -19,6 +19,8 @@ class Plugins_mlmmenuadd extends \componentBase\Plugin {
         $admin_m->addItem(array('Payouts','icon'=>'gauge-1'),'xMLM_page_owner_payouts');
         $admin_m->addItem(array('Credits Management','icon'=>'gauge-1'),'xMLM_page_owner_credits');
         $admin_m->addItem(array('Reports','icon'=>'gauge-1'),'xMLM_page_owner_reports');
+        $admin_m->addItem(array('Properties Management','icon'=>'gauge-1'),'xMLM_page_owner_properties');
+        $admin_m->addItem(array('Booking Management','icon'=>'gauge-1'),'xMLM_page_owner_bookings');
         $admin_m->addItem(array('Configuration','icon'=>'gauge-1'),'xMLM_page_owner_configuration');
         
 	}

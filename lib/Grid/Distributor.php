@@ -86,8 +86,10 @@ class Grid_Distributor extends \Grid{
 		if($this->model['greened_on'])
 			$grn = "<div class='atk-size-micro'>gn: ".date("d M Y",strtotime($this->model['greened_on']))."</div>";
 		else{
-			// $grn_vp = $this->js()->univ()->frameURL('Pay Now For Distributor '. $this->model['name'],)->render();
-			$grn = "<div class='atk-size-micro'>gn: <a href='#green' onclick=\"$.univ.frameURL('Pay Now For Distributor ".$this->model['name']."','".($this->api->url($this->pay_vp->getURL(),array('red_distributor_id'=>$this->model->id))->getURL())."')\">Pay Now</a></div>";
+			if($this->api->auth->isLoggedIn() && $this->api->auth->model->isFrontEndUser())
+				$grn = "<div class='atk-size-micro'>gn: <a href='#green' onclick=\"$.univ.frameURL('Pay Now For Distributor ".$this->model['name']."','".($this->api->url($this->pay_vp->getURL(),array('red_distributor_id'=>$this->model->id))->getURL())."')\">Pay Now</a></div>";
+			else
+				$grn="";
 		}
 
 		$this->current_row_html['username'] = $un.$jn.$grn;

@@ -19,39 +19,41 @@ class Model_Distributor extends \Model_Document {
 		$this->getElement('status')->DefaultValue('unpaid');
 		$this->addField('customer_id')->type('int')->system(true);
 		$this->addField('user_id')->type('int')->system(true);
-		$this->hasOne('xMLM/Sponsor','sponsor_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
-		$this->hasOne('xMLM/Introducer','introducer_id')->display(array('form'=>'xMLM/Distributor'));//->mandatory(true);
+		$this->hasOne('xMLM/Sponsor','sponsor_id')->display(array('form'=>'xMLM/Distributor'))->mandatory(true);
+		$this->hasOne('xMLM/Introducer','introducer_id')->display(array('form'=>'xMLM/Distributor'))->mandatory(true);
 
 
 		$user_j = $this->join('users','user_id');
 		$user_j->addField('username')->sortable(true)->group('b~4~Distributor Login')->mandatory(true);
-		$user_j->addField('password')->type('password')->group('b~4')->mandatory(true);
-		$user_j->addField('name')->mandatory(true)->mandatory(true)->system(true);
-			$this->addField('first_name')->group('a~4~Distributor Info')->mandatory(true)->mandatory(true);
-			$this->addField('last_name')->group('a~4')->mandatory(true)->mandatory(true);
+		$user_j->addField('password')->type('password')->group('b~4')->mandatory(true)->display(array('form'=>'xMLM/Password'));
+		$user_j->addField('name')->mandatory(true)->mandatory(true)->system(true)->display(array('form'=>'Alpha'));
+			$this->addField('first_name')->group('a~4~Distributor Info')->mandatory(true)->mandatory(true)->display(array('form'=>'Alpha'));
+			$this->addField('last_name')->group('a~4')->mandatory(true)->mandatory(true)->display(array('form'=>'Alpha'));
 			$this->addField('date_of_birth')->type('date')->group('a~4')->mandatory(true)->mandatory(true);
-		$user_j->addField('email')->sortable(true)->group('a~4');
+		$user_j->addField('email')->sortable(true)->group('a~4')->mandatory(true)->display(array('form'=>'Email'));
+
 		$user_j->addField('user_is_active','is_active')->system(true)->defaultValue(true);
 		$user_j->addField('user_epan_id','epan_id')->system(true);
+		
 		$this->addCondition('user_epan_id',$this->api->current_website->id);
 
 		$customer_j = $this->join('xshop_memberdetails','customer_id');
 		$customer_j->addField('users_id')->type('int')->system(true);
-		$customer_j->addField('mobile_number')->group('a~4');
+		$customer_j->addField('mobile_number')->group('a~4')->mandatory(true)->display(array('form'=>'xMLM/MobileNumber'));
 		
 		$customer_j->addField('member_epan_id','epan_id')->system(true);
 		$this->addCondition('member_epan_id',$this->api->current_website->id);
 
-		$this->addField('pan_no')->group('a~4');
+		$this->addField('pan_no')->group('a~4')->mandatory(true);
 		$customer_j->addField('address')->type('text')->group('a~12')->system(true);
 			
 			$this->addField('block_no')->group('a~4');
 			$this->addField('building_no')->group('a~4');
 			$this->addField('landmark')->group('a~4');
-			$this->addField('pin_code')->group('a~4');
+			$this->addField('pin_code')->group('a~4')->display(array('form'=>'xMLM/Number'));
 
-			$this->hasOne('xMLM/State','state_id')->group('a~4')->mandatory(true);
-			$this->hasOne('xMLM/District','district_id')->group('a~4')->mandatory(true);
+			$this->hasOne('xMLM/State','state_id')->group('a~4')->mandatory(true)->display(array('form'=>'DropDownNormal'));
+			$this->hasOne('xMLM/District','district_id')->group('a~4')->mandatory(true)->display(array('form'=>'DropDownNormal'));
 
 		$customer_j->addField('is_active')->type('boolean')->defaultValue(true);
 
@@ -66,17 +68,17 @@ class Model_Distributor extends \Model_Document {
 		$this->hasOne('xMLM/Left','left_id')->defaultValue(null);
 		$this->hasOne('xMLM/Right','right_id')->defaultValue(null);
 
-		$this->addField('re_password')->type('password')->group('b~4');
+		$this->addField('re_password')->type('password')->group('b~4')->mandatory(true);
 
-		$this->hasOne('xMLM/Bank','bank_id')->group('e~6~Bank Info');//->system(true);
+		$this->hasOne('xMLM/Bank','bank_id')->group('e~6~Bank Info')->mandatory(true);//->system(true);
 		
-		$this->addField('IFCS_Code')->group('e~6~bl');//->system(true);
-		$this->addField('account_no')->group('e~6');//->system(true);
-		$this->addField('branch_name')->group('e~6~bl');//->system(true);
-		$this->addField('nominee_name')->group('f~6~Nominee Details');//->system(true);
-		$this->addField('relation_with_nominee')->enum(array('Father', 'Mother', 'Spouse', 'Sibling', 'Friend', 'Son', 'Daughter'))->group('f~2');//->system(true);
+		$this->addField('IFCS_Code')->group('e~6~bl')->mandatory(true);//->system(true);
+		$this->addField('account_no')->group('e~6')->mandatory(true)->display(array('form'=>'xMLM/Number'));//->system(true);
+		$this->addField('branch_name')->caption('Branch')->group('e~6~bl')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
+		$this->addField('nominee_name')->group('f~6~Nominee Details')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
+		$this->addField('relation_with_nominee')->enum(array('Father', 'Mother', 'Spouse', 'Sibling', 'Friend', 'Son', 'Daughter'))->group('f~2')->mandatory(true);//->system(true);
 		$this->addField('nominee_email')->group('f~2');//->system(true);
-		$this->addField('nominee_age')->group('f~2');//->system(true);
+		$this->addField('nominee_age')->group('f~2')->mandatory(true)->display(array('form'=>'xMLM/Number'));//->system(true);
 
 		$this->addField('Leg')->setValueList(array('A'=>'Left','B'=>'Right'))->mandatory(true);
 		$this->addField('path')->type('text')->system(true);
@@ -118,7 +120,8 @@ class Model_Distributor extends \Model_Document {
 		$this->add('Controller_Validator');
 		$this->is(array(
 							'username|to_trim|unique',
-							'email|email'
+							'password|to_trim',
+							're_password|to_trim',
 						)
 				);
 
@@ -129,24 +132,21 @@ class Model_Distributor extends \Model_Document {
 
 	function beforeSaveDistributor(){
 
-		if( $this['password'] !== $this['re_password'])
+		if( trim($this['password']) !== trim($this['re_password']))
 			throw $this->exception('Passwords Must Match','ValidityCheck')->setField('re_password');
 
-		if($this['pan_no'] and $this['pan_no'][4] != $this['last_name'][0]){
+		if($this['pan_no'] and strtolower($this['pan_no'][4]) != strtolower($this['last_name'][0]) and strlen($this['pan_no']) !=10){
 			throw $this->exception('Pan No Does not looks correct','ValidityCheck')->setField('pan_no');
 		}
 
 		$mobile_number = $this->get('mobile_number');
 
-		if(!$this['mobile_number'] OR preg_match('/^\d{10}$/', $mobile_number)){
-		}else{
-			throw $this->exception('Mobile Number must be 10 digit long only '.preg_match('/^\d{10}$/', $mobile_number). " :: ". $this['username']. " :: " . $this['mobile_number'],'ValidityCheck')->setField('mobile_number');
-		}
-
 		$diff = $this->api->my_date_diff($this->api->today,$this['date_of_birth']);
 		if($diff['years']<18)
-			throw $this->exception('Applicant must be above 18','ValidityCheck')->setField('date_of_birth');
+			throw $this->exception('Applicant must be above 18','ValidityCheck')->setField('date_of_birth_ALERTED');		
 
+		if(strlen($this['username']) < 3)
+			throw $this->exception('Username must be more than 3 characters long');
 
 		// throw new \Exception("Error Processing Request", 1);
 		

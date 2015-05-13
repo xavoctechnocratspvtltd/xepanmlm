@@ -18,11 +18,20 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		$form=$container->add('Form_Stacked');
 
 		$distributor= $this->add('xMLM/Model_Distributor');
-		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','block_no','building_no','landmark','pin_code','state_id','district_id','username','password','re_password','bank_id','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age','nominee_email'));
+		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','block_no','building_no','landmark','pin_code','state_id','district_id','username','password','re_password','bank_id','IFCS_Code','account_no','branch_name','nominee_name','relation_with_nominee','nominee_age','nominee_email'));
 		$form->getElement('kit_item_id')->setEmptyText('Free/Red Entry');
 		$form->addSubmit('Register');			
+
+		$district_field = $form->getElement('district_id');
+
+		if($this->api->stickyGET('state_id'))
+			$district_field->getModel()->addCondition('state_id',$_GET['state_id']);
+		// else
+			// $district_field->getModel()->addCondition('state_id',-1);
+
+		$state_field = $form->getElement('state_id');
+		$state_field->js('change',$form->js()->atk4_form('reloadField','district_id',array($this->api->url(null),'state_id'=>$state_field->js()->val())));
 		
-		$form->getElement('password')->js(true)->_load('pwstrength-bootstrap-1.2.5.min')->pwstrength();
 		$dob_field = $form->getElement('date_of_birth');
 		$dob_field->options=array('yearRange'=> "1942:2015");
 
@@ -32,11 +41,6 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		}
 		
 		if($form->isSubmitted()){
-
-			if(strlen($form['password']) < 6)
-				$form->error('password','Legth must be greater than 6');
-
-			// $distributor= $this->add('xMLM/Model_Distributor');		
 			$form->save();
 			$form->js(null,array($form->js()->reload(),$cr_view->js()->reload()))->univ()->successMessage('Entry Done')->execute();
 		}
