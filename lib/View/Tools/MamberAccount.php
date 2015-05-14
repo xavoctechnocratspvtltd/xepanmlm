@@ -22,6 +22,35 @@ class View_Tools_MamberAccount extends \componentBase\View_Component{
 				return;
 			}
 
+			if(!$dis['last_password_change']){
+				$this->add('View_Info')->set('Please change your Password');
+				$form = $this->add('Form');
+				$form->addField('password','old_password');
+				$form->addField('password','new_password');
+				$form->addField('password','re_new_password');
+
+				$form->addSubmit('Update');
+
+				if($form->isSubmitted()){
+					if($form['old_password'] != $dis['password'])
+						$form->displayError('old_password','Password is not correct');
+
+					if(strcmp($form['new_password'],$form['re_new_password'])!=0)
+						$form->displayError('re_new_password','Password must match...');
+
+					if(strlen($form['new_password']) < 6)
+						$form->displayError('new_password','Must be greater than 6 characters in length');
+
+					$dis['last_password_change'] = $this->api->now;
+					$dis['password'] = $dis['re_password'] = $form['new_password'];
+					$dis->save();
+					$this->js()->reload()->execute();
+
+				}
+
+				return;
+			}
+
 			$tab=$this->add('Tabs');
 			$login_tab=$tab->addTabURL('xMLM_page_owner_xmlm_dashboard','Dashboard');
 			$profile_tab=$tab->addTabURL('xMLM_page_owner_xmlm_profile','Update Profile');
@@ -29,7 +58,7 @@ class View_Tools_MamberAccount extends \componentBase\View_Component{
 			$payout_tab=$tab->addTabURL('xMLM_page_owner_xmlm_mypayout','My Payout');
 			$tree_tab=$tab->addTabURL('xMLM_page_owner_xmlm_treeview','Tree View');
 			$downline_tab=$tab->addTabURL('xMLM_page_owner_xmlm_downlineview','Downline View');
-			$invoice_tab=$tab->addTabURL('xMLM_page_owner_xmlm_invoice','Invoice');
+			// $invoice_tab=$tab->addTabURL('xMLM_page_owner_xmlm_invoice','Invoice');
 			$credits_tab=$tab->addTabURL('xMLM_page_owner_xmlm_credits','Credits Management');
 			$credits_tab=$tab->addTabURL('xMLM_page_owner_xmlm_mybookings','My Booking(s)');
 			// $logout_tab=$tab->addTabURL('xMLM_page_owner_xmlm_logout','Logout');

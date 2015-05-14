@@ -59,6 +59,7 @@ class Model_CreditMovement extends \Model_Document {
 	}
 
 	function cancel($reason){
+		$this->distributor()->nitifyViaEmail("Credit Request Canceled","Dear Distributor,<br> Your credit request has been canceled by administrator due to following reason: <br/> '$reason' <br/><br/> -- Reagrds <br/> System");
 		$this->setStatus('Canceled',$reason);
 	}
 

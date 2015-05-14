@@ -54,12 +54,36 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 			
 			$form->save();
 
-			$form->model->email_authorities();
+			try{
+				$form->model->email_authorities();
+			}catch(\Exception $e){
+				$form->js(null,array($form->js()->univ()->errorMessage("Request Sent, Admin not emailed"),$grid->js()->reload()))->univ()->reload()->execute();
+			}
 			
 			$form->js(null,array($form->js()->univ()->successMessage("Request Sent"),$grid->js()->reload()))->univ()->reload()->execute();
 		}
 
-		$grid->setModel('xMLM/CreditMovement',array('attachment','created_at','credits','narration'))->addCondition('status',array('Request','Canceled'));
+		$credit_request_list_model = $this->add('xMLM/Model_CreditMovement');
+		$credit_request_list_model->addCondition('distributor_id',$current_distributor->id);
+		$grid->setModel($credit_request_list_model,array('attachment','created_at','credits','narration','status'))->addCondition('status',array('Request','Canceled'));
+
+		$grid->addMethod('format_req',function($g,$f){
+			if($g->model['status'] == 'Canceled'){
+				$g->setTDParam($f,'style/color','red');
+				$g->setTDParam($f,'style/text-decoration','line-through');
+				$g->setTDParam($f,'title','Canceled Request: '. $g->add('xCRM/Model_Activity')->loadWhoseRelatedDocIs($g->model)->addCondition('action','Canceled')->tryLoadAny()->get('message'));
+			}
+			else{
+				$g->setTDParam($f,'style/color','');
+				$g->setTDParam($f,'text-decoration','');
+				$g->setTDParam($f,'title','');
+				$g->setTDParam($f,'title','');
+			}
+		});
+
+		$grid->addFormatter('credits','req');
+		$grid->removeColumn('status');
+		$grid->js(true)->xtooltip();
 
 	}
 }

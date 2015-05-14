@@ -69,6 +69,7 @@ class Model_Distributor extends \Model_Document {
 		$this->hasOne('xMLM/Right','right_id')->defaultValue(null);
 
 		$this->addField('re_password')->type('password')->group('b~4')->mandatory(true);
+		$this->addField('last_password_change')->type('datetime')->system(true)->defaultValue(null);
 
 		$this->hasOne('xMLM/Bank','bank_id')->group('e~6~Bank Info')->mandatory(true);//->system(true);
 		
@@ -146,7 +147,7 @@ class Model_Distributor extends \Model_Document {
 			throw $this->exception('Applicant must be above 18','ValidityCheck')->setField('date_of_birth_ALERTED');		
 
 		if(strlen($this['username']) < 3)
-			throw $this->exception('Username must be more than 3 characters long');
+			throw $this->exception('Username must be more than 3 characters long','ValidityCheck')->setField('username');
 
 		// throw new \Exception("Error Processing Request", 1);
 		
@@ -192,7 +193,7 @@ class Model_Distributor extends \Model_Document {
 		if($leg = $this->recall('leg',false)){
 			$sponsor = $this->sponsor();
 			$sponsor[($leg=='A'?'left':'right').'_id'] = $this->id;
-			$sponsor->save();
+			$sponsor->saveAndUnload();
 			if($this['greened_on']){
 				$kit=$this->kit();
 				$this->updateAnsestors($kit->getPV(),$kit->getBV());
@@ -428,6 +429,19 @@ class Model_Distributor extends \Model_Document {
 
 	function loadRoot(){
 		return $this->loadBy('path','0');	
+	}
+
+	function nitifyViaEmail($subject, $email_body){
+		$email = $this['email'];
+		if(!$email) return;
+		$tm=$this->add( 'TMail_Transport_PHPMailer' );	
+		try{
+			$tm->send($email, $email,$subject, $email_body);
+		}catch( \phpmailerException $e ) {
+			$this->js(true)->univ()->errorMessage($e->getMessage());
+		}catch( \Exception $e ) {
+			throw $e;
+		}
 	}
 
 }

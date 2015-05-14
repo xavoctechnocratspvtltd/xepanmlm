@@ -39,6 +39,8 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 			$form->getElement('sponsor_id')->set($_GET['sponsor_id']);
 			$form->getElement('Leg')->set($_GET['Leg']);
 		}
+
+		$form->getElement('sponsor_id')->getModel()->addCondition($this->api->db->dsql()->orExpr()->where('left_id',null)->where('right_id',null));
 		
 		if($form->isSubmitted()){
 			$form->save();
