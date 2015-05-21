@@ -164,7 +164,7 @@ class Model_Distributor extends \Model_Document {
 				throw $this->exception($this->id.' :: You do not have sufficient credits','Growl');
 			}
 			$this['status']='paid';
-			$this['greened_on']=$this['created_at'];
+			$this['greened_on']=$this->api->now;
 			$this['is_active']=true;
 			$this['capping']=$kit->getCapping();
 			if($this->loaded()){
