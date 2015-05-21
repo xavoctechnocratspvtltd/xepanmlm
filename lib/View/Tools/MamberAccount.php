@@ -7,12 +7,14 @@ class View_Tools_MamberAccount extends \componentBase\View_Component{
 	function init(){
 		parent::init();
 
+		$config = $this->add('xMLM/Model_Configuration')->tryLoadAny();
+
 		if(! $dis = $this->add('xMLM/Model_Distributor')->loadLoggedIn()){
 			$this->add('View_Error')->set('Please Login First '.$this->api->auth->model->id);
 		}else{
 			$days = $this->api->my_date_diff($dis['created_at'],$this->api->today);
 
-			if(!$dis['greened_on'] and $days['days_total']>=46 and $dis['is_active']){
+			if(!$dis['greened_on'] and $days['days_total']>=$config['days_allowed_for_green'] and $dis['is_active']){
 				$dis['is_active']=false;
 				$dis->save();
 			}
