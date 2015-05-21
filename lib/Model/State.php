@@ -8,7 +8,7 @@ class Model_State extends \Model_Table {
 	function init(){
 		parent::init();
 
-		$this->addField('name');
+		$this->addField('name')->mandatory(true);
 		$this->hasMany('xMLM/District','state_id');
 		$this->hasMany('xMLM/Distributor','state_id');
 	}
