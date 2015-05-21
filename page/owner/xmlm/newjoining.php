@@ -24,13 +24,14 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 
 		$district_field = $form->getElement('district_id');
 
-		if($this->api->stickyGET('state_id'))
-			$district_field->getModel()->addCondition('state_id',$_GET['state_id']);
-		// else
-			// $district_field->getModel()->addCondition('state_id',-1);
-
 		$state_field = $form->getElement('state_id');
-		$state_field->js('change',$form->js()->atk4_form('reloadField','district_id',array($this->api->url(null),'state_id'=>$state_field->js()->val())));
+
+		if($this->api->stickyGET($state_field->name) OR $_REQUEST[$state_field->name])
+			$district_field->getModel()->addCondition('state_id',$_REQUEST[$state_field->name]);
+		else
+			$district_field->getModel()->addCondition('state_id',-1);
+
+		$state_field->js('change',$form->js()->atk4_form('reloadField','district_id',array($this->api->url(null),$state_field->name=>$state_field->js()->val())));
 		
 		$dob_field = $form->getElement('date_of_birth');
 		$dob_field->options=array('yearRange'=> "1942:2015");
