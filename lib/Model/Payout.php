@@ -70,6 +70,17 @@ class Model_Payout extends \SQL_Model {
 		";
 		$this->query($q);
 
+
+		// Set distributor carried_amount to 0
+		$q="
+			UPDATE
+				xmlm_distributors d
+			SET
+				carried_amount=0;
+		";
+
+		$this->query($q);
+
 		// calculate Pairs
 		$q="
 			UPDATE xmlm_payouts
