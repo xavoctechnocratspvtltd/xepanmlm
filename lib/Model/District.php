@@ -8,8 +8,8 @@ class Model_District extends \Model_Table {
 	function init(){
 		parent::init();
 
-		$this->hasOne('xMLM/State','state_id');
-		$this->addField('name');
+		$this->hasOne('xMLM/State','state_id')->mandatory(true);
+		$this->addField('name')->mandatory(true);
 
 		$this->hasMany('xMLM/Distributor','district_id');
 	}
