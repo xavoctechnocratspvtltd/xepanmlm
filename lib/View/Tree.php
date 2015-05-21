@@ -72,6 +72,24 @@ class View_Tree extends \View {
 					</tr>
 					</table>
 					<div class='atk-box-small atk-swatch-green'>Session Intros: ".$model['session_intros_amount']." /-</div>
+					<div class='atk-box-small atk-size-mega atk-swatch-green'>Downline</div>
+					<table border=1>
+						<tr>
+							<td>&nbsp;</td>
+							<td>Left</td>
+							<td>Right</td>
+						</tr>
+						<tr>
+							<td>Total</td>
+							<td>". $model->newInstance()->addCondition('path','like',$model['path'].'A%')->count()->getOne() ."</td>
+							<td>". $model->newInstance()->addCondition('path','like',$model['path'].'B%')->count()->getOne() ."</td>
+						</tr>
+						<tr>
+							<td>Green</td>
+							<td>". $model->newInstance()->addCondition('path','like',$model['path'].'A%')->addCondition('greened_on','<>',null)->count()->getOne() ."</td>
+							<td>". $model->newInstance()->addCondition('path','like',$model['path'].'B%')->addCondition('greened_on','<>',null)->count()->getOne() ."</td>
+						</tr>
+					</table>
 					"
 				);
 
