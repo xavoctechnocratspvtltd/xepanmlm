@@ -16,6 +16,8 @@ class Model_Distributor extends \Model_Document {
 	function init(){
 		parent::init();
 
+		$config = $this->add('xMLM/Model_Configuration')->tryLoadAny();
+
 		$this->getElement('status')->DefaultValue('unpaid');
 		$this->addField('customer_id')->type('int')->system(true);
 		$this->addField('user_id')->type('int')->system(true);
@@ -77,7 +79,7 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('account_no')->group('e~6')->mandatory(true)->display(array('form'=>'xMLM/Number'));//->system(true);
 		$this->addField('branch_name')->caption('Branch')->group('e~6~bl')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
 		$this->addField('nominee_name')->group('f~6~Nominee Details')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
-		$this->addField('relation_with_nominee')->enum(array('Father', 'Mother', 'Spouse', 'Sibling', 'Friend', 'Son', 'Daughter'))->group('f~2')->mandatory(true);//->system(true);
+		$this->addField('relation_with_nominee')->enum(explode(",", $config['relations_with_nominee']))->group('f~2')->mandatory(true);//->system(true);
 		$this->addField('nominee_email')->group('f~2');//->system(true);
 		$this->addField('nominee_age')->group('f~2')->mandatory(true)->display(array('form'=>'xMLM/Number'));//->system(true);
 
