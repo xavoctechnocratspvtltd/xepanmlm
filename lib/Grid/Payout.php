@@ -37,7 +37,22 @@ class Grid_Payout extends \Grid {
 		if($this->hasColumn('greened_on'))
 			$this->removeColumn('greened_on');
 
+		$this->addColumn('total_pay','total_pay');
+		$this->addColumn('total_discount','total_discount');
+		$this->addOrder()
+			->move('total_pay','after','introduction_income')
+			->move('total_discount','after','admin_charge')
+			->now();
+
 		return $m;
+	}
+
+	function format_total_pay($field){
+		$this->current_row[$field] = $this->current_row['introduction_income'] + $this->current_row['pair_income'];
+	}
+
+	function format_total_discount($field){
+		$this->current_row[$field] = $this->model['admin_charge'] + $this->model['tds'];
 	}
 
 	function format_distributor($field){

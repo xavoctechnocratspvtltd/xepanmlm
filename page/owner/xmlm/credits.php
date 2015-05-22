@@ -18,20 +18,27 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 		$trans_cr_col = $trans_cr_dr_col->addColumn(6);
 		$trans_dr_col = $trans_cr_dr_col->addColumn(6);
 
-		$trans_cr_col->add('H3')->set('Credits')->addClass('text-center');
 		$trans_credit = $current_distributor->creditMovements();
 		$trans_credit->addCondition('status',array('Purchase'));
+		$trans_cr_col->add('H3')->setHTML('Credits<br/><small>'.$trans_credit->sum('credits')->getOne().' /-</small>')->addClass('text-center');
 		
 		$grid = $trans_cr_col->add('Grid');
 		$grid->setModel($trans_credit,array('created_at','credits'));
+		$grid->add('xMLM/Controller_Export');
+		$grid->addPaginator(50);
+		// $grid->addTotals(array('credits'));
 
 		$trans_debit = $current_distributor->creditMovements();
 		$trans_debit->addCondition('status',array('Consumed','Collapsed'));
 		
-		$trans_dr_col->add('H3')->set('Debits')->addClass('text-center');
+		$trans_dr_col->add('H3')->setHTML('Debits<br/><small>'.$trans_debit->sum('credits')->getOne().' /-</small>')->addClass('text-center');
 		$grid = $trans_dr_col->add('Grid');
 		$grid->setModel($trans_debit,array('created_at','credits','narration'));
-
+		$grid->add('xMLM/Controller_Export');
+		// $grid->addSno(50);
+		$grid->addPaginator(50);
+		// $grid->addTotals(array('credits'));
+		// $grid->addGrandTotals(array('credits'));
 
 		$req_col->add('View')->set('Request Credits')->addClass('text-center atk-swatch-yellow atk-size-exa atk-box');
 		$form = $req_col->add('Form_Stacked');

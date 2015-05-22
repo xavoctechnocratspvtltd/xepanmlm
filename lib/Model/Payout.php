@@ -42,6 +42,7 @@ class Model_Payout extends \SQL_Model {
 
 		$this->addField('on_date')->type('date');
 
+		$this->setOrder('on_date');
 	}
 
 	function distributor(){

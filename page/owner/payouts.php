@@ -95,7 +95,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		// $payout_grid->addPaginator(100);
 		$payout_grid->addSno();
 
-		$payout_grid->add('misc/Export');
+		$payout_grid->add('xMLM/Controller_Export');
 
 		if($form->isSubmitted()){
 			$payout_grid->js()->reload(array(

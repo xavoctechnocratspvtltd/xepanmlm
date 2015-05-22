@@ -128,7 +128,7 @@ class Model_Distributor extends \Model_Document {
 						)
 				);
 
-
+		$this->setOrder('created_at');
 		// $this->api->auth->addEncryptionHook($this);
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
@@ -307,7 +307,7 @@ class Model_Distributor extends \Model_Document {
 			if($from_distributor['credit_purchase_points'] < $kitpoints){
 				return false;		
 			}
-			$from_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this->id." [".$this['username']."]");
+			$from_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this['username']);
 			return true;
 		}
 

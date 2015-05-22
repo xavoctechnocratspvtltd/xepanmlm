@@ -22,6 +22,16 @@ class page_xMLM_page_owner_xmlm_dashboard extends page_xMLM_page_owner_xmlm_main
             return $m->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->addCondition('greened_on','<>',null)->count();
         });
 
+        foreach ($this->add('xMLM/Model_Kit') as $kit) {
+            $distributor->addExpression($this->api->normalizeName($kit['name']).'_left')->set(function($m,$q)use($kit){
+                return $m->add('xMLM/Model_Distributor',array('table_alias'=>'k'.$kit->id.'left'))->addCondition('path','like',$q->concat($q->getField('path'),'A','%'))->addCondition('kit_item_id',$kit->id)->count();
+            });
+
+            $distributor->addExpression($this->api->normalizeName($kit['name']).'_right')->set(function($m,$q)use($kit){
+                return $m->add('xMLM/Model_Distributor',array('table_alias'=>'k'.$kit->id.'right'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->addCondition('kit_item_id',$kit->id)->count();
+            });            
+        }
+
         $distributor->loadLoggedIn();
 
         if($distributor['greened_on'])
@@ -61,6 +71,12 @@ class page_xMLM_page_owner_xmlm_dashboard extends page_xMLM_page_owner_xmlm_main
         
         $right_col->add('View')->setHTML('<div class="atk-move-left">Total Distributors: </div><div class="atk-move-right">'.$distributor['total_right'].'</div>')->addClass('atk-clear-fix');
         $right_col->add('View')->setHTML('<div class="atk-move-left">Green Distributors: </div><div class="atk-move-right">'.$distributor['green_right'].'</div>')->addClass('atk-clear-fix');
+
+        foreach ($this->add('xMLM/Model_Kit') as $kit) {
+            $left_col->add('View')->setHTML('<div class="atk-move-left">'.$kit['name'].': </div><div class="atk-move-right">'.$distributor[$this->api->normalizeName($kit['name']).'_left'].'</div>')->addClass('atk-clear-fix');
+            $right_col->add('View')->setHTML('<div class="atk-move-left">'.$kit['name'].': </div><div class="atk-move-right">'.$distributor[$this->api->normalizeName($kit['name']).'_right'].'</div>')->addClass('atk-clear-fix');
+        }
+
 
 	}
 }
