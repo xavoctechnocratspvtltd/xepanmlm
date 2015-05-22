@@ -11,24 +11,25 @@ class page_xMLM_page_owner_xmlm_dashboard extends page_xMLM_page_owner_xmlm_main
         });
 
         $distributor->addExpression('total_right')->set(function($m,$q){
-            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->count();
+            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'tr'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->count();
         });
 
         $distributor->addExpression('green_left')->set(function($m,$q){
-            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'A','%'))->addCondition('greened_on','<>',null)->count();
+            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'gl'))->addCondition('path','like',$q->concat($q->getField('path'),'A','%'))->addCondition('greened_on','<>',null)->count();
         });
 
         $distributor->addExpression('green_right')->set(function($m,$q){
-            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'tl'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->addCondition('greened_on','<>',null)->count();
+            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'gr'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->addCondition('greened_on','<>',null)->count();
         });
 
         foreach ($this->add('xMLM/Model_Kit') as $kit) {
-            $distributor->addExpression($this->api->normalizeName($kit['name']).'_left')->set(function($m,$q)use($kit){
-                return $m->add('xMLM/Model_Distributor',array('table_alias'=>'k'.$kit->id.'left'))->addCondition('path','like',$q->concat($q->getField('path'),'A','%'))->addCondition('kit_item_id',$kit->id)->count();
+            $kit_id= $kit->id;
+            $distributor->addExpression($this->api->normalizeName($kit['name']).'_left')->set(function($m,$q)use($kit_id){
+                return $m->add('xMLM/Model_Distributor',array('table_alias'=>'k'.$kit_id.'left'))->addCondition('path','like',$q->concat($q->getField('path'),'A','%'))->addCondition('kit_item_id',$kit_id)->count();
             });
 
-            $distributor->addExpression($this->api->normalizeName($kit['name']).'_right')->set(function($m,$q)use($kit){
-                return $m->add('xMLM/Model_Distributor',array('table_alias'=>'k'.$kit->id.'right'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->addCondition('kit_item_id',$kit->id)->count();
+            $distributor->addExpression($this->api->normalizeName($kit['name']).'_right')->set(function($m,$q)use($kit_id){
+                return $m->add('xMLM/Model_Distributor',array('table_alias'=>'k'.$kit_id.'right'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->addCondition('kit_item_id',$kit_id)->count();
             });            
         }
 
