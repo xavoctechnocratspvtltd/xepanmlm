@@ -128,7 +128,7 @@ class Model_Distributor extends \Model_Document {
 						)
 				);
 
-		$this->setOrder('created_at');
+		$this->setOrder('greened_on','desc');
 		// $this->api->auth->addEncryptionHook($this);
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
