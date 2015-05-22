@@ -38,10 +38,10 @@ class Grid_Payout extends \Grid {
 			$this->removeColumn('greened_on');
 
 		$this->addColumn('total_pay','total_pay');
-		$this->addColumn('total_diduction','total_diduction');
+		$this->addColumn('total_deduction','total_deduction');
 		$this->addOrder()
 			->move('total_pay','after','introduction_income')
-			->move('total_diduction','after','admin_charge')
+			->move('total_deduction','after','admin_charge')
 			->now();
 
 		return $m;
@@ -51,7 +51,7 @@ class Grid_Payout extends \Grid {
 		$this->current_row[$field] = $this->current_row['introduction_income'] + $this->current_row['pair_income'];
 	}
 
-	function format_total_diduction($field){
+	function format_total_deduction($field){
 		$this->current_row[$field] = $this->model['admin_charge'] + $this->model['tds'];
 	}
 
