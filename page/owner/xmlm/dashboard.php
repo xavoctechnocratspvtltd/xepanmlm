@@ -22,6 +22,14 @@ class page_xMLM_page_owner_xmlm_dashboard extends page_xMLM_page_owner_xmlm_main
             return $m->add('xMLM/Model_Distributor',array('table_alias'=>'gr'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->addCondition('greened_on','<>',null)->count();
         });
 
+        $distributor->addExpression('red_left')->set(function($m,$q){
+            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'rl'))->addCondition('path','like',$q->concat($q->getField('path'),'A','%'))->addCondition('greened_on',null)->count();
+        });
+
+        $distributor->addExpression('red_right')->set(function($m,$q){
+            return $m->add('xMLM/Model_Distributor',array('table_alias'=>'rr'))->addCondition('path','like',$q->concat($q->getField('path'),'B','%'))->addCondition('greened_on',null)->count();
+        });
+
         foreach ($this->add('xMLM/Model_Kit') as $kit) {
             $kit_id= $kit->id;
             $distributor->addExpression($this->api->normalizeName($kit['name']).'_left')->set(function($m,$q)use($kit_id){
@@ -69,9 +77,11 @@ class page_xMLM_page_owner_xmlm_dashboard extends page_xMLM_page_owner_xmlm_main
 
         $left_col->add('View')->setHTML('<div class="atk-move-left">Total Distributors: </div><div class="atk-move-right">'.$distributor['total_left'].'</div>')->addClass('atk-clear-fix');
         $left_col->add('View')->setHTML('<div class="atk-move-left">Green Distributors: </div><div class="atk-move-right">'.$distributor['green_left'].'</div>')->addClass('atk-clear-fix');
+        $left_col->add('View')->setHTML('<div class="atk-move-left">Red Distributors: </div><div class="atk-move-right">'.$distributor['red_left'].'</div>')->addClass('atk-clear-fix');
         
         $right_col->add('View')->setHTML('<div class="atk-move-left">Total Distributors: </div><div class="atk-move-right">'.$distributor['total_right'].'</div>')->addClass('atk-clear-fix');
         $right_col->add('View')->setHTML('<div class="atk-move-left">Green Distributors: </div><div class="atk-move-right">'.$distributor['green_right'].'</div>')->addClass('atk-clear-fix');
+        $right_col->add('View')->setHTML('<div class="atk-move-left">Red Distributors: </div><div class="atk-move-right">'.$distributor['red_right'].'</div>')->addClass('atk-clear-fix');
 
         foreach ($this->add('xMLM/Model_Kit') as $kit) {
             $left_col->add('View')->setHTML('<div class="atk-move-left">'.$kit['name'].': </div><div class="atk-move-right">'.$distributor[$this->api->normalizeName($kit['name']).'_left'].'</div>')->addClass('atk-clear-fix');
