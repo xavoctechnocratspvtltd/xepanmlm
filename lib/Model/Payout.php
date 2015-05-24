@@ -11,34 +11,40 @@ class Model_Payout extends \SQL_Model {
 
 		// $this->addField('session_intros_amount');
 
-		$this->addField('session_left_pv')->type('int');
-		$this->addField('session_right_pv')->type('int');
+		$this->addField('session_left_pv')->type('int')->defaultValue(0);
+		$this->addField('session_right_pv')->type('int')->defaultValue(0);
+		$this->addField('session_carried_left_pv')->type('int')->defaultValue(0);
+		$this->addField('session_carried_right_pv')->type('int')->defaultValue(0);
 		
-		$this->addField('session_self_bv')->type('int');
-		$this->addField('session_left_bv')->type('int');
-		$this->addField('session_right_bv')->type('int');
+		$this->addField('session_self_bv')->type('int')->defaultValue(0);
+		$this->addField('session_left_bv')->type('int')->defaultValue(0);
+		$this->addField('session_right_bv')->type('int')->defaultValue(0);
 
 		// $this->addField('session_direct_count');
 
-		$this->addField('pairs')->type('int');
+		$this->addField('pairs')->type('int')->defaultValue(0);
 		
-		$this->addField('session_business_volume')->type('int');
-		$this->addField('generation_level')->type('int');
-		$this->addField('generation_gross_amount')->type('int');
+		$this->addField('session_business_volume')->type('int')->defaultValue(0);
+		$this->addField('generation_level')->type('int')->defaultValue(0);
+		$this->addField('generation_gross_amount')->type('int')->defaultValue(0);
 		
-		$this->addField('pair_income')->type('int');
-		$this->addField('introduction_income')->type('int');
-		$this->addField('generation_difference_income')->type('int');
-		$this->addField('bonus')->type('int');
+		$this->addField('pair_income')->type('int')->defaultValue(0);
+		$this->addField('introduction_income')->type('int')->defaultValue(0);
+		$this->addField('generation_difference_income')->type('int')->defaultValue(0);
+		$this->addField('bonus')->type('int')->defaultValue(0);
 
-		$this->addField('tds')->type('money');
-		$this->addField('admin_charge')->type('money');
+		$this->addExpression('total_pay')->set('introduction_income+pair_income+generation_difference_income+bonus');
+
+		$this->addField('tds')->type('money')->defaultValue(0);
+		$this->addField('admin_charge')->type('money')->defaultValue(0);
 		// $this->addField('repurchase_deduction')->type('money');
-		$this->addField('other_deduction_name')->type('money');
-		$this->addField('other_deduction')->type('money');
+		$this->addField('other_deduction_name')->type('money')->defaultValue(0);
+		$this->addField('other_deduction')->type('money')->defaultValue(0);
+		
+		$this->addExpression('total_deduction')->set('tds+admin_charge+other_deduction');
 
-		$this->addField('net_amount')->type('money');
-		$this->addField('carried_amount')->type('money');
+		$this->addField('net_amount')->type('money')->defaultValue(0);
+		$this->addField('carried_amount')->type('money')->defaultValue(0);
 
 		$this->addField('on_date')->type('date');
 
@@ -201,6 +207,20 @@ class Model_Payout extends \SQL_Model {
 				d.temp = IF(d.session_left_pv = d.session_right_pv AND d.session_left_pv > 0, d.session_left_pv - $pair_pv, IF(d.session_left_pv > d.session_right_pv,d.session_right_pv,d.session_left_pv)),
 				d.session_left_pv = d.session_left_pv - d.temp,
 				d.session_right_pv = d.session_right_pv - d.temp
+		";
+		$this->query($q);
+
+		// Set carried pv back in this Closing [for records]
+		$q="
+			UPDATE 
+				xmlm_payouts p
+			JOIN
+				xmlm_distributors d on p.distributor_id = d.id
+			SET
+				p.session_carried_left_pv = d.session_left_pv,
+				p.session_carried_right_pv = d.session_right_pv
+			WHERE
+				p.on_date='$on_date'
 		";
 		$this->query($q);
 		

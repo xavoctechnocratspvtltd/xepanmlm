@@ -16,6 +16,9 @@ class Grid_Payout extends \Grid {
 		if($this->hasColumn('session_left_bv')) $this->removeColumn('session_left_bv');
 		if($this->hasColumn('session_right_bv')) $this->removeColumn('session_right_bv');
 		if($this->hasColumn('session_business_volume')) $this->removeColumn('session_business_volume');
+		if($this->hasColumn('session_carried_left_pv')) $this->removeColumn('session_carried_left_pv');
+		if($this->hasColumn('session_carried_right_pv')) $this->removeColumn('session_carried_right_pv');
+		
 		if(!$this->generation_income OR $this->hasColumn('session_self_bv')) $this->removeColumn('session_self_bv');
 		if(!$this->generation_income OR $this->hasColumn('generation_level')) $this->removeColumn('generation_level');
 		if(!$this->generation_income OR $this->hasColumn('generation_gross_amount')) $this->removeColumn('generation_gross_amount');
@@ -61,6 +64,38 @@ class Grid_Payout extends \Grid {
 		}else{
 			$this->setTDparam($field,'style/color','');
 		}
+
 	}
+
+	function format_totals_distributor($field){
+		$this->current_row_html[$field]="<b>Total</b>";
+	}
+
+
+	function updateGrandTotals()
+    {
+        // get model
+        $m = clone $this->getIterator();
+        // create DSQL query for sum and count request
+        $fields = array_keys($this->totals);
+
+        // select as sub-query
+        $sub_q = $m->_dsql()->del('limit')->del('order')->del('group');
+
+        // $q = $this->api->db->dsql();//->debug();
+        // $q->table($sub_q->render(), 'grandTotals'); // alias is mandatory if you pass table as DSQL
+        foreach ($fields as $field) {
+            $sub_q->field($sub_q->sum('xmlm_payouts.'.$field), $field);
+        }
+        $sub_q->field($sub_q->count(), 'total_cnt');
+
+        // execute DSQL
+        $data = $sub_q->getHash();
+
+        // parse results
+        $this->total_rows = $data['total_cnt'];
+        unset($data['total_cnt']);
+        $this->totals = $data;
+    }
 
 }

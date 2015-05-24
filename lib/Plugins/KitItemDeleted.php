@@ -14,8 +14,8 @@ class Plugins_KitItemDeleted extends \componentBase\Plugin {
 		
 		$this->add('xMLM/Model_Distributor')
 			->addCondition('kit_item_id',$item->id)
-			->set('kit_item_id',null)
-			->saveAndUnload();
-
+			->each(function($obj){
+				$obj->set('kit_item_id',null)->save();
+			});
 	}
 }

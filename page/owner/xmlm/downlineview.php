@@ -16,22 +16,22 @@ class page_xMLM_page_owner_xmlm_downlineview extends page_xMLM_page_owner_xmlm_m
 
 		$left_col->add('View')->set('Left')->addClass('atk-swatch-ink atk-size-exa text-center atk-box-small');
 		$left_grid = $left_col->add('xMLM/Grid_Distributor');
-		$left_grid->setModel('xMLM/Distributor',array('username','name','sponsor','introducer','left','right','created_at','greened_on','kit_item'))
+		$left_grid->setModel('xMLM/Distributor',array('username','name','sponsor','introducer','left','right','created_at','greened_on','kit_item','color_value'))
 					->addCondition('path','like',$current_distributor['path'].'A%');
-		$left_grid->addQuickSearch(array('username','name','kit_item'));
+		$left_grid->addQuickSearch(array('username','name','kit_item'),null,'xMLM/Filter_Distributor');
 		$left_grid->addPaginator(50);
 		
 		$right_col->add('View')->set('Right')->addClass('atk-swatch-ink atk-size-exa text-center atk-box-small');
 		$right_grid = $right_col->add('xMLM/Grid_Distributor');
-		$right_grid->setModel('xMLM/Distributor',array('username','name','sponsor','introducer','left','right','created_at','greened_on','kit_item'))
+		$right_grid->setModel('xMLM/Distributor',array('username','name','sponsor','introducer','left','right','created_at','greened_on','kit_item','color_value'))
 					->addCondition('path','like',$current_distributor['path'].'B%');
-		$right_grid->addQuickSearch(array('username','name','kit_item'));
+		$right_grid->addQuickSearch(array('username','name','kit_item'),null,'xMLM/Filter_Distributor');
 		$right_grid->addPaginator(50);
 
 		$container->add('HR');
 		$container->add('View')->set('Direct Introductions')->addClass('text-center atk-swatch-green atk-size-exa atk-box');
 		$intro_grid = $container->add('xMLM/Grid_Distributor');
-		$intro_grid->setModel('xMLM/Distributor',array('username','name','sponsor','introducer','left','right','created_at','greened_on','kit_item'))
+		$intro_grid->setModel('xMLM/Distributor',array('username','name','sponsor','introducer','left','right','created_at','greened_on','kit_item','color_value'))
 					->addCondition('introducer_id',$current_distributor->id);
 
 	}

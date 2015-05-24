@@ -38,12 +38,19 @@ class Model_Kit extends \xShop\Model_Item {
 
 		$specification = $this->add('xShop\Model_Specification');
 		$specification->addCondition('name','Introduction Income');
-		$spec_assos_j4 = $this->join('xshop_item_spec_ass.item_id',null,null,'cp_j');
+		$spec_assos_j4 = $this->join('xshop_item_spec_ass.item_id',null,null,'ii_j');
 		$spec_assos_j4->addField('intro_specification_id','specification_id');
 		$spec_assos_j4->addField('intro_value','value')->display(array('form'=>'Readonly'))->caption('Introduction Income')->type('money');
 		$this->addCondition('intro_specification_id',$specification->fieldQuery('id'));
 
-		$this->addField('purchase_points_required')->mandatory(true);
+		$specification = $this->add('xShop\Model_Specification');
+		$specification->addCondition('name','Color');
+		$spec_assos_j4 = $this->join('xshop_item_spec_ass.item_id',null,null,'clr_j');
+		$spec_assos_j4->addField('color_specification_id','specification_id');
+		$spec_assos_j4->addField('color_value','value')->display(array('form'=>'Readonly'))->caption('Color');
+		$this->addCondition('color_specification_id',$specification->fieldQuery('id'));
+
+		// $this->addField('purchase_points_required')->mandatory(true);
 
 	}
 	

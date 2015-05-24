@@ -149,7 +149,7 @@ class Model_Distributor extends \Model_Document {
 			throw $this->exception('Applicant must be above 18','ValidityCheck')->setField('date_of_birth_ALERTED');		
 
 		if(strlen($this['username']) < 3)
-			throw $this->exception('Username must be more than 3 characters long','ValidityCheck')->setField('username');
+			throw $this->exception('Username must be more than 3 characters long '. $this['id'],'ValidityCheck')->setField('username');
 
 		// throw new \Exception("Error Processing Request", 1);
 		

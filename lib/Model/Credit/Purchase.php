@@ -8,6 +8,7 @@ class Model_Credit_Purchase extends Model_CreditMovement{
 			// 'can_mark_processed'=>array(),
 			// 'can_cancel'=>array(),
 			// 'allow_add'=>array(),
+			'can_manage_attachments'=>false,
 		);
 
 	function init(){

@@ -22,9 +22,14 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 		$trans_credit->addCondition('status',array('Purchase'));
 		$trans_cr_col->add('H3')->setHTML('Credits<br/><small>'.$trans_credit->sum('credits')->getOne().' /-</small>')->addClass('text-center');
 		
+		$export_model = $current_distributor->creditMovements()->setOrder('created_at');
+		$export_model->addExpression('credit')->set($export_model->dsql()->fx('IF',array($export_model->dsql()->expr('status="Purchase"'),$export_model->dsql()->expr('credits'),'0')));
+		$export_model->addExpression('debit')->set($export_model->dsql()->fx('IF',array($export_model->dsql()->expr('status<>"Purchase"'),$export_model->dsql()->expr('credits'),'0')));
+		$export_model->debug();
+
 		$grid = $trans_cr_col->add('Grid');
 		$grid->setModel($trans_credit,array('created_at','credits'));
-		$grid->add('xMLM/Controller_Export');
+		$grid->add('xMLM/Controller_Export',array('output_filename'=>'distributor_credit_repot.csv','model'=>$export_model,'fields'=>array('status','credit','debit','created_at','narration'),'totals'=>array('credit','debit')));
 		$grid->addPaginator(50);
 		// $grid->addTotals(array('credits'));
 
@@ -34,7 +39,7 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 		$trans_dr_col->add('H3')->setHTML('Debits<br/><small>'.$trans_debit->sum('credits')->getOne().' /-</small>')->addClass('text-center');
 		$grid = $trans_dr_col->add('Grid');
 		$grid->setModel($trans_debit,array('created_at','credits','narration'));
-		$grid->add('xMLM/Controller_Export');
+		// $grid->add('xMLM/Controller_Export');
 		// $grid->addSno(50);
 		$grid->addPaginator(50);
 		// $grid->addTotals(array('credits'));

@@ -12,14 +12,14 @@ class Controller_Export extends \AbstractController {
 	public $output_type = "text/csv";
 	public $output_disposition = "attachment";
     public $output_filename = "export.csv";
-
+    public $model=null;
 
 	function init(){
 		parent::init();
 		$grid = $this->owner;
 		if(!$this->fields) $this->fields = $grid->model->getActualFields();
 		// $this->addHook("output", array($this, "output"));
-		
+		if(!$this->model) $this->model= $grid->model;
 		if($_GET[$this->name]){
 			$this->getData();
 			$this->output();
@@ -41,7 +41,7 @@ class Controller_Export extends \AbstractController {
 		
 		// Add Data
 		$i=1;
-		foreach ($this->owner->model->getRows() as $row) {
+		foreach ($this->model->getRows() as $row) {
             $cols = array();
             
             if($this->add_sno)

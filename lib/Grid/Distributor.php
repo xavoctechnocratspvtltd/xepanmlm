@@ -47,7 +47,21 @@ class Grid_Distributor extends \Grid{
 	}
 
 	function setModel($model,$fields=null){
+		if(is_string($model)){
+			$model= str_replace('/', "/Model_", $model);
+			$model = $this->add($model);
+		}
+
+		$kit_j = $model->join('xshop_items','kit_item_id');
+		$specification = $this->add('xShop\Model_Specification');
+		$specification->addCondition('name','Color');
+		$spec_assos_j4 = $kit_j->join('xshop_item_spec_ass.item_id',null,null,'clr_val_j');
+		$spec_assos_j4->addField('color_specification_id','specification_id');
+		$spec_assos_j4->addField('color_value','value')->display(array('form'=>'Readonly'))->caption('Color');
+		$model->addCondition('color_specification_id',$specification->fieldQuery('id'));
+
 		$m=parent::setModel($model,$fields);
+
 		if($this->hasColumn('created_at')) $this->removeColumn('created_at');
 		if($this->hasColumn('greened_on')) $this->removeColumn('greened_on');
 		if($this->hasColumn('sponsor')) $this->removeColumn('sponsor');
@@ -56,6 +70,7 @@ class Grid_Distributor extends \Grid{
 		if($this->hasColumn('right')) $this->removeColumn('right');
 		if($this->hasColumn('kit_item')) $this->removeColumn('kit_item');
 		if($this->hasColumn('status')) $this->removeColumn('status');
+		if($this->hasColumn('color_value')) $this->removeColumn('color_value');
 
 		return $m;
 	}
@@ -70,7 +85,7 @@ class Grid_Distributor extends \Grid{
 			$name_class="atk-clear-fix atk-effect-danger atk-size-mega";
 
 		$name = "<br/><div class='$name_class'>".$this->model['name'].
-				"<br/><small>". $this->model['kit_item'] ."</small>".
+				"<br/><small style='color: ". $this->model['color_value'] ."'>". $this->model['kit_item'] ."</small>".
 				"</div>";
 
 		$left = "<div class='atk-size-micro atk-move-left'>A: ".$this->model['left']."</div>";
