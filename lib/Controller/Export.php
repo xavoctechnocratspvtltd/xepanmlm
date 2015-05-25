@@ -13,20 +13,24 @@ class Controller_Export extends \AbstractController {
 	public $output_disposition = "attachment";
     public $output_filename = "export.csv";
     public $model=null;
+    public $export_title='Export';
 
 	function init(){
 		parent::init();
-		$grid = $this->owner;
 		if(!$this->fields) $this->fields = $grid->model->getActualFields();
 		// $this->addHook("output", array($this, "output"));
-		if(!$this->model) $this->model= $grid->model;
+		if(!$this->model) $this->model= $this->owner->model;
 		if($_GET[$this->name]){
 			$this->getData();
 			$this->output();
 		}
 
-		$btn = $grid->addButton('Export');
-		$btn->js("click")->univ()->location($this->api->url(null, array($this->name => "1")));
+		if($this->owner instanceof \Grid)
+			$this->btn = $this->owner->addButton($this->export_title);
+		else
+			$this->btn = $this->owner->add('Button')->set($this->export_title);
+		
+		$this->btn->js("click")->univ()->location($this->api->url(null, array($this->name => "1")));
 	}
 
 	function getData(){
