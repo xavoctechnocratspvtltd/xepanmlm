@@ -70,7 +70,7 @@ class Model_Distributor extends \Model_Document {
 		$this->hasOne('xMLM/Left','left_id')->defaultValue(null);
 		$this->hasOne('xMLM/Right','right_id')->defaultValue(null);
 
-		$this->addField('re_password')->type('password')->group('b~4')->mandatory(true);
+		// $this->addField('re_password')->type('password')->group('b~4')->mandatory(true);
 		$this->addField('last_password_change')->type('datetime')->system(true)->defaultValue(null);
 
 		$this->hasOne('xMLM/Bank','bank_id')->group('e~6~Bank Info')->mandatory(true);//->system(true);
@@ -124,7 +124,7 @@ class Model_Distributor extends \Model_Document {
 		$this->is(array(
 							'username|to_trim|unique',
 							'password|to_trim',
-							're_password|to_trim',
+							// 're_password|to_trim',
 						)
 				);
 
@@ -135,8 +135,8 @@ class Model_Distributor extends \Model_Document {
 
 	function beforeSaveDistributor(){
 
-		if( trim($this['password']) !== trim($this['re_password']))
-			throw $this->exception('Passwords Must Match','ValidityCheck')->setField('re_password');
+		// if( trim($this['password']) !== trim($this['re_password']))
+		// 	throw $this->exception('Passwords Must Match','ValidityCheck')->setField('re_password');
 
 		if($this['pan_no'] and strtolower($this['pan_no'][4]) != strtolower($this['last_name'][0]) and strlen($this['pan_no']) !=10){
 			throw $this->exception('Pan No Does not looks correct','ValidityCheck')->setField('pan_no');

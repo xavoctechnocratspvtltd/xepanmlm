@@ -52,13 +52,15 @@ class Grid_Distributor extends \Grid{
 			$model = $this->add($model);
 		}
 
-		$kit_j = $model->join('xshop_items','kit_item_id');
-		$specification = $this->add('xShop\Model_Specification');
-		$specification->addCondition('name','Color');
-		$spec_assos_j4 = $kit_j->join('xshop_item_spec_ass.item_id',null,null,'clr_val_j');
-		$spec_assos_j4->addField('color_specification_id','specification_id');
-		$spec_assos_j4->addField('color_value','value')->display(array('form'=>'Readonly'))->caption('Color');
-		$model->addCondition('color_specification_id',$specification->fieldQuery('id'));
+		// $q= $model->dsql();
+
+		// $kit_j = $model->leftJoin('xshop_items','kit_item_id');
+		// $specification = $this->add('xShop\Model_Specification');
+		// $specification->addCondition('name','Color');
+		// $spec_assos_j4 = $kit_j->leftJoin('xshop_item_spec_ass.item_id',null,null,'clr_val_j');
+		// $spec_assos_j4->addField('color_specification_id','specification_id');
+		// $spec_assos_j4->addField('color_value','value')->display(array('form'=>'Readonly'))->caption('Color');
+		// $model->addCondition('color_specification_id',$specification->fieldQuery('id'));
 
 		$m=parent::setModel($model,$fields);
 
@@ -85,7 +87,7 @@ class Grid_Distributor extends \Grid{
 			$name_class="atk-clear-fix atk-effect-danger atk-size-mega";
 
 		$name = "<br/><div class='$name_class'>".$this->model['name'].
-				"<br/><small style='color: ". $this->model['color_value'] ."'>". $this->model['kit_item'] ."</small>".
+				"<br/><small style='color: ". $this->model->ref('kit_item_id')->get('color_value') ."'>". $this->model['kit_item'] ."</small>".
 				"</div>";
 
 		$left = "<div class='atk-size-micro atk-move-left'>A: ".$this->model['left']."</div>";

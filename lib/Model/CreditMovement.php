@@ -19,6 +19,7 @@ class Model_CreditMovement extends \Model_Document {
 
 		$this->hasOne('xMLM\Distributor','distributor_id')->mandatory(true)->caption('Paid Distributors');
 		$this->addField('credits')->type('money')->mandatory(true);
+		$this->addField('credits_given_on')->type('datetime')->defaultValue(null);
 		$this->addField('narration')->mandatory(true);
 
 		$this->add('filestore/Field_Image','attachment_id');//->mandatory(true);
@@ -75,6 +76,8 @@ class Model_CreditMovement extends \Model_Document {
 	}
 
 	function mark_processed(){
+		$this['credits_given_on']=$this->api->now;
+		$this->save();
 		$this->distributor()->set('credit_purchase_points',$this->dsql()->expr('credit_purchase_points+'.$this['credits']))->save();
 	}
 

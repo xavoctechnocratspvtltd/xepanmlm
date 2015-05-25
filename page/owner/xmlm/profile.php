@@ -19,8 +19,11 @@ class page_xMLM_page_owner_xmlm_profile extends page_xMLM_page_owner_xmlm_main{
 
 		$form=$container->add('Form_Stacked');
 		// $form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','name','email','mobile_number','pan_no','address','username','password','re_password','name_of_bank','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age'));
-		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','block_no','building_no','landmark','pin_code','state_id','district_id','username','password','re_password','bank_id','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age','nominee_email'));
-		
+		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','block_no','building_no','landmark','pin_code','state_id','district_id','username','password','bank_id','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age','nominee_email'));
+		$form->addField('password','re_password')->setterGetter('group','b~4');
+		$form->add('Order')
+			->move('re_password','after','password')
+			->now();
 
 		$district_field = $form->getElement('district_id');
 
@@ -43,12 +46,23 @@ class page_xMLM_page_owner_xmlm_profile extends page_xMLM_page_owner_xmlm_main{
 
 		$form->addSubmit('Update');
 
+
 		if($form->isSubmitted()){
 			if(strlen($form['password']) < 6)
 				$form->error('password','Legth must be greater than 6');
+
+			if($form['password']!=$form['re_password'])
+				$form->error('password','Password Must Match');
+
+			if($form['password']=='~~~~~~') $form->getModel()->getElement('password')->destroy();
+
 			$form->save();
 			$form->js()->univ()->successMessage('Updated Successfully')->execute();
 		}
 		$form->add('Controller_FormBeautifier');
+
+		$form->getElement('password')->set('~~~~~~');
+		$form->getElement('re_password')->set('~~~~~~');
 	}
+
 }

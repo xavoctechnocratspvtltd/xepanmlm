@@ -63,7 +63,7 @@ class page_xMLM_page_owner_xmlm_credits_report extends page_xMLM_page_owner_main
 			}
 
 
-		$grid->setModel($credit_mov->debug());
+		$grid->setModel($credit_mov);
 
 		$grid->removeColumn('item_name');
 		$grid->removeColumn('created_by');

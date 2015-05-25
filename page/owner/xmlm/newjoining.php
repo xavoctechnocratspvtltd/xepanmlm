@@ -18,8 +18,12 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		$form=$container->add('Form_Stacked');
 
 		$distributor= $this->add('xMLM/Model_Distributor');
-		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','block_no','building_no','landmark','pin_code','state_id','district_id','username','password','re_password','bank_id','IFCS_Code','account_no','branch_name','nominee_name','relation_with_nominee','nominee_age','nominee_email'));
+		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','block_no','building_no','landmark','pin_code','state_id','district_id','username','password','bank_id','IFCS_Code','account_no','branch_name','nominee_name','relation_with_nominee','nominee_age','nominee_email'));
 		$form->getElement('kit_item_id')->setEmptyText('Free/Red Entry');
+		$form->addField('password','re_password')->setterGetter('group','b~4');
+		$form->add('Order')
+			->move('re_password','after','password')
+			->now();
 		$form->addSubmit('Register');			
 
 		$district_field = $form->getElement('district_id');
@@ -44,7 +48,10 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		$form->getElement('sponsor_id')->getModel()->addCondition($this->api->db->dsql()->orExpr()->where('left_id',null)->where('right_id',null));
 		
 		if($form->isSubmitted()){
+			if($form['password']!=$form['re_password'])
+				$form->error('password','Password Must Match');
 			$form->save();
+
 			$form->js(null,array($form->js()->reload(),$cr_view->js()->reload()))->univ()->successMessage('Entry Done')->execute();
 		}
 		$form->add('Controller_FormBeautifier');

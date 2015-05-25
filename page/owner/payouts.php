@@ -26,7 +26,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$rc= $cols->addColumn(6);
 
 		$form = $lc->add('Form');
-		$form->addField('Readonly','on_date')->set($this->api->today);
+		$form->addField('Readonly','on_date')->set($this->api->now);
 		if($config['include_generation'])
 			$form->addField('Checkbox','close_generation','Close Generation Income Also');
 		$field=$form->addField('line','captcha');

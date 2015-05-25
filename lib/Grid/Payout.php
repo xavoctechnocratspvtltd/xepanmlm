@@ -5,6 +5,7 @@ namespace xMLM;
 class Grid_Payout extends \Grid {
 	public $hide_distributor=true;
 	public $generation_income=false;
+	public $introducer_vp;
 
 	function setModel($model,$fields=null){
 		$m = parent::setModel($model,$fields);
@@ -36,6 +37,7 @@ class Grid_Payout extends \Grid {
 		if(!$this->hide_distributor and $this->hasColumn('distributor')){
 			$this->addFormatter('distributor','distributor');
 		}
+			$this->addFormatter('introduction_income','introduction_income');
 		
 		if($this->hasColumn('greened_on'))
 			$this->removeColumn('greened_on');
@@ -47,6 +49,29 @@ class Grid_Payout extends \Grid {
 			->move('total_deduction','after','admin_charge')
 			->now();
 
+
+		$this->introducer_vp = $this->add('VirtualPage');
+		$this->introducer_vp->set(function($p){
+			$pout=$p->add('xMLM/Model_Payout'); 
+			$pout->load($_GET['payout_id']);
+
+			$last_payout_date=$p->add('xMLM/Model_Payout');
+			$last_payout_date->addCondition('on_date','<',$pout['on_date']);
+			$last_payout_date->setOrder('on_date','desc');
+
+			$last_closing_date=$last_payout_date->tryLoadAny()->get('on_date')?:"1970-01-01";
+
+			$intro_grid = $p->add('xMLM/Grid_Distributor');
+			$intro_grid->setModel('xMLM/Distributor',array('username','name','sponsor','introducer','left','right','created_at','greened_on','kit_item','color_value'))
+					->addCondition('introducer_id',$pout['distributor_id'])
+					->addCondition('greened_on','<>',null)
+					->addCondition('greened_on','>=',$last_closing_date)
+					->addCondition('greened_on','<=',$pout['on_date']);
+
+		});	
+
+
+
 		return $m;
 	}
 
@@ -56,6 +81,10 @@ class Grid_Payout extends \Grid {
 
 	function format_total_deduction($field){
 		$this->current_row[$field] = $this->model['admin_charge'] + $this->model['tds'];
+	}
+
+	function format_introduction_income($f){
+		$this->current_row_html[$f] = '<a href="#na" onclick="javascript:'.$this->js()->univ()->frameURL('Introductions ', $this->api->url($this->introducer_vp->getURL(),array('payout_id'=>$this->model['id']))).'">'.$this->current_row[$f]."</a>";		
 	}
 
 	function format_distributor($field){

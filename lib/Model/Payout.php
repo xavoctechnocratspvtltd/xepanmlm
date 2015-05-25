@@ -46,7 +46,7 @@ class Model_Payout extends \SQL_Model {
 		$this->addField('net_amount')->type('money')->defaultValue(0);
 		$this->addField('carried_amount')->type('money')->defaultValue(0);
 
-		$this->addField('on_date')->type('date');
+		$this->addField('on_date')->type('datetime');
 
 		$this->setOrder('on_date');
 	}

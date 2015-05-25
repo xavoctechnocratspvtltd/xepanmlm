@@ -16,8 +16,7 @@ class Filter_Distributor extends \Filter_Base
                 ->setNoSave()
                 ->setModel('xMLM/Kit');
         $this->status_field = $this->addField('Dropdown', 'status', '')->setEmptyText('Any Status')->setValueList(array('active'=>'Active','inactive'=>'InActive'))->setNoSave();
-        $this->from_date_field = $this->addField('DatePicker', 'from_date', '')->setNoSave();
-        $this->to_date_field = $this->addField('DatePicker', 'to_date', '')->setNoSave();
+        $this->on_date_field = $this->addField('DatePicker', 'on_date', '')->setNoSave();
 
     }
 
@@ -33,10 +32,9 @@ class Filter_Distributor extends \Filter_Base
         $v = trim($this->get('q'));
         $kit= $this->get('kit');
         $status = $this->get('status');
-        $from_date = $this->get('from_date');
-        $to_date = $this->get('to_date');
+        $on_date = $this->get('on_date');
 
-        if(!$v AND !$kit AND !$status AND !$from_date AND !$to_date) {
+        if(!$v AND !$kit AND !$status AND !$on_date) {
             return;
         }
 
@@ -59,12 +57,12 @@ class Filter_Distributor extends \Filter_Base
         if($kit)
             $and->where('kit_item_id',$kit);
 
-        if($from_date)
-            $and->where('created_at','>=',$from_date);
-        
-        if($to_date)
-	        $and->where('created_at','<',$this->api->nextDate($to_date));
+        if($on_date){
+            $and->where('greened_on','>=',$on_date);
+            $and->where('greened_on','<',$this->api->nextDate($on_date));
+        }
 
+        
         if($status)
             $and->where('is_active',$status=='active'?1:0);
         

@@ -14,6 +14,7 @@ class page_xMLM_page_owner_credits extends page_xMLM_page_owner_main {
 		$req_tab = $tabs->addTabURL("xMLM_page_owner_xmlm_credits_purchase","Processed");
 		$req_tab = $tabs->addTabURL("xMLM_page_owner_xmlm_credits_canceled","Canceled");
 		$req_tab = $tabs->addTabURL("xMLM_page_owner_xmlm_credits_consumed","Consumed");		
+		$req_tab = $tabs->addTabURL("xMLM_page_owner_xmlm_credits_report","Report");		
 
 	}
 }
