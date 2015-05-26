@@ -17,7 +17,7 @@ class page_xMLM_page_owner_xmlm_credits_report extends page_xMLM_page_owner_main
 		$credit_mov->addExpression('debit')->set($credit_mov->dsql()->fx('IF',array($credit_mov->dsql()->expr('status="Consumed"'),$credit_mov->dsql()->expr('credits'),'0')));
 		
 
-		$grid=$this->add('Grid');
+		$grid=$this->add('xMLM/Grid_CreditMovement');
 
 			$this->api->stickyGET('distributor_id');
 			$this->api->stickyGET('from_date');
@@ -63,7 +63,7 @@ class page_xMLM_page_owner_xmlm_credits_report extends page_xMLM_page_owner_main
 			}
 
 
-		$grid->setModel($credit_mov);
+		$grid->setModel($credit_mov, array('status','credits_given_on','credit','debit','narration'));
 
 		$grid->removeColumn('item_name');
 		$grid->removeColumn('created_by');
