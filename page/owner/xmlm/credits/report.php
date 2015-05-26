@@ -62,15 +62,25 @@ class page_xMLM_page_owner_xmlm_credits_report extends page_xMLM_page_owner_main
 					);
 			}
 
-
-		$grid->setModel($credit_mov, array('distributor_id','distributor','status','created_at','credits_given_on','credit','debit','narration'));
+		$grid->setModel($credit_mov);
+		$grid->add('xMLM/Controller_Export',
+				array(
+					'fields'=>array('distributor','status',
+									'created_at','credits_given_on',
+									'credit','debit','narration'
+									),
+					'totals'=>array('credit','debit')
+					)
+				);	
 
 		$grid->removeColumn('item_name');
 		$grid->removeColumn('created_by');
 		$grid->removeColumn('related_document');
 		$grid->removeColumn('distributor_id');
-
+		$grid->addPaginator(50);
 		$grid->addQuickSearch(array('distributor','status','credits','credits_given_on'));
+		$grid->addGrandTotals(array('credit','debit'));
+
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(
