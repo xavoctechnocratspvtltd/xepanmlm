@@ -20,8 +20,7 @@ class Grid_Distributor extends \Grid{
 			$form->addSubmit("Pay Now");
 			if($form->isSubmitted()){
 				
-				$current_distributor = $p->add('xMLM/Model_Distributor')->loadLoggedIn();
-				if($current_distributor['password'] != $form['your_password'])
+				if(!$this->api->auth->verifyCredentials($this->api->auth->model['username'], $form['your_password']))
 					$form->displayError('your_password','Password is not correct');
 
 				$distributor = $p->add('xMLM/Model_Distributor')->load($_GET['red_distributor_id']);

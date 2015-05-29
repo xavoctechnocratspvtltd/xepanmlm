@@ -38,7 +38,7 @@ class Model_Payout extends \SQL_Model {
 		$this->addField('tds')->type('money')->defaultValue(0);
 		$this->addField('admin_charge')->type('money')->defaultValue(0);
 		// $this->addField('repurchase_deduction')->type('money');
-		$this->addField('other_deduction_name')->type('money')->defaultValue(0);
+		$this->addField('other_deduction_name')->defaultValue(0);
 		$this->addField('other_deduction')->type('money')->defaultValue(0);
 		
 		$this->addExpression('total_deduction')->set('tds+admin_charge+other_deduction');
@@ -64,16 +64,15 @@ class Model_Payout extends \SQL_Model {
 		// check if closing before max on_date
 		$on_date_check_model =$this->newInstance();
 		$max_date = $on_date_check_model->dsql()->del('field')->field($on_date_check_model->dsql()->expr('max(on_date)'))->getOne();
-		if($max_date != null and strtotime($on_date) <= strtotime($max_date) ){
+		if($max_date != null and strtotime($this->api->nextDate($on_date)) <= strtotime($max_date) ){
 			throw $this->exception('Closing before this date is already done ...','ValidityCheck')->setField('on_date');
 		}
 
 		// copy all distributors in here
 		$q="
 			INSERT INTO xmlm_payouts
-			(
-				SELECT 0, id, session_left_pv,session_right_pv,0,0,0,0,0,0,carried_amount,'$on_date',session_self_bv, session_left_bv,session_right_bv, 0, 0,0,session_intros_amount,0,0,0 FROM xmlm_distributors
-			)
+						(id,distributor_id,session_left_pv,session_right_pv, pairs,pair_income, tds,admin_charge,net_amount,bonus,carried_amount, on_date,  session_self_bv, session_left_bv, session_right_bv,session_business_volume,generation_level,generation_gross_amount,introduction_income,generation_difference_income,other_deduction_name,other_deduction,session_carried_left_pv,session_carried_right_pv)
+				SELECT 	  0,     id,       session_left_pv,session_right_pv,   0,         0,      0,      0,           0,     0,  carried_amount,'$on_date',session_self_bv, session_left_bv, session_right_bv,            0,                  0,                    0,        session_intros_amount,             0,                     '',                   0,                 0,                      0 FROM xmlm_distributors
 		";
 		$this->query($q);
 

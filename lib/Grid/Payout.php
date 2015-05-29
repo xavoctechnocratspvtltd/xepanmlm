@@ -6,8 +6,16 @@ class Grid_Payout extends \Grid {
 	public $hide_distributor=true;
 	public $generation_income=false;
 	public $introducer_vp;
+	public $all_kits=true;
+
+	function init(){
+		parent::init();
+		$this->all_kits= $this->add('xMLM/Model_Kit')->getRows();
+	}
+
 
 	function setModel($model,$fields=null){
+
 		$m = parent::setModel($model,$fields);
 
 		if($this->hide_distributor and $this->hasColumn('distributor')) $this->removeColumn('distributor');
@@ -53,7 +61,7 @@ class Grid_Payout extends \Grid {
 		$this->introducer_vp = $this->add('VirtualPage');
 		$this->introducer_vp->set(function($p){
 			$pout=$p->add('xMLM/Model_Payout'); 
-			$pout->load($_GET['payout_id']);
+			$pout->load($this->api->stickyGET('payout_id'));
 
 			$last_payout_date=$p->add('xMLM/Model_Payout');
 			$last_payout_date->addCondition('on_date','<',$pout['on_date']);
@@ -84,7 +92,35 @@ class Grid_Payout extends \Grid {
 	}
 
 	function format_introduction_income($f){
-		$this->current_row_html[$f] = '<a href="#na" onclick="javascript:'.$this->js()->univ()->frameURL('Introductions ', $this->api->url($this->introducer_vp->getURL(),array('payout_id'=>$this->model['id']))).'">'.$this->current_row[$f]."</a>";		
+		$this->current_row_html[$f] = '<a href="#na" onclick="javascript:'.$this->js()->univ()->frameURL('Introductions ', $this->api->url($this->introducer_vp->getURL(),array('payout_id'=>$this->model['id']))).'">'.$this->current_row[$f]."</a>";
+
+		$counts=array();
+			
+		foreach ($this->all_kits as $kit) {
+			$last_payout_date=$this->add('xMLM/Model_Payout','p'.$this->model->id);
+			$last_payout_date->addCondition('on_date','<',$this->model['on_date']);
+			$last_payout_date->setOrder('on_date','desc');
+
+			$last_closing_date=$last_payout_date->tryLoadAny()->get('on_date')?:"1970-01-01";
+
+			$kit_counts = $this->add('xMLM/Model_Distributor');
+			$counts[$kit['name']] = $kit_counts->addCondition('introducer_id',$this->model['distributor_id'])
+					->addCondition('greened_on','<>',null)
+					->addCondition('greened_on','>=',$last_closing_date)
+					->addCondition('greened_on','<=',$this->model['on_date'])
+					->addCondition('kit_item_id',$kit['id'])
+					->count()->getOne()
+					;
+
+		}
+
+		foreach ($counts as $kit => $cnt) {
+			$this->current_row_html[$f] .= "<div class='atk-size-micro atk-text-dimmed'>$kit : $cnt,</div>";
+		}
+	}
+
+	function format_totals_introduction_income($f){
+		$this->current_row_html[$f]= $this->current_row[$f];
 	}
 
 	function format_distributor($field){

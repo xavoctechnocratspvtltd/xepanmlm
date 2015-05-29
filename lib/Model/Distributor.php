@@ -276,13 +276,14 @@ class Model_Distributor extends \Model_Document {
 		return $this->add('xMLM/Model_CreditMovement')->addCondition('distributor_id',$this->id);
 	}
 
-	function consumePurchasePoints($points,$narration){
+	function consumePurchasePoints($points,$narration, $joined_distributor){
 		$this['credit_purchase_points'] = $this['credit_purchase_points'] - $points;
 		$this->save();
 		$credit_movement = $this->creditMovements();
 		$credit_movement['credits'] = $points;
 		$credit_movement['narration'] = $narration;
 		$credit_movement['status'] = 'Consumed';
+		$credit_movement['joined_distributor_id'] = $joined_distributor->id;
 		$credit_movement->save();
 	}
 
@@ -307,7 +308,7 @@ class Model_Distributor extends \Model_Document {
 			if($from_distributor['credit_purchase_points'] < $kitpoints){
 				return false;		
 			}
-			$from_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this['username']);
+			$from_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this['username'], $this);
 			return true;
 		}
 

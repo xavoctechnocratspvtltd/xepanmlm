@@ -9,6 +9,7 @@ class page_xMLM_page_owner_xmlm_profile extends page_xMLM_page_owner_xmlm_main{
 		$container->add('View')->setHTML('Manage Your Profile')->addClass('text-center atk-swatch-green atk-size-exa atk-box');
 
 		$distributor=$this->add('xMLM/Model_Distributor');
+		$this->api->auth->addEncryptionHook($distributor);
 		$distributor->loadLoggedIn();
 		$distributor->getElement('username')->display(array('form'=>'Readonly'));
 		$distributor->getElement('name')->display(array('form'=>'Readonly'));
