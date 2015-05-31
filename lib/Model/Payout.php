@@ -28,12 +28,14 @@ class Model_Payout extends \SQL_Model {
 		$this->addField('generation_level')->type('int')->defaultValue(0);
 		$this->addField('generation_gross_amount')->type('int')->defaultValue(0);
 		
+		$this->addField('previous_carried_amount')->type('money')->defaultValue(0);
+
 		$this->addField('pair_income')->type('int')->defaultValue(0);
 		$this->addField('introduction_income')->type('int')->defaultValue(0);
 		$this->addField('generation_difference_income')->type('int')->defaultValue(0);
 		$this->addField('bonus')->type('int')->defaultValue(0);
 
-		$this->addExpression('total_pay')->set('introduction_income+pair_income+generation_difference_income+bonus');
+		$this->addExpression('total_pay')->set('introduction_income+pair_income+generation_difference_income+bonus+previous_carried_amount');
 
 		$this->addField('tds')->type('money')->defaultValue(0);
 		$this->addField('admin_charge')->type('money')->defaultValue(0);
@@ -71,8 +73,8 @@ class Model_Payout extends \SQL_Model {
 		// copy all distributors in here
 		$q="
 			INSERT INTO xmlm_payouts
-						(id,distributor_id,session_left_pv,session_right_pv, pairs,pair_income, tds,admin_charge,net_amount,bonus,carried_amount, on_date,  session_self_bv, session_left_bv, session_right_bv,session_business_volume,generation_level,generation_gross_amount,introduction_income,generation_difference_income,other_deduction_name,other_deduction,session_carried_left_pv,session_carried_right_pv)
-				SELECT 	  0,     id,       session_left_pv,session_right_pv,   0,         0,      0,      0,           0,     0,  carried_amount,'$on_date',session_self_bv, session_left_bv, session_right_bv,            0,                  0,                    0,        session_intros_amount,             0,                     '',                   0,                 0,                      0 FROM xmlm_distributors
+						(id,distributor_id,session_left_pv,session_right_pv, pairs,pair_income, tds,admin_charge,net_amount,bonus,previous_carried_amount, on_date,  session_self_bv, session_left_bv, session_right_bv,session_business_volume,generation_level,generation_gross_amount,introduction_income,generation_difference_income,other_deduction_name,other_deduction,session_carried_left_pv,session_carried_right_pv)
+				SELECT 	  0,     id,       session_left_pv,session_right_pv,   0,         0,      0,      0,           0,     0,     carried_amount,       '$on_date',session_self_bv, session_left_bv, session_right_bv,            0,                  0,                    0,        session_intros_amount,             0,                     '',                   0,                 0,                      0 FROM xmlm_distributors
 		";
 		$this->query($q);
 
@@ -161,9 +163,9 @@ class Model_Payout extends \SQL_Model {
 				xmlm_payouts payouts
 			SET
 				pair_income = pairs,
-				TDS = (payouts.carried_amount + pair_income + introduction_income + generation_difference_income + bonus) * IF(length((select pan_no from xmlm_distributors where id=payouts.distributor_id))=10,10,20) / 100,
-				admin_charge = (payouts.carried_amount + pair_income + introduction_income + generation_difference_income + bonus) * $admin_charge / 100,
-				net_amount = (payouts.carried_amount + pair_income + introduction_income + generation_difference_income + bonus) - (TDS + admin_charge)
+				TDS = (payouts.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus) * IF(length((select pan_no from xmlm_distributors where id=payouts.distributor_id))=10,10,20) / 100,
+				admin_charge = (payouts.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus) * $admin_charge / 100,
+				net_amount = (payouts.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus) - (TDS + admin_charge)
 			WHERE
 				on_date = '$on_date'
 		";
@@ -178,12 +180,12 @@ class Model_Payout extends \SQL_Model {
 			JOIN
 				xmlm_distributors d on p.distributor_id = d.id
 			SET
-				p.carried_amount = (p.carried_amount + pair_income + introduction_income + generation_difference_income + bonus),
+				p.carried_amount = (p.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus),
 				p.TDS=0,
 				p.admin_charge=0,
 				p.net_amount=0,
 				p.other_deduction=0,
-				d.carried_amount = (p.carried_amount + pair_income + introduction_income + generation_difference_income + bonus)
+				d.carried_amount = (p.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus)
 
 			WHERE
 				p.on_date='$on_date'

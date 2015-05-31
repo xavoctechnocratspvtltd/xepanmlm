@@ -17,6 +17,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$tabs->addTabURL('./old_pays','Payouts');
 		$tabs->addTabURL('./report_pays','Cumulative Payouts');
 		$tabs->addTabURL('./inout','Income Expense Report');
+		$tabs->addTabURL('./analysis','Analytical Report');
 	}
 
 	function page_gen_pay(){
@@ -175,6 +176,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$payout_grid->removeColumn('net_amount');
 		$payout_grid->removeColumn('carried_amount');
 		$payout_grid->removeColumn('on_date');
+		$payout_grid->removeColumn('previous_carried_amount');
 
 		$payout_grid->addGrandTotals(array('pair_income','introduction_income','tds','admin_charge','net_amount','carried_amount'));
 		// $payout_grid->addGrandTotals();
@@ -198,8 +200,9 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 
 		if($form->isSubmitted()){
 			$payout_grid->js()->reload(array(
-					'on_date'=>$form['closings'],
-					'distributor_id'=>$form['distributor']
+					'from_date'=>$form['from_date']?:0,
+					'to_date'=>$form['to_date']?:0,
+					// 'distributor_id'=>$form['distributor']
 				))->execute();
 		}
 
@@ -297,6 +300,129 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 					'distributor'=>$form['distributor']?:0,
 				))->execute();
 		}
+	}
+
+	function page_analysis(){
+
+		$this->add('View')
+			->setHTML('Under Construction, Tentative Data, DATA TO BE RESET <br/>[FUND = (KIT PV * 4) + Introduction Income of Kit] ... Working ON Carried Amount')
+			->addClass('atk-swatch-red atk-box-small text-center atk-text-bold');
+
+		$payouts_list=$this->add('xMLM/Model_Payout');
+		$payouts_list->addExpression('name')->set('on_date');
+		$payouts_list->id_field = 'name';
+		$payouts_list->_dsql()->group('name')->order('on_date');
+
+		$fund_times = 4;
+
+		$data=array();
+		foreach ($payouts_list as $pl) {
+
+			$last_payout_date=$this->add('xMLM/Model_Payout');
+			$last_payout_date->addCondition('on_date','<',$pl['on_date']);
+			$last_payout_date->setOrder('on_date','desc');
+
+			$last_closing_date=$last_payout_date->tryLoadAny()->get('on_date')?:"1970-01-01";
+			
+			// Total Joining Fund 
+			$total_binay_fund = $this->add('xMLM/Model_Kit');
+			$total_binay_fund->join('xmlm_distributors.kit_item_id')
+					->addField('greened_on');
+			$total_binay_fund = $total_binay_fund->addCondition('greened_on','<=',$pl['on_date'])
+					->sum('pv_value')->getOne();
+			$total_binay_fund *= $fund_times;
+
+			$total_intro_fund = $this->add('xMLM/Model_Kit');
+			$total_intro_fund->join('xmlm_distributors.kit_item_id')
+					->addField('greened_on');
+			$total_intro_fund = $total_intro_fund->addCondition('greened_on','<=',$pl['on_date'])
+					->sum('intro_value')->getOne();
+
+
+			$total_out = $this->add('xMLM/Model_Payout');
+			$exp = $total_out->addCondition('on_date','<=',$pl['on_date'])
+					->sum('total_pay')->getOne();
+
+			$admin_charge = $this->add('xMLM/Model_Payout');
+			$admin_charge = $total_out->addCondition('on_date','<=',$pl['on_date'])
+					->sum('admin_charge')->getOne();
+
+			// ClosingJoining Fund 
+			$closing_binay_fund = $this->add('xMLM/Model_Kit');
+			$closing_binay_fund->join('xmlm_distributors.kit_item_id')
+					->addField('greened_on');
+			$closing_binay_fund = $closing_binay_fund->addCondition('greened_on','<=',$pl['on_date'])
+					->addCondition('greened_on',">",$last_closing_date)
+					->sum('pv_value')->getOne();
+			$closing_binay_fund *= $fund_times;
+
+			$closing_intro_fund = $this->add('xMLM/Model_Kit');
+			$closing_intro_fund->join('xmlm_distributors.kit_item_id')
+					->addField('greened_on');
+			$closing_intro_fund = $closing_intro_fund->addCondition('greened_on','<=',$pl['on_date'])
+					->addCondition('greened_on',">",$last_closing_date)
+					->sum('intro_value')->getOne();
+
+			$closing_total_out = $this->add('xMLM/Model_Payout');
+			$closing_total_out = $closing_total_out->addCondition('on_date','<=',$pl['on_date'])
+					->addCondition('on_date',">",$last_closing_date)
+					->sum('total_pay')->getOne();
+
+			$closing_admin_charge = $this->add('xMLM/Model_Payout');
+			$closing_admin_charge = $closing_admin_charge->addCondition('on_date','<=',$pl['on_date'])
+					->addCondition('on_date',">",$last_closing_date)
+					->sum('admin_charge')->getOne();
+
+
+
+
+			$data[] = array('series'=>"Total Joining Fund",'fund'=>$pl['on_date'],'payout'=>$total_binay_fund + $total_intro_fund);
+			$data[] = array('series'=>"Total Payouts",'fund'=>$pl['on_date'],'payout'=>($exp - $admin_charge));
+			
+			$data[] = array('series'=>"Closing Fund",'fund'=>$pl['on_date'],'payout'=> $closing_binay_fund +  $closing_intro_fund);
+			$data[] = array('series'=>"Closing Payouts",'fund'=>$pl['on_date'],'payout'=>($closing_total_out - $closing_admin_charge));
+
+		}
+
+
+		// echo "<pre>";
+		// print_r($data);							
+		// echo "</pre>";
+
+		$chart=$this->add('chart/Chart');
+		foreach($data as $dt) {
+			$y=$chart->addLineData($dt['series'],$dt['fund'],(int)$dt['payout']);
+		}
+
+		$chart
+		->setXAxisTitle('Closings')
+		// ->setXAxis($xaxis)
+		->setYAxisTitle('Cumulative')
+		->setTitle('Closing Report',null,'Cumulative Analysis')
+		->setChartType('line')
+		;
+
+
+		// Structure Packing
+		$data =array();
+		$data[]=array('fund'=>'xx','payout'=>20);
+		$data[]=array('fund'=>'yy','payout'=>80);
+
+		$chart=$this->add('chart/Chart');
+		foreach($data as $dt) {
+			$y=$chart->addLineData("aa",$dt['fund'],(int)$dt['payout']);
+		}
+
+		$chart
+		->setXAxisTitle('Packing Data')
+		// ->setXAxis($xaxis)
+		->setYAxisTitle('Cumulative')
+		->setTitle('Structure Identicalness',null,'Cumulative Analysis')
+		->setChartType('pie')
+		;
+
+
+
 	}
 
 }
