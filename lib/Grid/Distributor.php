@@ -98,9 +98,9 @@ class Grid_Distributor extends \Grid{
 
 
 		$un = "<div class='text-center'>".$this->model['username']."</div>";
-		$jn = "<div class='atk-size-micro'>jn: ".date("d M Y",strtotime($this->model['created_at']))."</div>";
+		$jn = "<div class='atk-size-micro'>Joined On: ".date("d M Y",strtotime($this->model['created_at']))."</div>";
 		if($this->model['greened_on'])
-			$grn = "<div class='atk-size-micro'>gn: ".date("d M Y",strtotime($this->model['greened_on']))."</div>";
+			$grn = "<div class='atk-size-micro'>Qualified On: ".date("d M Y",strtotime($this->model['greened_on']))."</div>";
 		else{
 			if($this->api->auth->isLoggedIn() && $this->api->auth->model->isFrontEndUser())
 				$grn = "<div class='atk-size-micro'>gn: <a href='#green' onclick=\"$.univ.frameURL('Pay Now For Distributor ".$this->model['name']."','".($this->api->url($this->pay_vp->getURL(),array('red_distributor_id'=>$this->model->id))->getURL())."')\">Pay Now</a></div>";

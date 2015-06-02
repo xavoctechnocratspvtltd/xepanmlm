@@ -17,11 +17,11 @@ class Model_CreditMovement extends \Model_Document {
 	function init(){
 		parent::init();
 
-		$this->hasOne('xMLM\Distributor','distributor_id')->mandatory(true)->caption('Paid Distributors');
-		$this->hasOne('xMLM\Distributor','joined_distributor_id')->mandatory(true)->caption('Paid Distributors');
-		$this->addField('credits')->type('money')->mandatory(true);
+		$this->hasOne('xMLM\Distributor','distributor_id')->mandatory(true)->caption('Distributor Name');
+		$this->hasOne('xMLM\Distributor','joined_distributor_id')->mandatory(true)->caption('Used for Distributor');
+		$this->addField('credits')->type('money')->mandatory(true)->caption("Credit Amount");
 		$this->addField('credits_given_on')->type('datetime')->defaultValue(null);
-		$this->addField('narration')->mandatory(true);
+		$this->addField('narration')->mandatory(true)->caption("Remarks");
 
 		$this->add('filestore/Field_Image','attachment_id');//->mandatory(true);
 

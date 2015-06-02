@@ -47,11 +47,13 @@ class Model_Distributor extends \Model_Document {
 		$this->addCondition('member_epan_id',$this->api->current_website->id);
 
 		$this->addField('pan_no')->group('a~4')->mandatory(true);
-		$customer_j->addField('address')->type('text')->group('a~12')->system(true);
+		// $customer_j->addField('address')->type('text')->group('a~12')->system(true);
 			
-			$this->addField('block_no')->group('a~4');
-			$this->addField('building_no')->group('a~4');
-			$this->addField('landmark')->group('a~4');
+			// $this->addField('block_no')->group('a~4');
+			// $this->addField('building_no')->group('a~4');
+			// $this->addField('landmark')->group('a~4');
+			$this->addField('address')->type('text')->group('a~12');
+
 			$this->addField('pin_code')->group('a~4')->display(array('form'=>'xMLM/Number'));
 
 			$this->hasOne('xMLM/State','state_id')->group('a~4')->mandatory(true)->display(array('form'=>'DropDownNormal'));
@@ -78,6 +80,7 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('IFCS_Code')->group('e~6~bl')->mandatory(true);//->system(true);
 		$this->addField('account_no')->group('e~6')->mandatory(true)->display(array('form'=>'xMLM/Number'));//->system(true);
 		$this->addField('branch_name')->caption('Branch')->group('e~6~bl')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
+		$this->add('filestore/Field_Image','kyc_id')->group('e-12')->caption('KYC Form');
 		$this->addField('nominee_name')->group('f~6~Nominee Details')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
 		$this->addField('relation_with_nominee')->enum(explode(",", $config['relations_with_nominee']))->group('f~2')->mandatory(true);//->system(true);
 		$this->addField('nominee_email')->group('f~2');//->system(true);
@@ -155,7 +158,7 @@ class Model_Distributor extends \Model_Document {
 		
 
 		$this['name'] = $this['first_name'].' '. $this['last_name'];
-		$this['address'] = "Block No ". $this['block_no'] .", Building No ". $this['building_no']. ", ". $this['landmark'] . ', PIN-'. $this['pin_code'];
+		// $this['address'] = "Block No ". $this['block_no'] .", Building No ". $this['building_no']. ", ". $this['landmark'] . ', PIN-'. $this['pin_code'];
 
 		// Check For available purchase points
 		if($this->dirty['kit_item_id'] AND $this['kit_item_id'] !==""){
@@ -321,7 +324,7 @@ class Model_Distributor extends \Model_Document {
 			// throw new \Exception("Not sufficient credit points", 1);
 			return false;
 		}
-		$logged_in_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this->id." [".$this['username']."]");
+		$logged_in_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this->id." [".$this['username']."]",$this);
 		return true;
 	}
 
