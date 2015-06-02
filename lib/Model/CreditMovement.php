@@ -25,6 +25,8 @@ class Model_CreditMovement extends \Model_Document {
 
 		$this->add('filestore/Field_Image','attachment_id');//->mandatory(true);
 
+		$this->addHook('beforeDelete',array($this,'beforeCreditDelete'));
+
 		$this->add('Controller_Validator');
 		$this->is(array(
 							'credits|number|>0'
@@ -32,6 +34,11 @@ class Model_CreditMovement extends \Model_Document {
 				);
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
+	}
+
+	function beforeCreditDelete(){
+		if($act = $this->add('xCRM/Model_Activity')->loadWhoseRelatedDocIs($this))
+			$act->forceDelete();
 	}
 
 	function approve_page($page){

@@ -20,9 +20,9 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		$distributor= $this->add('xMLM/Model_Distributor');
 		$this->api->auth->addEncryptionHook($distributor);
 		
-		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','block_no','building_no','landmark','pin_code','state_id','district_id','username','password','bank_id','IFCS_Code','account_no','branch_name','nominee_name','relation_with_nominee','nominee_age','nominee_email'));
+		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','block_no','building_no','landmark','pin_code','state_id','district_id','username','password','bank_id','IFCS_Code','account_no','branch_name','nominee_name','relation_with_nominee','nominee_age','nominee_email','kyc_id'));
 		$form->getElement('kit_item_id')->setEmptyText('Free/Red Entry');
-		$form->addField('password','re_password')->setterGetter('group','b~4');
+	$form->addField('password','re_password')->setterGetter('group','b~4');
 		$form->add('Order')
 			->move('re_password','after','password')
 			->now();

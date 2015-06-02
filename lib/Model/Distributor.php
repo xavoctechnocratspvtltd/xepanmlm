@@ -109,6 +109,8 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('credit_purchase_points')->type('money')->defaultValue(0);
 		$this->addField('temp')->system(true)->defaultValue(0);
 
+		$this->add('filestore/Field_Image','kyc_id');
+
 		$this->addField('greened_on')->type('datetime')->defaultValue(null);
 
 		$this->hasMany('xMLM/Sponsor','sponsor_id',null,'SponsoredDistributors');
@@ -221,8 +223,13 @@ class Model_Distributor extends \Model_Document {
 		if(!isset($this->api->deleted_distributor)) $this->api->deleted_distributor =array();
 		if(in_array($this->id, $this->api->deleted_distributor)) return;
 		
-		$this->creditMovements()->deleteAll();
 
+		$this->add('xMLM/Model_CreditMovement')->addCondition('joined_distributor_id',$this->id)
+			->each(function($obj){
+				$obj->forceDelete();
+			});
+
+		$this->creditMovements()->deleteAll();
 		// Main kisi ki sponsor id kmain to hun .. usme se mujhe hatao ...
 		$i_m_in_left = $this->newInstance()->tryLoadBy('left_id',$this->id);
 		if($i_m_in_left->loaded()){
@@ -234,6 +241,14 @@ class Model_Distributor extends \Model_Document {
 		if($i_m_in_right->loaded()){
 			$i_m_in_right['right_id']=null;
 			$i_m_in_right->save();
+		}
+
+		// I am some onec Introducer
+
+		$i_am_intro =  $this->newInstance()->addCondition('introducer_id',$this->id);
+		foreach ($i_am_intro as $intros) {
+			$intros['introducer_id']=null;
+			$intros->saveAndUnload();
 		}
 
 		
@@ -251,15 +266,16 @@ class Model_Distributor extends \Model_Document {
 			// echo $this->id;
 			throw $e;
 		}
-		
-		if($lid) {
-			$ld = $this->newInstance()->tryLoad($lid);
-			if($ld->loaded()) $ld->forceDelete();
-		}
-		if($rid){
-			$rd = $this->newInstance()->tryLoad($rid);
-			if($rd->loaded()) $rd->forceDelete();	
-		} 
+			
+		$this->add('xMLM/Model_Distributor')->addCondition('path','like',$this['path'].'A%')
+				->each(function($obj){
+					$obj->forceDelete();
+				});
+		$this->add('xMLM/Model_Distributor')->addCondition('path','like',$this['path'].'B%')
+				->each(function($obj){
+					$obj->forceDelete();
+				});
+
 		// if($this['sponsor_id'])	$this->newInstance()->tryLoad($this['sponsor_id'])->forceDelete();
 		// if($this['introducer_id']) $this->newInstance()->tryLoad($this['introducer_id'])->forceDelete();
 

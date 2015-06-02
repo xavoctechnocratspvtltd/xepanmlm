@@ -70,7 +70,7 @@ class page_xMLM_page_tests_base extends Page_Tester{
 	}
 
 	function setUpRootDistributor(){
-		$gold_kit = $this->add('xMLM/Model_Kit')->loadBy('name','Gold');
+		$gold_kit = $this->add('xMLM/Model_Kit')->addCondition('name','like','%Gold%')->loadAny();
 
         $root_dist = $this->add('xMLM/Model_Distributor');
         $root_dist->addCondition('path','0');
