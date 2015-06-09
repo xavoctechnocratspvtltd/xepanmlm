@@ -25,7 +25,7 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 		$trans_cr_col = $trans_cr_dr_col->addColumn(6);
 		$trans_dr_col = $trans_cr_dr_col->addColumn(6);
 
-		$trans_credit = $current_distributor->creditMovements();
+		$trans_credit = $current_distributor->creditMovements()->setOrder('created_at','desc');
 		$trans_credit->addCondition('status',array('Purchase'));
 		$trans_cr_col->add('H3')->setHTML('Credits<br/><small>'.$trans_credit->sum('credits')->getOne().' /-</small>')->addClass('text-center');
 		
@@ -35,7 +35,7 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 		$grid->addPaginator(20);
 		// $grid->addTotals(array('credits'));
 
-		$trans_debit = $current_distributor->creditMovements();
+		$trans_debit = $current_distributor->creditMovements()->setOrder('created_at','desc');
 		$trans_debit->addCondition('status',array('Consumed','Collapsed'));
 		
 		$trans_dr_col->add('H3')->setHTML('Debits<br/><small>'.$trans_debit->sum('credits')->getOne().' /-</small>')->addClass('text-center');

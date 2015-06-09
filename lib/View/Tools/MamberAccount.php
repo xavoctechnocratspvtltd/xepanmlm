@@ -34,7 +34,7 @@ class View_Tools_MamberAccount extends \componentBase\View_Component{
 				$form->addSubmit('Update');
 
 				if($form->isSubmitted()){
-					if($form['old_password'] != $dis['password'])
+					if(!$this->api->auth->verifyCredentials($this->api->auth->model['username'], $form['old_password']))
 						$form->displayError('old_password','Password is not correct');
 
 					if(strcmp($form['new_password'],$form['re_new_password'])!=0)

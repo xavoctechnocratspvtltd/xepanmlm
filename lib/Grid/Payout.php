@@ -78,8 +78,6 @@ class Grid_Payout extends \Grid {
 
 		});	
 
-
-
 		return $m;
 	}
 
@@ -114,9 +112,14 @@ class Grid_Payout extends \Grid {
 
 		}
 
+
+		$str = '<div class="atk-size-micro atk-text-dimmed">';
 		foreach ($counts as $kit => $cnt) {
-			$this->current_row_html[$f] .= "<div class='atk-size-micro atk-text-dimmed'>$kit : $cnt,</div>";
+			$str .= $kit.':'.$cnt.',';
 		}
+		$str .='</div>';
+		$this->current_row_html[$f] = $str;
+
 	}
 
 	function format_totals_introduction_income($f){

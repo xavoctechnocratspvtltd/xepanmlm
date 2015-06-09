@@ -33,23 +33,36 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 
 	function page_unpaid(){
 
+		$export_model=$this->add('xMLM/Model_UnpaidIds');
+		$v = $this->add('View');
+		$exp = $v->add('xMLM/Controller_Export',array('output_filename'=>'Unpaid_Ids_'.date('l jS \of F Y h:i:s A').'.csv','model'=>$export_model,'fields'=>array('name','email','mobile_number','address','sponsor','introducer','left','right','username','created_at','is_active','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount')));
+		$exp->btn->addClass('atk-box atk-swatch-yellow');
+		
 		$crud = $this->add('CRUD',array('grid_class'=>'xMLM/Grid_Distributor','allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
 		$unpaid_model=$this->add('xMLM/Model_UnpaidIds');
-		$crud->setModel($unpaid_model,array('sponsor_id','Leg','introducer_id','kit_item_id','name','email','mobile_number','address','username','password','re_password','name_of_bank','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age'),array('name','email','mobile_number','address','sponsor','introducer','username','password','re_password','item_name','created_at','is_active','kit_item','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
+		$crud->setModel($unpaid_model,array('sponsor_id','Leg','introducer_id','kit_item_id','name','email','mobile_number','address','username','password','re_password','name_of_bank','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age'),array('name','email','mobile_number','address','sponsor','introducer','username','re_password','item_name','created_at','is_active','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
 		// $crud->add('xHR/Controller_Acl',array('override'=>array('can_view'=>'All')));
 		if(!$crud->isEditing()){
-			$crud->grid->add('misc/Export');
+			// $crud->grid->add('misc/Export');
 			$crud->grid->addPaginator(25);
 			$crud->grid->addQuickSearch(array('name','sponsor','introducer','username','mobile_number','email'));
+			
 		}
+
+
 	}
 
 	function page_paid(){
+		$export_model=$this->add('xMLM/Model_PaidIds');
+		$v = $this->add('View');
+		$exp = $v->add('xMLM/Controller_Export',array('output_filename'=>'Paid_Ids_'.date('l jS \of F Y h:i:s A').'.csv','model'=>$export_model,'fields'=>array('name','email','mobile_number','address','sponsor','introducer','left','right','kit_item','username','created_at','greened_on','is_active','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount')));
+		$exp->btn->addClass('atk-box atk-swatch-yellow');
+
 		$crud = $this->add('CRUD',array('grid_class'=>'xMLM/Grid_Distributor','allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
-		$crud->setModel('xMLM/PaidIds',array('status','name','email','mobile_number','address','sponsor','introducer','username','password','item_name','created_at','kit_item','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
+		$crud->setModel('xMLM/PaidIds',array('status','name','email','mobile_number','address','sponsor','introducer','username','item_name','created_at','kit_item','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
 		
 		if(!$crud->isEditing()){
-			$crud->grid->add('misc/Export');
+			// $crud->grid->add('misc/Export');
 			$crud->grid->addPaginator(25);
 			$crud->grid->addQuickSearch(array('name','sponsor','introducer','username','mobile_number','email'));
 		}
@@ -58,22 +71,33 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 	}
 
 	function page_unactive(){
+		$export_model=$this->add('xMLM/Model_BlockedIds');
+		$v = $this->add('View');
+		$exp = $v->add('xMLM/Controller_Export',array('output_filename'=>'UnActive_or_Blocked_Ids_'.date('l jS \of F Y h:i:s A').'.csv','model'=>$export_model,'fields'=>array('name','email','mobile_number','address','sponsor','introducer','left','right','kit_item','username','created_at','greened_on','is_active','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount')));
+		$exp->btn->addClass('atk-box atk-swatch-yellow');
+
+
 		$crud = $this->add('CRUD',array('grid_class'=>'xMLM/Grid_Distributor','allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));
-		$crud->setModel('xMLM/BlockedIds',array('status','name','email','mobile_number','address','sponsor','introducer','username','password','item_name','created_at','kit_item','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
+		$crud->setModel('xMLM/BlockedIds',array('status','name','email','mobile_number','address','sponsor','introducer','username','item_name','created_at','kit_item','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
 		// $crud->add('xHR/Controller_Acl',array('override'=>array('can_view'=>'All')));
 		if(!$crud->isEditing()){
-			$crud->grid->add('misc/Export');
+			// $crud->grid->add('misc/Export');
 			$crud->grid->addPaginator(25);
 			$crud->grid->addQuickSearch(array('name','sponsor','introducer','username','mobile_number','email'));
 		}
 	}
 
 	function page_all(){
+		$export_model=$this->add('xMLM/Model_Distributor');
+		$v = $this->add('View');
+		$exp = $v->add('xMLM/Controller_Export',array('output_filename'=>'All_Distributors_'.date('l jS \of F Y h:i:s A').'.csv','model'=>$export_model,'fields'=>array('name','email','mobile_number','address','sponsor','introducer','left','right','kit_item','username','created_at','greened_on','is_active','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount')));
+		$exp->btn->addClass('atk-box atk-swatch-yellow');
+
 		$crud = $this->add('CRUD',array('grid_class'=>'xMLM/Grid_Distributor','allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));		
 		$crud->setModel('xMLM/Distributor',array('status','name','email','mobile_number','address','sponsor','introducer','username','password','item_name','created_at','is_active','kit_item','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
 		// $crud->add('xHR/Controller_Acl',array('override'=>array('can_view'=>'All')));
 		if(!$crud->isEditing()){
-			$crud->grid->add('misc/Export');
+			// $crud->grid->add('misc/Export');
 			$crud->grid->addPaginator(25);
 			$crud->grid->addQuickSearch(array('name','sponsor','introducer','username','mobile_number','email'),null,'xMLM/Filter_Distributor');
 		}

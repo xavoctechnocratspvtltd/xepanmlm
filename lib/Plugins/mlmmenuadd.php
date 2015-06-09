@@ -12,7 +12,7 @@ class Plugins_mlmmenuadd extends \componentBase\Plugin {
 	}
 
 	function Plugins_mlmmenuadd($obj, $top_menu){
-		$admin_m = $top_menu->addMenu('MLM');
+		$admin_m = $top_menu->addMenu('Referral Program');
         $admin_m->addItem(array('Dashboard','icon'=>'gauge-1'),'xMLM_page_owner_dashboard');
         $admin_m->addItem(array('Joining Kits','icon'=>'gauge-1'),'xMLM_page_owner_kits');
         $admin_m->addItem(array('Distributors','icon'=>'gauge-1'),'xMLM_page_owner_distributors');
