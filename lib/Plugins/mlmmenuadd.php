@@ -12,12 +12,14 @@ class Plugins_mlmmenuadd extends \componentBase\Plugin {
 	}
 
 	function Plugins_mlmmenuadd($obj, $top_menu){
-		$admin_m = $top_menu->addMenu('Referral Program');
+        $dept_model = $this->add('xHR/Model_Department');
+
+	$admin_m = $top_menu->addMenu('Referral Program');
         $admin_m->addItem(array('Dashboard','icon'=>'gauge-1'),'xMLM_page_owner_dashboard');
-        $admin_m->addItem(array('Joining Kits','icon'=>'gauge-1'),'xMLM_page_owner_kits');
+        $admin_m->addItem(array('Joining Kits','icon'=>'gauge-1'),$this->api->url('xMLM_page_owner_kits',array('department_id'=>$dept_model->getCached(array('name'=>'Company'),'id'))));
         $admin_m->addItem(array('Distributors','icon'=>'gauge-1'),'xMLM_page_owner_distributors');
-        $admin_m->addItem(array('Payouts','icon'=>'gauge-1'),'xMLM_page_owner_payouts');
-        $admin_m->addItem(array('Credits Management','icon'=>'gauge-1'),'xMLM_page_owner_credits');
+        $admin_m->addItem(array('Payouts','icon'=>'gauge-1'),$this->api->url('xMLM_page_owner_payouts',array('department_id'=>$dept_model->getCached(array('name'=>'Accounts'),'id'))));
+        $admin_m->addItem(array('Credits Management','icon'=>'gauge-1'),$this->api->url('xMLM_page_owner_credits',array('department_id'=>$dept_model->getCached(array('name'=>'Accounts'),'id'))));
         $admin_m->addItem(array('Reports','icon'=>'gauge-1'),'xMLM_page_owner_reports');
         $admin_m->addItem(array('Properties Management','icon'=>'gauge-1'),'xMLM_page_owner_properties');
         $admin_m->addItem(array('Booking Management','icon'=>'gauge-1'),'xMLM_page_owner_bookings');

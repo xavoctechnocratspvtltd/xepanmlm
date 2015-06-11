@@ -224,30 +224,33 @@ class Model_Distributor extends \Model_Document {
 
 		if(!isset($this->api->deleted_distributor)) $this->api->deleted_distributor =array();
 		if(in_array($this->id, $this->api->deleted_distributor)) return;
-		
+		$this->api->deleted_distributor[]  = $this->id;
+
 
 		$this->add('xMLM/Model_CreditMovement')->addCondition('joined_distributor_id',$this->id)
 			->each(function($obj){
 				$obj->forceDelete();
 			});
 
-		$this->creditMovements()->deleteAll();
-		// Main kisi ki sponsor id kmain to hun .. usme se mujhe hatao ...
-		$i_m_in_left = $this->newInstance()->tryLoadBy('left_id',$this->id);
+		$this->creditMovements()->each(function ($obj){
+			$obj->forceDelete();
+		});
+		
+		// Main kisi ki sponsor id main to hun .. usme se mujhe hatao ...
+		$i_m_in_left = $this->add('xMLM/Model_Distributor')->tryLoadBy('left_id',$this->id);
 		if($i_m_in_left->loaded()){
 			$i_m_in_left['left_id']=null;
 			$i_m_in_left->save();
 		}
 
-		$i_m_in_right = $this->newInstance()->tryLoadBy('right_id',$this->id);
+		$i_m_in_right = $this->add('xMLM/Model_Distributor')->tryLoadBy('right_id',$this->id);
 		if($i_m_in_right->loaded()){
 			$i_m_in_right['right_id']=null;
 			$i_m_in_right->save();
 		}
 
-		// I am some onec Introducer
-
-		$i_am_intro =  $this->newInstance()->addCondition('introducer_id',$this->id);
+		// I am someones Introducer
+		$i_am_intro =  $this->add('xMLM/Model_Distributor')->addCondition('introducer_id',$this->id);
 		foreach ($i_am_intro as $intros) {
 			$intros['introducer_id']=null;
 			$intros->saveAndUnload();
