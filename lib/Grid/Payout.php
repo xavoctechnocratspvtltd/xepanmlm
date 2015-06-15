@@ -37,23 +37,27 @@ class Grid_Payout extends \Grid {
 		if($this->hasColumn('other_deduction')) $this->removeColumn('other_deduction');
 		if($this->hasColumn('bonus')) $this->removeColumn('bonus');
 
-		$order = $this->addOrder();
-		if($this->hasColumn('on_date')) $order->move('on_date','first');
 
+		$order = $this->addOrder();
+			if($this->hasColumn('on_date')) $order->move('on_date','first');
+		$order->move('standard_kit_count','after','pair_income');
+		$order->move('standard_kit_income','after','standard_kit_count');
+		$order->move('gold_kit_count','after','standard_kit_income');
+		$order->move('gold_kit_income','after','gold_kit_count');
 		$order->now();
 
 		if(!$this->hide_distributor and $this->hasColumn('distributor')){
 			$this->addFormatter('distributor','distributor');
 		}
-			$this->addFormatter('introduction_income','introduction_income');
+		// $this->addFormatter('introduction_income','introduction_income');
 		
-		if($this->hasColumn('greened_on'))
-			$this->removeColumn('greened_on');
+		if($this->hasColumn('greened_on')) $this->removeColumn('greened_on');
+		if($this->hasColumn('introduction_income')) $this->removeColumn('introduction_income');
 
 		// $this->addColumn('total_pay','total_pay');
 		$this->addColumn('total_deduction','total_deduction');
-		$this->addOrder()
-			->move('total_pay','after','introduction_income')
+		$order
+			->move('total_pay','before','tds')
 			->move('total_deduction','after','admin_charge')
 			->now();
 

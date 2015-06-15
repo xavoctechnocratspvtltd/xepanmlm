@@ -16,7 +16,7 @@ class Filter_Distributor extends \Filter_Base
                 ->setNoSave()
                 ->setModel('xMLM/Kit');
         $this->status_field = $this->addField('Dropdown', 'status', '')->setEmptyText('Any Status')->setValueList(array('active'=>'Active','inactive'=>'InActive'))->setNoSave();
-        $this->on_date_field = $this->addField('DatePicker', 'on_date', '')->setNoSave();
+        $this->on_date_field = $this->addField('xMLM/DatePicker', 'on_date', '')->setNoSave()->setAttr('placeholder','Greened On');
 
         if($_GET['reset_filter']){
             foreach ($this->get() as $field=>$value) {

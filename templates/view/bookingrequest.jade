@@ -1,0 +1,21 @@
+div(id="{$_name}" class=" {$class}" style=" {$style}")
+	.atk-row.atk-form-row
+		.atk-col-4
+			| Distributor Name
+		.atk-col-8
+			| {$distributor_name}
+	.atk-row
+		.atk-col-4
+			| Booking In Name Of
+		.atk-col-8.atk-form-field {$booking_in_name_of}
+		
+			{field_error}
+			p.atk-form-error
+				span.icon-attention
+				span.atk-size-micro.field-error-text {$field_error_str}
+			{/}
+			
+
+	
+
+	|{$Content}

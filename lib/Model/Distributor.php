@@ -31,7 +31,7 @@ class Model_Distributor extends \Model_Document {
 		$user_j->addField('name')->mandatory(true)->mandatory(true)->system(true)->display(array('form'=>'Alpha'));
 			$this->addField('first_name')->group('a~4~Distributor Info')->mandatory(true)->mandatory(true)->display(array('form'=>'Alpha'));
 			$this->addField('last_name')->group('a~4')->mandatory(true)->mandatory(true)->display(array('form'=>'Alpha'));
-			$this->addField('date_of_birth')->type('date')->group('a~4')->mandatory(true)->mandatory(true);
+			$this->addField('date_of_birth')->type('date')->group('a~4')->mandatory(true)->mandatory(true)->display(array('form'=>'xMLM/BDate'));
 		$user_j->addField('email')->sortable(true)->group('a~4')->mandatory(true)->display(array('form'=>'Email'));
 
 		$user_j->addField('user_is_active','is_active')->system(true)->defaultValue(true);
@@ -46,13 +46,13 @@ class Model_Distributor extends \Model_Document {
 		$customer_j->addField('member_epan_id','epan_id')->system(true);
 		$this->addCondition('member_epan_id',$this->api->current_website->id);
 
-		$this->addField('pan_no')->group('a~4')->mandatory(true);
+		$this->addField('pan_no')->group('a~4');
 		// $customer_j->addField('address')->type('text')->group('a~12')->system(true);
 			
 			// $this->addField('block_no')->group('a~4');
 			// $this->addField('building_no')->group('a~4');
 			// $this->addField('landmark')->group('a~4');
-			$this->addField('address')->type('text')->group('a~12');
+			$this->addField('address')->type('text')->group('a~12')->mandatory(true);
 
 			$this->addField('pin_code')->group('a~4')->display(array('form'=>'xMLM/Number'));
 
@@ -80,7 +80,8 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('IFCS_Code')->group('e~6~bl')->mandatory(true);//->system(true);
 		$this->addField('account_no')->group('e~6')->mandatory(true)->display(array('form'=>'xMLM/Number'));//->system(true);
 		$this->addField('branch_name')->caption('Branch')->group('e~6~bl')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
-		$this->add('filestore/Field_Image','kyc_id')->group('e-12')->caption('KYC Form');
+		$this->addField('kyc_no')->group('kyc~6~Kyc Information')->mandatory(true);
+		$this->add('filestore/Field_Image','kyc_id')->group('kyc~6')->caption('KYC Form');
 		$this->addField('nominee_name')->group('f~6~Nominee Details')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
 		$this->addField('relation_with_nominee')->enum(explode(",", $config['relations_with_nominee']))->group('f~2')->mandatory(true);//->system(true);
 		$this->addField('nominee_email')->group('f~2');//->system(true);

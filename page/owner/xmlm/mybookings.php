@@ -1,14 +1,22 @@
 <?php
 
 class page_xMLM_page_owner_xmlm_mybookings extends page_xMLM_page_owner_xmlm_main{
+	function init(){
+		parent::init();
+		$this->app->pathfinder->base_location->addRelativeLocation(
+		    'epan-components/xMLM', array(
+		        'php'=>'lib',
+		        'template'=>'templates',
+		        'css'=>'templates/css',
+		        'js'=>'templates/js',
+		    )
+		);
+	}
 	function page_index(){
-		// parent::init();
-
 		$this->add('View_Info')->set('Bookings Here');
-
 		$tabs=$this->add('Tabs');
 		$booking=$tabs->addTabURL('./booking','Bookings');
-		$new_booking=$tabs->addTabURL('./newbooking','New Bookings');
+		$new_booking=$tabs->addTabURL('./request','Request');
 	}
 	function page_booking(){
 		$grid=$this->add('xMLM/Grid_MyBooking');
@@ -23,9 +31,17 @@ class page_xMLM_page_owner_xmlm_mybookings extends page_xMLM_page_owner_xmlm_mai
 
 	}
 
-	function page_newbooking(){
-		$form=$this->add('Form');
+	function page_request(){
+		$distributor = $this->add('xMLM/Model_Distributor')->loadLoggedIn();
+
+		$form=$this->add('Form',null,null,array('form/empty'));
+		$form->setLayout('view/bookingrequest');
+
 		$form->add('View_Warning')->set('Prefrence 1');
+
+		$form->addField('Readonly','distributor_name')->set($distributor['name']);
+		$form->addField('line','booking_in_name_of')->set($distributor['name']);
+
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		$form->addField('DropDown','city')->setValueList(array('udaipur'=>'udaipur','jaipur'=>'jaipur'))->setEmptyText('Please Select City');
@@ -51,6 +67,7 @@ class page_xMLM_page_owner_xmlm_mybookings extends page_xMLM_page_owner_xmlm_mai
 		$form->addField('Number','children');
 		$form->addSubmit('Submit');
 		if($form->isSubmitted()){
+			$form->error('booking_in_name_of','Hello');
 			$form->js()->univ()->errorMessage('Value Not Proper')->execute();
 		}
 	}	

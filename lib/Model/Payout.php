@@ -35,7 +35,7 @@ class Model_Payout extends \SQL_Model {
 		$this->addField('generation_difference_income')->type('int')->defaultValue(0);
 		$this->addField('bonus')->type('int')->defaultValue(0);
 
-		$this->addExpression('total_pay')->set('introduction_income+pair_income+generation_difference_income+bonus+previous_carried_amount');
+		$this->addExpression('total_pay')->set('introduction_income+pair_income+generation_difference_income+bonus+previous_carried_amount')->caption('Total Income');
 
 		$this->addField('tds')->type('money')->defaultValue(0);
 		$this->addField('admin_charge')->type('money')->defaultValue(0);
@@ -48,7 +48,45 @@ class Model_Payout extends \SQL_Model {
 		$this->addField('net_amount')->type('money')->defaultValue(0);
 		$this->addField('carried_amount')->type('money')->defaultValue(0);
 
-		$this->addField('on_date')->type('datetime');
+		$this->addField('on_date')->type('datetime')->caption('Date');
+
+		foreach ($this->add('xMLM/Model_Kit') as $kit) {
+			$kit_id = $kit->id;
+			$this->addExpression(strtolower($this->api->normalizeName($kit['name'].'_count')))->set(function($m,$q)use($kit_id){
+				$last_payout_date=$this->add('xMLM/Model_Payout',array("table_alias"=>'p'.$kit_id));
+				$last_payout_date->addCondition('on_date','<',$q->getField('on_date'));
+				$last_payout_date->setOrder('on_date','desc');
+				
+				$kit_counts = $this->add('xMLM/Model_Distributor',array("table_alias"=>'count_'.$kit_id));
+				return $kit_counts->addCondition('introducer_id',$q->getField('distributor_id'))
+					->addCondition('greened_on','<>',null)
+					->addCondition('greened_on','>=',$q->expr("IFNULL((".$last_payout_date->_dsql()->del('fields')->field('p'.$kit_id.'.on_date')->render()."),'1970-01-01')" ))
+					->addCondition('greened_on','<=',$q->getField('on_date'))
+					->addCondition('kit_item_id',$kit_id)
+					->count();
+
+			});
+
+			$this->addExpression(strtolower($this->api->normalizeName($kit['name'].'_income')))->set(function($m,$q)use($kit_id){
+				$last_payout_date=$this->add('xMLM/Model_Payout',array("table_alias"=>'p'.$kit_id));
+				$last_payout_date->addCondition('on_date','<',$q->getField('on_date'));
+				$last_payout_date->setOrder('on_date','desc');
+				
+				$kit_counts = $this->add('xMLM/Model_Kit',array("table_alias"=>'income_'.$kit_id));
+				$dist_join = $kit_counts->join('xmlm_distributors.kit_item_id');
+				$dist_join->addField('introducer_id');
+				$dist_join->addField('greened_on');
+				$dist_join->addField('kit_item_id');
+
+				return $kit_counts->addCondition('introducer_id',$q->getField('distributor_id'))
+					->addCondition('greened_on','<>',null)
+					->addCondition('greened_on','>=',$q->expr("IFNULL((".$last_payout_date->_dsql()->del('fields')->field('p'.$kit_id.'.on_date')->render()."),'1970-01-01')" ))
+					->addCondition('greened_on','<=',$q->getField('on_date'))
+					->addCondition('kit_item_id',$kit_id)
+					->sum('intro_value');
+
+			});
+		}
 
 		$this->setOrder('on_date');
 	}

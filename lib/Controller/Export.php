@@ -39,7 +39,10 @@ class Controller_Export extends \AbstractController {
 		if($this->add_sno)
 			$header[] ="Sno";
 		foreach ($this->fields as $f) {
-			$header[] = "\"" . preg_replace("/\"/", "\"\"", $f) . "\"";
+			if($fn = $this->model->hasElement($f)){
+				$f= $fn->caption()?:$f;
+			}
+			$header[] = "\"" . preg_replace("/\"/", "\"\"", ucwords(str_replace("_", " ", $f))) . "\"";
 		}
 		$this->output= implode($this->column_separator, $header);
 		

@@ -5,10 +5,12 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 	function init(){
 		parent::init();
 
-		$container=$this->add('View')->addClass('container');
+		$container=$this->add('View')->addClass('');
 		$current_distributor = $this->add('xMLM/Model_Distributor')->loadLoggedIn();
 
 		$export_model = $current_distributor->creditMovements()->setOrder('created_at');
+		$export_model->getElement('created_at')->caption('Request Date');
+		$export_model->getElement('narration')->caption('Remark');
 		$export_model->addExpression('credit')->set($export_model->dsql()->fx('IF',array($export_model->dsql()->expr('status="Purchase"'),$export_model->dsql()->expr('credits'),'0')));
 		$export_model->addExpression('debit')->set($export_model->dsql()->fx('IF',array($export_model->dsql()->expr('status="Consumed"'),$export_model->dsql()->expr('credits'),'0')));
 		
@@ -55,8 +57,8 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 
 		$credit_request_model = $this->add('xMLM/Model_Credit_Request');
 		$credit_request_model->addCondition('distributor_id',$current_distributor->id);
-
-		$form->setModel($credit_request_model);
+		$form->addField('Readonly','request_date')->set($this->api->today);
+		$form->setModel($credit_request_model,array('credits','narration','attachment_id'));
 		// $form->addField('DropDown','request_for')->setEmptyText("Please select kit")->validateNotNull()->setModel('xMLM/Kit');
 		// $form->addfield('Number','qty')->validateNotNull();
 		// $form->addfield('Text','payment_details');
@@ -65,6 +67,8 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 		if($form->isSubmitted()){
 			if($form['credits'] > 500000)
 				$form->displayError('credits','Credit Limit : 5,00,000/-');
+			if($form['credits'] < 6000)
+				$form->displayError('credits','Must be greater then : 6,000/-');
 			
 			$form->save();
 
