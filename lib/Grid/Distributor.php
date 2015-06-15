@@ -63,8 +63,9 @@ class Grid_Distributor extends \Grid{
 
 		$m=parent::setModel($model,$fields);
 
+		if($this->hasColumn('item_name')) $this->removeColumn('item_name');
 		if($this->hasColumn('created_at')) $this->removeColumn('created_at');
-		if($this->hasColumn('greened_on')) $this->removeColumn('greened_on');
+		if($this->hasColumn('is_active')) $this->removeColumn('is_active');
 		if($this->hasColumn('sponsor')) $this->removeColumn('sponsor');
 		if($this->hasColumn('introducer')) $this->removeColumn('introducer');
 		if($this->hasColumn('left')) $this->removeColumn('left');
