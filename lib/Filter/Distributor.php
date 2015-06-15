@@ -16,7 +16,17 @@ class Filter_Distributor extends \Filter_Base
                 ->setNoSave()
                 ->setModel('xMLM/Kit');
         $this->status_field = $this->addField('Dropdown', 'status', '')->setEmptyText('Any Status')->setValueList(array('active'=>'Active','inactive'=>'InActive'))->setNoSave();
-        $this->on_date_field = $this->addField('DatePicker', 'on_date', '')->setNoSave();
+        $this->on_date_field = $this->addField('xMLM/DatePicker', 'on_date', '')->setNoSave()->setAttr('placeholder','Greened On');
+
+        if($_GET['reset_filter']){
+            foreach ($this->get() as $field=>$value) {
+                if ($this->isClicked('Clear') || is_null($value)) {
+                    $this->forget($field);
+                } else {
+                    $this->memorize($field, $value);
+                }
+            }
+        }
 
     }
 
@@ -63,8 +73,13 @@ class Filter_Distributor extends \Filter_Base
         }
 
         
-        if($status)
-            $and->where('is_active',$status=='active'?1:0);
+        if($status){
+            if($status =='active'){
+                $and->where('greened_on','<>',null);
+            }elseif($status =='inactive'){
+                $and->where('greened_on',null);
+            }
+        }
         
         $and->where($or);
         $q->having($and);

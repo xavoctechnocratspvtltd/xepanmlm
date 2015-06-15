@@ -31,7 +31,7 @@ class Model_Distributor extends \Model_Document {
 		$user_j->addField('name')->mandatory(true)->mandatory(true)->system(true)->display(array('form'=>'Alpha'));
 			$this->addField('first_name')->group('a~4~Distributor Info')->mandatory(true)->mandatory(true)->display(array('form'=>'Alpha'));
 			$this->addField('last_name')->group('a~4')->mandatory(true)->mandatory(true)->display(array('form'=>'Alpha'));
-			$this->addField('date_of_birth')->type('date')->group('a~4')->mandatory(true)->mandatory(true);
+			$this->addField('date_of_birth')->type('date')->group('a~4')->mandatory(true)->mandatory(true)->display(array('form'=>'xMLM/BDate'));
 		$user_j->addField('email')->sortable(true)->group('a~4')->mandatory(true)->display(array('form'=>'Email'));
 
 		$user_j->addField('user_is_active','is_active')->system(true)->defaultValue(true);
@@ -46,12 +46,14 @@ class Model_Distributor extends \Model_Document {
 		$customer_j->addField('member_epan_id','epan_id')->system(true);
 		$this->addCondition('member_epan_id',$this->api->current_website->id);
 
-		$this->addField('pan_no')->group('a~4')->mandatory(true);
-		$customer_j->addField('address')->type('text')->group('a~12')->system(true);
+		$this->addField('pan_no')->group('a~4');
+		// $customer_j->addField('address')->type('text')->group('a~12')->system(true);
 			
-			$this->addField('block_no')->group('a~4');
-			$this->addField('building_no')->group('a~4');
-			$this->addField('landmark')->group('a~4');
+			// $this->addField('block_no')->group('a~4');
+			// $this->addField('building_no')->group('a~4');
+			// $this->addField('landmark')->group('a~4');
+			$this->addField('address')->type('text')->group('a~12')->mandatory(true);
+
 			$this->addField('pin_code')->group('a~4')->display(array('form'=>'xMLM/Number'));
 
 			$this->hasOne('xMLM/State','state_id')->group('a~4')->mandatory(true)->display(array('form'=>'DropDownNormal'));
@@ -78,6 +80,8 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('IFCS_Code')->group('e~6~bl')->mandatory(true);//->system(true);
 		$this->addField('account_no')->group('e~6')->mandatory(true)->display(array('form'=>'xMLM/Number'));//->system(true);
 		$this->addField('branch_name')->caption('Branch')->group('e~6~bl')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
+		$this->addField('kyc_no')->group('kyc~6~Kyc Information')->mandatory(true);
+		$this->add('filestore/Field_Image','kyc_id')->group('kyc~6')->caption('KYC Form');
 		$this->addField('nominee_name')->group('f~6~Nominee Details')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
 		$this->addField('relation_with_nominee')->enum(explode(",", $config['relations_with_nominee']))->group('f~2')->mandatory(true);//->system(true);
 		$this->addField('nominee_email')->group('f~2');//->system(true);
@@ -108,6 +112,7 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('carried_amount')->type('money')->defaultValue(0);
 		$this->addField('credit_purchase_points')->type('money')->defaultValue(0);
 		$this->addField('temp')->system(true)->defaultValue(0);
+
 
 		$this->addField('greened_on')->type('datetime')->defaultValue(null);
 
@@ -155,7 +160,7 @@ class Model_Distributor extends \Model_Document {
 		
 
 		$this['name'] = $this['first_name'].' '. $this['last_name'];
-		$this['address'] = "Block No ". $this['block_no'] .", Building No ". $this['building_no']. ", ". $this['landmark'] . ', PIN-'. $this['pin_code'];
+		// $this['address'] = "Block No ". $this['block_no'] .", Building No ". $this['building_no']. ", ". $this['landmark'] . ', PIN-'. $this['pin_code'];
 
 		// Check For available purchase points
 		if($this->dirty['kit_item_id'] AND $this['kit_item_id'] !==""){
@@ -220,20 +225,36 @@ class Model_Distributor extends \Model_Document {
 
 		if(!isset($this->api->deleted_distributor)) $this->api->deleted_distributor =array();
 		if(in_array($this->id, $this->api->deleted_distributor)) return;
-		
-		$this->creditMovements()->deleteAll();
+		$this->api->deleted_distributor[]  = $this->id;
 
-		// Main kisi ki sponsor id kmain to hun .. usme se mujhe hatao ...
-		$i_m_in_left = $this->newInstance()->tryLoadBy('left_id',$this->id);
+
+		$this->add('xMLM/Model_CreditMovement')->addCondition('joined_distributor_id',$this->id)
+			->each(function($obj){
+				$obj->forceDelete();
+			});
+
+		$this->creditMovements()->each(function ($obj){
+			$obj->forceDelete();
+		});
+		
+		// Main kisi ki sponsor id main to hun .. usme se mujhe hatao ...
+		$i_m_in_left = $this->add('xMLM/Model_Distributor')->tryLoadBy('left_id',$this->id);
 		if($i_m_in_left->loaded()){
 			$i_m_in_left['left_id']=null;
 			$i_m_in_left->save();
 		}
 
-		$i_m_in_right = $this->newInstance()->tryLoadBy('right_id',$this->id);
+		$i_m_in_right = $this->add('xMLM/Model_Distributor')->tryLoadBy('right_id',$this->id);
 		if($i_m_in_right->loaded()){
 			$i_m_in_right['right_id']=null;
 			$i_m_in_right->save();
+		}
+
+		// I am someones Introducer
+		$i_am_intro =  $this->add('xMLM/Model_Distributor')->addCondition('introducer_id',$this->id);
+		foreach ($i_am_intro as $intros) {
+			$intros['introducer_id']=null;
+			$intros->saveAndUnload();
 		}
 
 		
@@ -251,15 +272,16 @@ class Model_Distributor extends \Model_Document {
 			// echo $this->id;
 			throw $e;
 		}
-		
-		if($lid) {
-			$ld = $this->newInstance()->tryLoad($lid);
-			if($ld->loaded()) $ld->forceDelete();
-		}
-		if($rid){
-			$rd = $this->newInstance()->tryLoad($rid);
-			if($rd->loaded()) $rd->forceDelete();	
-		} 
+			
+		$this->add('xMLM/Model_Distributor')->addCondition('path','like',$this['path'].'A%')
+				->each(function($obj){
+					$obj->forceDelete();
+				});
+		$this->add('xMLM/Model_Distributor')->addCondition('path','like',$this['path'].'B%')
+				->each(function($obj){
+					$obj->forceDelete();
+				});
+
 		// if($this['sponsor_id'])	$this->newInstance()->tryLoad($this['sponsor_id'])->forceDelete();
 		// if($this['introducer_id']) $this->newInstance()->tryLoad($this['introducer_id'])->forceDelete();
 
@@ -276,13 +298,14 @@ class Model_Distributor extends \Model_Document {
 		return $this->add('xMLM/Model_CreditMovement')->addCondition('distributor_id',$this->id);
 	}
 
-	function consumePurchasePoints($points,$narration){
+	function consumePurchasePoints($points,$narration, $joined_distributor){
 		$this['credit_purchase_points'] = $this['credit_purchase_points'] - $points;
 		$this->save();
 		$credit_movement = $this->creditMovements();
 		$credit_movement['credits'] = $points;
 		$credit_movement['narration'] = $narration;
 		$credit_movement['status'] = 'Consumed';
+		$credit_movement['joined_distributor_id'] = $joined_distributor->id;
 		$credit_movement->save();
 	}
 
@@ -307,7 +330,7 @@ class Model_Distributor extends \Model_Document {
 			if($from_distributor['credit_purchase_points'] < $kitpoints){
 				return false;		
 			}
-			$from_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this['username']);
+			$from_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this['username'], $this);
 			return true;
 		}
 
@@ -320,7 +343,7 @@ class Model_Distributor extends \Model_Document {
 			// throw new \Exception("Not sufficient credit points", 1);
 			return false;
 		}
-		$logged_in_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this->id." [".$this['username']."]");
+		$logged_in_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this->id." [".$this['username']."]",$this);
 		return true;
 	}
 

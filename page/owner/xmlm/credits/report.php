@@ -78,7 +78,7 @@ class page_xMLM_page_owner_xmlm_credits_report extends page_xMLM_page_owner_main
 		$grid->removeColumn('related_document');
 		$grid->removeColumn('distributor_id');
 		$grid->addPaginator(50);
-		$grid->addQuickSearch(array('distributor','status','credits','credits_given_on'));
+		// $grid->addQuickSearch(array(,'status','credits','credits_given_on'));
 		$grid->addGrandTotals(array('credit','debit'));
 
 

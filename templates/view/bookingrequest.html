@@ -1,0 +1,15 @@
+
+<div id="{$_name}" style=" {$style}" class=" {$class}">
+  <div class="atk-row atk-form-row">
+    <div class="atk-col-4">Distributor Name</div>
+    <div class="atk-col-8">{$distributor_name}</div>
+  </div>
+  <div class="atk-row">
+    <div class="atk-col-4">Booking In Name Of</div>
+    <div class="atk-col-8 atk-form-field">
+      {$booking_in_name_of}
+      {field_error}
+      <p class="atk-form-error"><span class="icon-attention"></span><span class="atk-size-micro field-error-text">{$field_error_str}</span></p>{/}
+    </div>
+  </div>{$Content}
+</div>

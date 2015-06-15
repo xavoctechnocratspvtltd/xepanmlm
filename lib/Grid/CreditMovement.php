@@ -25,7 +25,8 @@ class Grid_CreditMovement extends \Grid {
 
 
 	function setModel($model,$fields=null){
-		$fields=array('distributor_id','distributor','status','created_at','credits_given_on','credit','debit','narration');
+		if(!$fields)
+			$fields=array('distributor_id','distributor','status','created_at','credits_given_on','credit','debit','narration','credits');
 		$m = parent::setModel($model,$fields);
 		
 		if($this->hasColumn('attachment')) $this->removeColumn('attachment');
