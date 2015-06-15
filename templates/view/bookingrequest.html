@@ -4,12 +4,60 @@
     <div class="atk-col-4">Distributor Name</div>
     <div class="atk-col-8">{$distributor_name}</div>
   </div>
-  <div class="atk-row">
-    <div class="atk-col-4">Booking In Name Of</div>
-    <div class="atk-col-8 atk-form-field">
-      {$booking_in_name_of}
-      {field_error}
-      <p class="atk-form-error"><span class="icon-attention"></span><span class="atk-size-micro field-error-text">{$field_error_str}</span></p>{/}
-    </div>
+  <div class="atk-row atk-form-row">
+    <div class="atk-col-4">Distributor Name</div>
+    <div class="atk-col-8 atk-form-field">{$booking_in_name_of}</div>
+  </div><br/>
+  <div class="atk-table atk-table-zebra atk-table-bordered atk4_grid">
+    <table>
+      <tr>
+        <th>Preference</th>
+        <th>Location</th>
+        <th>HotelName</th>
+        <th>Check In</th>
+        <th>Check Out</th>
+        <th>No Of Nights</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td class="atk-form-row atk-form-field">{$location_1}</td>
+        <td class="atk-form-row atk-form-field">{$hotel_1}</td>
+        <td class="atk-form-row atk-form-field">{$checkin_date_1}</td>
+        <td class="atk-form-row atk-form-field">{$checkout_date_1}</td>
+        <td class="atk-form-row atk-form-field">{$no_of_nights_1}</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td class="atk-form-row atk-form-field">{$location_2}</td>
+        <td class="atk-form-row atk-form-field">{$hotel_2}</td>
+        <td class="atk-form-row atk-form-field">{$checkin_date_2}</td>
+        <td class="atk-form-row atk-form-field">{$checkout_date_2}</td>
+        <td class="atk-form-row atk-form-field">{$no_of_nights_2}</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td class="atk-form-row atk-form-field">{$location_3}</td>
+        <td class="atk-form-row atk-form-field">{$hotel_3}</td>
+        <td class="atk-form-row atk-form-field">{$checkin_date_3}</td>
+        <td class="atk-form-row atk-form-field">{$checkout_date_3}</td>
+        <td class="atk-form-row atk-form-field">{$no_of_nights_3}</td>
+      </tr>
+    </table>
+  </div><br/>
+  <div class="atk-row atk-form-row">
+    <div class="atk-col-2">No Of Adults</div>
+    <div class="atk-col-2">{$no_of_adults}</div>
+  </div>
+  <div class="atk-row atk-form-row">
+    <div class="atk-col-2">No Of Children</div>
+    <div class="atk-col-2">{$no_of_children}</div>
+  </div>
+  <div class="atk-row atk-form-row">
+    <div class="atk-col-2">Voucher No</div>
+    <div class="atk-col-2">{$voucher_no}</div>
+  </div>
+  <div class="atk-row atk-form-row">
+    <div class="atk-col-2">Confirmation Through</div>
+    <div class="atk-col-2">{$confirmation_through}</div>
   </div>{$Content}
 </div>

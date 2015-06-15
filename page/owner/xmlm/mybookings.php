@@ -37,34 +37,22 @@ class page_xMLM_page_owner_xmlm_mybookings extends page_xMLM_page_owner_xmlm_mai
 		$form=$this->add('Form',null,null,array('form/empty'));
 		$form->setLayout('view/bookingrequest');
 
-		$form->add('View_Warning')->set('Prefrence 1');
-
 		$form->addField('Readonly','distributor_name')->set($distributor['name']);
 		$form->addField('line','booking_in_name_of')->set($distributor['name']);
 
-		$form->addField('DatePicker','from_date');
-		$form->addField('DatePicker','to_date');
-		$form->addField('DropDown','city')->setValueList(array('udaipur'=>'udaipur','jaipur'=>'jaipur'))->setEmptyText('Please Select City');
-		$form->addField('DropDown','city')->setValueList(array('Rajasthan','Gujrat'))->setEmptyText('Please Select State');
-		$form->addField('DropDown','property')->setValueList(array('Rajasthan','Gujrat'))->setEmptyText('Please Select ');
-		$form->addField('Number','adults');
-		$form->addField('Number','children');
-		$form->add('View_Error')->set('Prefrence 2');
-		$form->addField('DatePicker','from_date');
-		$form->addField('DatePicker','to_date');
-		$form->addField('DropDown','city')->setValueList(array('udaipur'=>'udaipur','jaipur'=>'jaipur'))->setEmptyText('Please Select City');
-		$form->addField('DropDown','city')->setValueList(array('Rajasthan','Gujrat'))->setEmptyText('Please Select State');
-		$form->addField('DropDown','property')->setValueList(array('Rajasthan','Gujrat'))->setEmptyText('Please Select ');
-		$form->addField('Number','adults');
-		$form->addField('Number','children');
-		$form->add('View_Success')->set('Prefrence 3');
-		$form->addField('DatePicker','from_date');
-		$form->addField('DatePicker','to_date');
-		$form->addField('DropDown','city')->setValueList(array('udaipur'=>'udaipur','jaipur'=>'jaipur'))->setEmptyText('Please Select City');
-		$form->addField('DropDown','city')->setValueList(array('Rajasthan','Gujrat'))->setEmptyText('Please Select State');
-		$form->addField('DropDown','property')->setValueList(array('Rajasthan','Gujrat'))->setEmptyText('Please Select ');
-		$form->addField('Number','adults');
-		$form->addField('Number','children');
+		for($i=1;$i<=3;$i++){
+			$form->addField('line','location_'.$i)->validateNotNull();
+			$form->addField('line','hotel_'.$i)->validateNotNull();
+			$form->addField('line','checkin_date_'.$i)->validateNotNull();
+			$form->addField('line','checkout_date_'.$i)->validateNotNull();
+			$form->addField('line','no_of_nights_'.$i)->validateNotNull();
+		}
+
+		$form->addField('line','no_of_adults');
+		$form->addField('line','no_of_children');
+		$form->addField('line','voucher_no');
+		$form->addField('line','confirmation_through');
+
 		$form->addSubmit('Submit');
 		if($form->isSubmitted()){
 			$form->error('booking_in_name_of','Hello');
