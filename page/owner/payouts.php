@@ -89,15 +89,16 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		if(!$g_on_date and !$g_dist_id)
 			$payout_model->addCondition('id',-1);
 
+		if($payout_model->count()->getOne()){
+			$payout_grid = $this->add('xMLM/Grid_Payout',array('hide_distributor'=>false,'generation_income'=>$config['include_generation']));
+			$payout_grid->setModel($payout_model);
+			
+			$payout_grid->addGrandTotals(array('pair_income','introduction_income','tds','admin_charge','net_amount','carried_amount'));
+			// $payout_grid->addGrandTotals();
 
-		$payout_grid = $this->add('xMLM/Grid_Payout',array('hide_distributor'=>false,'generation_income'=>$config['include_generation']));
-		$payout_grid->setModel($payout_model);
+			$payout_grid->addPaginator(100);
+			$payout_grid->addSno();
 
-		$payout_grid->addGrandTotals(array('pair_income','introduction_income','tds','admin_charge','net_amount','carried_amount'));
-		// $payout_grid->addGrandTotals();
-
-		$payout_grid->addPaginator(100);
-		$payout_grid->addSno();
 
 		$payout_grid->add('xMLM/Controller_Export',
 				array(
@@ -113,11 +114,17 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 					)
 				);
 
+		}
 		if($form->isSubmitted()){
-			$payout_grid->js()->reload(array(
-					'on_date'=>$form['closings'],
-					'distributor_id'=>$form['distributor']
-				))->execute();
+			if($payout_model->count()->getOne()){
+				$payout_grid->js()->reload(array(
+						'on_date'=>$form['closings'],
+						'distributor_id'=>$form['distributor']
+					))->execute();
+				
+			}else{
+				$form->js()->reload()->execute();
+			}
 		}
 
 	}
