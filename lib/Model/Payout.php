@@ -55,7 +55,7 @@ class Model_Payout extends \SQL_Model {
 			$this->addExpression(strtolower($this->api->normalizeName($kit['name'].'_count')))->set(function($m,$q)use($kit_id){
 				$last_payout_date=$this->add('xMLM/Model_Payout',array("table_alias"=>'p'.$kit_id));
 				$last_payout_date->addCondition('on_date','<',$q->getField('on_date'));
-				$last_payout_date->setOrder('on_date','desc');
+				$last_payout_date->setOrder('on_date','desc')->setLimit(1);
 				
 				$kit_counts = $this->add('xMLM/Model_Distributor',array("table_alias"=>'count_'.$kit_id));
 				return $kit_counts->addCondition('introducer_id',$q->getField('distributor_id'))
@@ -70,7 +70,7 @@ class Model_Payout extends \SQL_Model {
 			$this->addExpression(strtolower($this->api->normalizeName($kit['name'].'_income')))->set(function($m,$q)use($kit_id){
 				$last_payout_date=$this->add('xMLM/Model_Payout',array("table_alias"=>'p'.$kit_id));
 				$last_payout_date->addCondition('on_date','<',$q->getField('on_date'));
-				$last_payout_date->setOrder('on_date','desc');
+				$last_payout_date->setOrder('on_date','desc')->setLimit(1);
 				
 				$kit_counts = $this->add('xMLM/Model_Kit',array("table_alias"=>'income_'.$kit_id));
 				$dist_join = $kit_counts->join('xmlm_distributors.kit_item_id');
