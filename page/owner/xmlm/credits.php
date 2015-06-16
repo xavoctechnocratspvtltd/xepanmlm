@@ -58,7 +58,7 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 		$credit_request_model = $this->add('xMLM/Model_Credit_Request');
 		$credit_request_model->addCondition('distributor_id',$current_distributor->id);
 		$form->addField('Readonly','request_date')->set($this->api->today);
-		$form->setModel($credit_request_model,array('credits','narration','attachment_id'));
+		$form->setModel($credit_request_model,array('distributor_id','credits','narration','attachment_id'));
 		// $form->addField('DropDown','request_for')->setEmptyText("Please select kit")->validateNotNull()->setModel('xMLM/Kit');
 		// $form->addfield('Number','qty')->validateNotNull();
 		// $form->addfield('Text','payment_details');

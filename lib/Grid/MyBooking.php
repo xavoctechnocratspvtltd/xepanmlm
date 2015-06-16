@@ -3,7 +3,9 @@ namespace xMLM;
 class Grid_MyBooking extends \Grid{
 	function init(){
 		parent::init();
+
 	}
+	
 	function setModel($model){
 		$m= parent::setModel($model);
 		if($this->hasColumn('item_name'))$this->removeColumn('item_name');
@@ -15,14 +17,13 @@ class Grid_MyBooking extends \Grid{
 		if($this->hasColumn('item_name'))$this->removeColumn('item_name');
 
 		$order = $this->addOrder();
-		// $order->move('status','after','no_of_childern');
 		$order->move('location','after','name');
 		$order->move('booking_through','after','voucher_no');
 		$order->now();
 
-
 		$this->addSno();
 
+		$this->model->setOrder('id','desc');
 		return $m;		
 	}
 	function formatRow(){

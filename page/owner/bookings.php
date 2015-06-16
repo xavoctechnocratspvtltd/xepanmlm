@@ -21,8 +21,7 @@ class page_xMLM_page_owner_bookings extends page_xMLM_page_owner_main {
 		$crud->setModel($request_model);
 		$crud->add('xHR/Controller_Acl');
 
-		$l_crud=$this->add('CRUD');
-		$l_crud->setModel('xMLM/Location');
+		
 	}
 
 	function page_approved(){

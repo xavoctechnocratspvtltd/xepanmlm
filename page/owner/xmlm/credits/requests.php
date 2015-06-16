@@ -13,6 +13,6 @@ class page_xMLM_page_owner_xmlm_credits_requests extends page_xMLM_page_owner_ma
 		// }
 		
 
-		$crud->add('xHR/Controller_Acl',array('override'=>array('can_view'=>'All','allow_add'=>false)));
+		$crud->add('xHR/Controller_Acl',array('override'=>array('can_view'=>'All')));
 	}
 }
