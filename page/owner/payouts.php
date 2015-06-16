@@ -76,55 +76,52 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 
 		$payout_model = $this->add('xMLM/Model_Payout');
 		$dist_j = $payout_model->join('xmlm_distributors','distributor_id');
-		$dist_j->addField('greened_on');
+		$dist_j->addField('greened_on')->caption('Qualified Date');
 		
 		if($g_on_date=$this->api->stickyGET('on_date')){
 			$payout_model->addCondition('on_date',$_GET['on_date']);
 		}
 
+		$g_dist_name="";
+
 		if($g_dist_id = $this->api->stickyGET('distributor_id')){
 			$payout_model->addCondition('distributor_id',$_GET['distributor_id']);
+			$g_dist_name=$this->add('xMLM/Model_Distributor')->load($g_dist_id)->get('name');
 		}
 
 		if(!$g_on_date and !$g_dist_id)
 			$payout_model->addCondition('id',-1);
 
-		if($payout_model->count()->getOne()){
-			$payout_grid = $this->add('xMLM/Grid_Payout',array('hide_distributor'=>false,'generation_income'=>$config['include_generation']));
-			$payout_grid->setModel($payout_model);
+		$payout_grid = $this->add('xMLM/Grid_Payout',array('hide_distributor'=>false));//,'generation_income'=>$config['include_generation']));
+		$payout_grid->setModel($payout_model);
 			
+		if($payout_model->count()->getOne()){
 			$payout_grid->addGrandTotals(array('pair_income','introduction_income','tds','admin_charge','net_amount','carried_amount'));
-			// $payout_grid->addGrandTotals();
+		}
 
-			$payout_grid->addPaginator(100);
-			$payout_grid->addSno();
-
+		$payout_grid->addPaginator(100);
+		$payout_grid->addSno();
 
 		$payout_grid->add('xMLM/Controller_Export',
-				array(
-					'fields'=>array('distributor','session_left_pv','session_right_pv',
-									'session_carried_left_pv','session_carried_right_pv','pairs',
+				array('output_filename'=>'Payout_'.$g_on_date."_".$g_dist_name.'.csv','model'=>$payout_model,
+					'fields'=>array('on_date','distributor','previous_carried_amount','standard_kit_count','standard_kit_income',
+									'gold_kit_count','gold_kit_income','pair_income','total_pay','tds','admin_charge',
+									'other_deduction','total_deduction','net_amount','carried_amount','session_left_pv',
+									'session_right_pv','pairs','session_carried_left_pv','session_carried_right_pv',
 									'session_business_volume','generation_level','generation_gross_amount',
-									'pair_income','introduction_income','generation_difference_income','bonus',
-									'total_pay',
-									'tds','admin_charge','other_deduction','total_deduction',
-									'net_amount','carried_amount','greened_on','on_date'
+									'introduction_income','generation_difference_income','bonus',
+									'greened_on'
 									),
 					'totals'=>array('pair_income','introduction_income','tds','admin_charge','net_amount','carried_amount')
 					)
 				);
 
-		}
 		if($form->isSubmitted()){
-			if($payout_model->count()->getOne()){
+
 				$payout_grid->js()->reload(array(
-						'on_date'=>$form['closings'],
+						'on_date'=>$form['closings']?:'0',
 						'distributor_id'=>$form['distributor']
 					))->execute();
-				
-			}else{
-				$form->js()->reload()->execute();
-			}
 		}
 
 	}
@@ -185,14 +182,16 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$payout_grid->removeColumn('on_date');
 		$payout_grid->removeColumn('previous_carried_amount');
 
+		if($payout_model->count()->getOne()){
 		$payout_grid->addGrandTotals(array('pair_income','introduction_income','tds','admin_charge','net_amount','carried_amount'));
+		}
 		// $payout_grid->addGrandTotals();
 
 		$payout_grid->addPaginator(100);
 		$payout_grid->addSno();
 
 		$payout_grid->add('xMLM/Controller_Export',
-				array(
+				array('output_filename'=>'Payout Report Pay_'.$from_date.'_'.$to_date.'.csv','model'=>$payout_model,
 					'fields'=>array('distributor','session_left_pv','session_right_pv',
 									'session_carried_left_pv','session_carried_right_pv','pairs',
 									'session_business_volume','generation_level','generation_gross_amount',
@@ -276,7 +275,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	            		->addCondition('on_date','<',$m->api->nextDate($to_date));
 	            return $exp->sum('net_amount');
 
-	    	})->sortable(true);
+	    	})->sortable(true)->caption('Total Payout');
 
 	    $amount_field[] = $fields[]= 'total_expense';
 

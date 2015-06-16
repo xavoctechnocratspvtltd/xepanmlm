@@ -44,7 +44,7 @@ class Model_CreditMovement extends \Model_Document {
 	function approve_page($page){
 		$form = $page->add('Form');
 		$form->addField('text','transaction_details');
-		$form->addSubmit('Approve');
+		$form->addSubmit('ok');
 
 		if($form->isSubmitted()){
 			$this->approve($form['transaction_details']);
@@ -84,9 +84,11 @@ class Model_CreditMovement extends \Model_Document {
 	}
 
 	function mark_processed(){
+		
 		$this['credits_given_on']=$this->api->now;
 		$this->save();
-		$this->distributor()->set('credit_purchase_points',$this->dsql()->expr('credit_purchase_points+'.$this['credits']))->save();
+		$dis=$this->distributor();
+		$dis->set('credit_purchase_points',$this->dsql()->expr('credit_purchase_points+'.$this['credits']))->save();
 	}
 
 	function distributor(){

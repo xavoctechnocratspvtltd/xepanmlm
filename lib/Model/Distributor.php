@@ -155,7 +155,7 @@ class Model_Distributor extends \Model_Document {
 			throw $this->exception('Applicant must be above 18','ValidityCheck')->setField('date_of_birth_ALERTED');		
 
 		if(strlen($this['username']) < 3)
-			throw $this->exception('Username must be more than 3 characters long '. $this['id'],'ValidityCheck')->setField('username');
+			throw $this->exception('Username must be more than 3 characters long '. $this['id']);//,'ValidityCheck')->setField('username');
 
 		// throw new \Exception("Error Processing Request", 1);
 		
@@ -166,7 +166,7 @@ class Model_Distributor extends \Model_Document {
 		$alloted_kyc_check->addCondition('to_no','>=',$this['kyc_no']);
 		$alloted_kyc_check->tryLoadANy();
 
-		if(!$alloted_kyc_check->loaded())
+		if($this['kyc_no'] and !$alloted_kyc_check->loaded())
 			throw $this->exception('Form is not alloted','ValidityCheck')->setField('kyc_no');
 
 		// Check Used KYC No
@@ -176,7 +176,7 @@ class Model_Distributor extends \Model_Document {
 			$used_kyc_check->addCondition('id','<>',$this->id);
 
 		$used_kyc_check->tryLoadAny();
-		if($used_kyc_check->loaded())
+		if($this['kyc_no'] and $used_kyc_check->loaded())
 			throw $this->exception('KYC No is already used','ValidityCheck')->setField('kyc_no');
 		
 
