@@ -22,7 +22,11 @@ class Model_Configuration extends \SQL_Model {
 		$this->addField('days_allowed_for_green')->type('int')->defaultValue(45);
 		$this->addField('relations_with_nominee')->type('text')->defaultValue('Father,Mother,Spouse,Sibling,Friend,Son,Daughter');
 
-		// $this->add('dynamic_model/Controller_AutoCreator');
+		$this->addField('royalty_percentage')->type('number');
+		$this->addField('self_buiness_4_active_royalty')->type('number');
+		$this->addField('active_royalty_percentage')->type('number');
+
+		$this->add('dynamic_model/Controller_AutoCreator');
 
 	}
 }

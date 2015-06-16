@@ -32,6 +32,8 @@ class Grid_Payout extends \Grid {
 		if(!$this->generation_income OR $this->hasColumn('generation_level')) $this->removeColumn('generation_level');
 		if(!$this->generation_income OR $this->hasColumn('generation_gross_amount')) $this->removeColumn('generation_gross_amount');
 		if(!$this->generation_income OR $this->hasColumn('generation_difference_income')) $this->removeColumn('generation_difference_income');
+		if(!$this->generation_income OR $this->hasColumn('generation_royalty_income')) $this->removeColumn('generation_royalty_income');
+		if(!$this->generation_income OR $this->hasColumn('generation_active_royalty_income')) $this->removeColumn('generation_active_royalty_income');
 
 		if($this->hasColumn('other_deduction_name')) $this->removeColumn('other_deduction_name');
 		if($this->hasColumn('other_deduction')) $this->removeColumn('other_deduction');

@@ -33,6 +33,8 @@ class Model_Payout extends \SQL_Model {
 		$this->addField('pair_income')->type('int')->defaultValue(0);
 		$this->addField('introduction_income')->type('int')->defaultValue(0);
 		$this->addField('generation_difference_income')->type('int')->defaultValue(0);
+		$this->addField('generation_royalty_income')->type('int')->defaultValue(0);
+		$this->addField('generation_active_royalty_income')->type('int')->defaultValue(0);
 		$this->addField('bonus')->type('int')->defaultValue(0);
 
 		$this->addExpression('total_pay')->set('introduction_income+pair_income+generation_difference_income+bonus+previous_carried_amount')->caption('Total Income');
@@ -111,8 +113,8 @@ class Model_Payout extends \SQL_Model {
 		// copy all distributors in here
 		$q="
 			INSERT INTO xmlm_payouts
-						(id,distributor_id,session_left_pv,session_right_pv, pairs,pair_income, tds,admin_charge,net_amount,bonus,previous_carried_amount, on_date,  session_self_bv, session_left_bv, session_right_bv,session_business_volume,generation_level,generation_gross_amount,introduction_income,generation_difference_income,other_deduction_name,other_deduction,session_carried_left_pv,session_carried_right_pv)
-				SELECT 	  0,     id,       session_left_pv,session_right_pv,   0,         0,      0,      0,           0,     0,     carried_amount,       '$on_date',session_self_bv, session_left_bv, session_right_bv,            0,                  0,                    0,        session_intros_amount,             0,                     '',                   0,                 0,                      0 FROM xmlm_distributors
+						(id,distributor_id,session_left_pv,session_right_pv, pairs,pair_income, tds,admin_charge,net_amount,bonus,previous_carried_amount, on_date,  session_self_bv, session_left_bv, session_right_bv,session_business_volume,generation_level,generation_gross_amount,introduction_income,generation_difference_income,generation_royalty_income, generation_active_royalty_income, other_deduction_name,other_deduction,session_carried_left_pv,session_carried_right_pv)
+				SELECT 	  0,     id,       session_left_pv,session_right_pv,   0,         0,      0,      0,           0,     0,     carried_amount,       '$on_date',session_self_bv, session_left_bv, session_right_bv,            0,                  0,                    0,        session_intros_amount,             0,                     ,          0,                  0,                          '',                   0,                 0,                      0 FROM xmlm_distributors
 		";
 		$this->query($q);
 
@@ -156,10 +158,13 @@ class Model_Payout extends \SQL_Model {
 				SET
 					session_business_volume = session_self_bv + session_left_bv + session_right_bv,
 					generation_level=0
+				WHERE
+				on_date = '$on_date'
 			";
 			$this->query($q);
+
 			// find all levels as per slab table
-			$slabs = $this->add('xMLM/Model_BVSlab');
+			$slabs = $this->add('xMLM/Model_BVSlab')->setOrder('name','desc');
 			foreach ($slabs as $slb) {
 				$q="
 					UPDATE
@@ -168,17 +173,23 @@ class Model_Payout extends \SQL_Model {
 						generation_level = ".$slb['percentage']."
 					WHERE
 						session_business_volume >= ". $slb['name'] ."
+					WHERE
+						on_date = '$on_date'
 				";
 				$this->query($q);
 			}
+
 			// get percentage and payments
 			$q="
 				UPDATE
 					xmlm_payouts p
 				SET
 					generation_gross_amount = session_business_volume * generation_level
+				WHERE
+					on_date = '$on_date'
 			";
 			$this->query($q);
+
 			// get differences
 			$q="
 				UPDATE
@@ -191,17 +202,29 @@ class Model_Payout extends \SQL_Model {
 							+
 							(SELECT generation_gross_amount FROM xmlm_payouts ldp JOIN xmlm_distributors ldp_d ON ldp.distributor_id = ldp_d.id WHERE ldp_d.id = d.right_id) /* Right Distributor generation gross amount*/
 						)
+				WHERE
+					on_date = '$on_date'
 			";
 
 			$this->query($q);
-		}
+		
+			// get Active Royalty
+			$q="
+				TODO THERE	
+			";
+
+			$this->query($q);
+
+			// get Royalty exclude active royalty achievers
+
+		} // END OF PAY GENERATION INCOME
 
 		$q="
 			UPDATE 
 				xmlm_payouts payouts
 			SET
 				pair_income = pairs,
-				TDS = (payouts.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus) * IF(length((select pan_no from xmlm_distributors where id=payouts.distributor_id))=10,10,20) / 100,
+				TDS = (payouts.previous_carried_amount + pair_income + introduction_income + generation_difference_income + generation_royalty_income + generation_active_royalty_income + bonus) * IF(length((select pan_no from xmlm_distributors where id=payouts.distributor_id))=10,10,20) / 100,
 				admin_charge = (payouts.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus) * $admin_charge / 100,
 				net_amount = (payouts.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus) - (TDS + admin_charge)
 			WHERE
@@ -218,12 +241,12 @@ class Model_Payout extends \SQL_Model {
 			JOIN
 				xmlm_distributors d on p.distributor_id = d.id
 			SET
-				p.carried_amount = (p.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus),
+				p.carried_amount = (p.previous_carried_amount + pair_income + introduction_income + generation_difference_income + generation_royalty_income + generation_active_royalty_income + bonus),
 				p.TDS=0,
 				p.admin_charge=0,
 				p.net_amount=0,
 				p.other_deduction=0,
-				d.carried_amount = (p.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus)
+				d.carried_amount = (p.previous_carried_amount + pair_income + introduction_income + generation_difference_income + generation_royalty_income + generation_active_royalty_income + bonus)
 
 			WHERE
 				p.on_date='$on_date'
