@@ -1,6 +1,6 @@
 <?php
 namespace xMLM;
-class Grid_MyBooking extends \Grid{
+class Grid_Property extends \Grid{
 	function init(){
 		parent::init();
 	}
@@ -13,13 +13,6 @@ class Grid_MyBooking extends \Grid{
 		if($this->hasColumn('updated_date'))$this->removeColumn('updated_date');
 		if($this->hasColumn('item_name'))$this->removeColumn('item_name');
 		if($this->hasColumn('item_name'))$this->removeColumn('item_name');
-
-		$order = $this->addOrder();
-		// $order->move('status','after','no_of_childern');
-		$order->move('location','after','name');
-		$order->move('booking_through','after','location');
-		$order->now();
-
 		return $m;		
 	}
 	function formatRow(){
