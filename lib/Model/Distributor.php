@@ -159,6 +159,26 @@ class Model_Distributor extends \Model_Document {
 		// throw new \Exception("Error Processing Request", 1);
 		
 
+		// Check KYC No 
+		$alloted_kyc_check = $this->add('xMLM/Model_FormAllot');
+		$alloted_kyc_check->addCondition('from_no','<=',$this['kyc_no']);
+		$alloted_kyc_check->addCondition('to_no','>=',$this['kyc_no']);
+		$alloted_kyc_check->tryLoadANy();
+
+		if(!$alloted_kyc_check->loaded())
+			throw $this->exception('Form is not alloted','ValidityCheck')->setField('kyc_no');
+
+		// Check Used KYC No
+		$used_kyc_check = $this->add('xMLM/Model_Distributor');
+		$used_kyc_check->addCondition('kyc_no',$this['kyc_no']);
+		if($this->loaded())
+			$used_kyc_check->addCondition('id','<>',$this->id);
+
+		$used_kyc_check->tryLoadAny();
+		if($used_kyc_check->loaded())
+			throw $this->exception('KYC No is already used','ValidityCheck')->setField('kyc_no');
+		
+
 		$this['name'] = $this['first_name'].' '. $this['last_name'];
 		// $this['address'] = "Block No ". $this['block_no'] .", Building No ". $this['building_no']. ", ". $this['landmark'] . ', PIN-'. $this['pin_code'];
 
