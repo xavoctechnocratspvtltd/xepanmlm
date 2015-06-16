@@ -4,18 +4,77 @@ div(id="{$_name}" class=" {$class}" style=" {$style}")
 			| Distributor Name
 		.atk-col-8
 			| {$distributor_name}
-	.atk-row
+	.atk-row.atk-form-row
 		.atk-col-4
-			| Booking In Name Of
-		.atk-col-8.atk-form-field {$booking_in_name_of}
-		
-			{field_error}
-			p.atk-form-error
-				span.icon-attention
-				span.atk-size-micro.field-error-text {$field_error_str}
-			{/}
-			
-
+			| Distributor Name
+		.atk-col-8.atk-form-field
+			| {$booking_in_name_of}
+	br
+	.atk-table.atk-table-zebra.atk-table-bordered.atk4_grid
+		table
+			tr
+				th Preference
+				th Location
+				th HotelName
+				th Check In
+				th Check Out
+				th No Of Nights
+			tr
+				td 1
+				td.atk-form-row.atk-form-field
+					| {$location_1}
+				td.atk-form-row.atk-form-field
+					| {$hotel_1}
+				td.atk-form-row.atk-form-field
+					| {$checkin_date_1}
+				td.atk-form-row.atk-form-field
+					| {$checkout_date_1}
+				td.atk-form-row.atk-form-field
+					| {$no_of_nights_1}
+			tr
+				td 2
+				td.atk-form-row.atk-form-field
+					| {$location_2}
+				td.atk-form-row.atk-form-field
+					| {$hotel_2}
+				td.atk-form-row.atk-form-field
+					| {$checkin_date_2}
+				td.atk-form-row.atk-form-field
+					| {$checkout_date_2}
+				td.atk-form-row.atk-form-field
+					| {$no_of_nights_2}
+			tr
+				td 3
+				td.atk-form-row.atk-form-field
+					| {$location_3}
+				td.atk-form-row.atk-form-field
+					| {$hotel_3}
+				td.atk-form-row.atk-form-field
+					| {$checkin_date_3}
+				td.atk-form-row.atk-form-field
+					| {$checkout_date_3}
+				td.atk-form-row.atk-form-field
+					| {$no_of_nights_3}
+	br
+	.atk-row.atk-form-row
+		.atk-col-2
+			| No Of Adults
+		.atk-col-2
+			| {$no_of_adults}
+	.atk-row.atk-form-row
+		.atk-col-2
+			| No Of Children
+		.atk-col-2
+			| {$no_of_children}
+	.atk-row.atk-form-row
+		.atk-col-2
+			| Voucher No
+		.atk-col-2
+			| {$voucher_no}
+	.atk-row.atk-form-row
+		.atk-col-2
+			| Confirmation Through
+		.atk-col-2
+			| {$confirmation_through}
 	
-
 	|{$Content}

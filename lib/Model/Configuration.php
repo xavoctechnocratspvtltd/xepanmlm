@@ -22,7 +22,7 @@ class Model_Configuration extends \SQL_Model {
 		$this->addField('days_allowed_for_green')->type('int')->defaultValue(45);
 		$this->addField('relations_with_nominee')->type('text')->defaultValue('Father,Mother,Spouse,Sibling,Friend,Son,Daughter');
 
-		$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 
 	}
 }

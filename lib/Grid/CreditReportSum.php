@@ -7,7 +7,16 @@ class Grid_CreditReportSum extends \Grid {
 	public $from_date=array();
 	public $to_date=array();
 
-	function updateGrandTotals()
+
+    function format_totals_name($f){
+        $this->current_row_html[$f]="Total";
+    }
+
+    function format_name($f){
+
+    }
+
+    function updateGrandTotals()
     {
         // get model
         $m = clone $this->getIterator();

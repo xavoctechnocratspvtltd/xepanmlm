@@ -216,15 +216,17 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	}
 
 	function page_inout(){
+		$this->template->loadTemplate('view/page/payoutinout');
 		$distributer=$this->add('xMLM/Model_Distributor');
-		$form=$this->add('Form');
+		$form=$this->add('Form',null,'form');
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		$form->addField('autocomplete/Basic','distributor')->setModel($distributer);
 		$form->addSubmit('Get Report');
 
 		$distributor_model = $this->add('xMLM/Model_Distributor');
-		$fields=array('date','username');
+		$distributor_model->getElement('name')->caption('Distributor Name');
+		$fields=array('date','name'); // I had given username here, client changed it to name
 		$amount_field = array();
 
         $from_date = $this->api->stickyGET('from_date')?:'1970-01-01';
@@ -287,18 +289,23 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	    }
 	    $distributor_model->_dsql()->having($or);
 
+	    $m = clone $distributor_model;
+        $sub_q = $m->_dsql()->del('limit')->del('order')->del('group')->del('having');
+	    
+	    $this->template->set('total_income',$m->sum('total_income')->getOne());
+	    $this->template->set('total_expense',$m->sum('total_expense')->getOne());
 
         if($this->api->stickyGET('distributor')){
         	$distributor_model->addCondition('id',$_GET['distributor']);
         }
 
-		$grid = $this->add('xMLM/Grid_CreditReportSum',array('amount_fields'=>$amount_field, 'from_date'=>$from_date,'to_date'=>$to_date));
+		$grid = $this->add('xMLM/Grid_CreditReportSum',array('amount_fields'=>$amount_field, 'from_date'=>$from_date,'to_date'=>$to_date),'grid');
 
 		$grid->setModel($distributor_model,$fields);
 		$grid->addSno();
 		$grid->addPaginator(20);
 		$grid->addGrandTotals($amount_field);
-
+		$grid->addFormatter('name','name');
 
 		if($form->isSubmitted()){
 			$grid->js()->reload(array(
@@ -323,6 +330,8 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$fund_times = 4;
 
 		$data=array();
+		$grid_data=array();
+
 		foreach ($payouts_list as $pl) {
 
 			$last_payout_date=$this->add('xMLM/Model_Payout');
@@ -330,6 +339,16 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 			$last_payout_date->setOrder('on_date','desc');
 
 			$last_closing_date=$last_payout_date->tryLoadAny()->get('on_date')?:"1970-01-01";
+
+			// Total Revenue 
+			$total_revenue = $this->add('xMLM/Model_Kit');
+			$dist_join = $total_revenue->join('xmlm_distributors.kit_item_id');
+			$dist_join->addField('greened_on');
+			// $total_revenue->addField('sale_price');
+
+			$total_revenue = $total_revenue->addCondition('greened_on','<=',$pl['on_date'])
+					->addCondition('greened_on',">",$last_closing_date)
+					->sum('sale_price')->getOne();
 			
 			// Total Joining Fund 
 			$total_binay_fund = $this->add('xMLM/Model_Kit');
@@ -382,12 +401,21 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 
 
 
+			$data[] = array('series'=>"Total Revenue",'fund'=>$pl['on_date'],'payout'=>$total_revenue);
 
 			$data[] = array('series'=>"Total Joining Fund",'fund'=>$pl['on_date'],'payout'=>$total_binay_fund + $total_intro_fund);
 			$data[] = array('series'=>"Total Payouts",'fund'=>$pl['on_date'],'payout'=>($exp - $admin_charge));
 			
 			$data[] = array('series'=>"Closing Fund",'fund'=>$pl['on_date'],'payout'=> $closing_binay_fund +  $closing_intro_fund);
 			$data[] = array('series'=>"Closing Payouts",'fund'=>$pl['on_date'],'payout'=>($closing_total_out - $closing_admin_charge));
+
+			$grid_data[]= array(
+					'closing_date'=>$pl['on_date'],
+					'total_joining_fund'=>$total_binay_fund + $total_intro_fund,
+					'total_payouts' => ($exp - $admin_charge),
+					'closing_fund' => $closing_binay_fund +  $closing_intro_fund,
+					'closing_payouts' => ($closing_total_out - $closing_admin_charge)
+					);
 
 		}
 
@@ -410,24 +438,16 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		;
 
 
-		// Structure Packing
-		$data =array();
-		$data[]=array('fund'=>'xx','payout'=>20);
-		$data[]=array('fund'=>'yy','payout'=>80);
+		$this->add('View')->set("Tabular Records");
+		$grid = $this->add('Grid');
+		
+		$grid->addColumn('closing_date');
+		$grid->addColumn('total_joining_fund');
+		$grid->addColumn('total_payouts');
+		$grid->addColumn('closing_fund');
+		$grid->addColumn('closing_payouts');
 
-		$chart=$this->add('chart/Chart');
-		foreach($data as $dt) {
-			$y=$chart->addLineData("aa",$dt['fund'],(int)$dt['payout']);
-		}
-
-		$chart
-		->setXAxisTitle('Packing Data')
-		// ->setXAxis($xaxis)
-		->setYAxisTitle('Cumulative')
-		->setTitle('Structure Identicalness',null,'Cumulative Analysis')
-		->setChartType('pie')
-		;
-
+		$grid->setSource($grid_data);
 
 
 	}

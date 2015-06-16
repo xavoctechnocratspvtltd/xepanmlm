@@ -108,7 +108,7 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 		$distributor=$this->add('xMLM/Model_Distributor');
 		$distributor->getElement('name')->caption('Distributor Name');
 		$distributor->getElement('greened_on')->caption('Qualified Date');
-		$crud = $this->add('CRUD',array('grid_class'=>'xMLM/Grid_Distributor','allow_add'=>false,'allow_edit'=>false,'allow_del'=>false));		
+		$crud = $this->add('CRUD',array('grid_class'=>'xMLM/Grid_Distributor','allow_add'=>true,'allow_edit'=>false,'allow_del'=>false));		
 		$crud->setModel($distributor,array('status','name','email','mobile_number','address','sponsor','introducer','username','item_name','created_at','is_active','kit_item','greened_on','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
 		// $crud->add('xHR/Controller_Acl',array('override'=>array('can_view'=>'All')));
 		if(!$crud->isEditing()){
