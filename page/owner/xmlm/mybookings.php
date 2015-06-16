@@ -20,17 +20,16 @@ class page_xMLM_page_owner_xmlm_mybookings extends page_xMLM_page_owner_xmlm_mai
 	}
 	function page_booking(){
 		$booking_model=$this->add('xMLM/Model_Booking');
-		$crud=$this->add('CRUD',array('grid_class'=>'xMLM/Grid_MyBooking'));
-		$crud->setModel($booking_model);
-		// $grid=$this->add('xMLM/Grid_MyBooking');
-		// $a=array(
-		// 	array('from_date_1'=>'06/06/2015','from_date_2'=>'10/06/2015','from_date_2'=>'15/06/2015','to_date_1'=>'10/06/2015','to_date_2'=>'10/06/2015','to_date_3'=>'10/06/2015','destination_1'=>'Udaipur','destination_2'=>'Udaipur','destination_3'=>'Udaipur','adults_1'=>'2','adults_2'=>'2','adults_3'=>'2','children_1'=>'3','children_2'=>'3','children_3'=>'3','status_1'=>'rejected','status_2'=>'availed','status_3'=>'rejected'),
-		// 	array('from_date_1'=>'06/06/2015','from_date_2'=>'10/06/2015','from_date_2'=>'15/06/2015','to_date_1'=>'10/06/2015','to_date_2'=>'10/06/2015','to_date_3'=>'10/06/2015','destination_1'=>'Udaipur','destination_2'=>'Udaipur','destination_3'=>'Udaipur','adults_1'=>'2','adults_2'=>'2','adults_3'=>'2','children_1'=>'3','children_2'=>'3','children_3'=>'3','status_1'=>'rejected','status_2'=>'rejected','status_3'=>'rejected'),
-		// 	array('from_date_1'=>'06/06/2015','from_date_2'=>'10/06/2015','from_date_2'=>'15/06/2015','to_date_1'=>'10/06/2015','to_date_2'=>'10/06/2015','to_date_3'=>'10/06/2015','destination_1'=>'Udaipur','destination_2'=>'Udaipur','destination_3'=>'Udaipur','adults_1'=>'2','adults_2'=>'2','adults_3'=>'2','children_1'=>'3','children_2'=>'3','children_3'=>'3','status_1'=>'rejected','status_2'=>'rejected','status_3'=>'rejected'),
-		// 	array('from_date_1'=>'06/06/2015','from_date_2'=>'10/06/2015','from_date_2'=>'15/06/2015','to_date_1'=>'10/06/2015','to_date_2'=>'10/06/2015','to_date_3'=>'10/06/2015','destination_1'=>'Udaipur','destination_2'=>'Udaipur','destination_3'=>'Udaipur','adults_1'=>'2','adults_2'=>'2','adults_3'=>'2','children_1'=>'3','children_2'=>'3','children_3'=>'3','status_1'=>'rejected','status_2'=>'rejected','status_3'=>'rejected'),
-		// 	);
+		$grid=$this->add('xMLM/Grid_MyBooking');
+		$grid->setModel($booking_model);
+		
+		$order = $grid->addOrder();
+		// $order->move('status','after','no_of_childern');
+		$order->move('status','after','no_of_childern');
+		$order->move('booking_through','after','voucher_no');
+		$order->now();
 
-		// $grid->setSource($a);
+		$booking_model->setOrder('id','desc');
 
 	}
 
@@ -43,12 +42,31 @@ class page_xMLM_page_owner_xmlm_mybookings extends page_xMLM_page_owner_xmlm_mai
 		$form->addField('Readonly','distributor_name')->set($distributor['name']);
 		$form->addField('line','booking_in_name_of')->set($distributor['name']);
 
+		$location = $this->add('xMLM/Model_Location');
+
 		for($i=1;$i<=3;$i++){
-			$form->addField('line','location_'.$i)->validateNotNull();
-			$form->addField('line','hotel_'.$i)->validateNotNull();
-			$form->addField('line','checkin_date_'.$i)->validateNotNull();
-			$form->addField('line','checkout_date_'.$i)->validateNotNull();
-			$form->addField('line','no_of_nights_'.$i)->validateNotNull();
+			$location_fileds = $form->addField('DropDownNormal','location_'.$i)->setEmptyText('Please Select Location')->validateNotNull(true);
+			$location_fileds->setModel($location);
+
+			$property = $this->add('xMLM/Model_Property');
+			if($this->api->StickyGET('location_'.$i)){
+				$property->addCondition('location_id',$_GET['location_'.$i]);
+			}
+
+			$hotel_field = $form->addField('DropDownNormal','hotel_'.$i)->setEmptyText('Please Select Hotel')->validateNotNull();
+			$hotel_field->setModel($property);
+		
+			$chekin_filed = $form->addField('DatePicker','checkin_date_'.$i)->validateNotNull();
+
+			$checkout_filed = $form->addField('DatePicker','checkout_date_'.$i)->validateNotNull();
+
+			$no_of_night_filed = $form->addField('line','no_of_nights_'.$i)->validateNotNull();
+
+			// $location_fileds->js('change',$form->js()->atk4_form('reloadField','hotel_'.$i,array($this->api->url(),'location_'.$i=>$location_fileds->js()->val())));
+			// $location_fileds->js('change',$form->js()->atk4_form('reloadField',$chekin_filed,array($this->api->url(),'location_selected'=>$location_fileds->js()->val())));
+			// $location_fileds->js('change',$form->js()->atk4_form('reloadField',$checkout_filed,array($this->api->url(),'location_selected'=>$location_fileds->js()->val())));
+			// $location_fileds->js('change',$form->js()->atk4_form('reloadField',$no_of_night_filed,array($this->api->url(),'location_selected'=>$location_fileds->js()->val())));
+
 		}
 
 		$form->addField('line','no_of_adults');
@@ -57,9 +75,31 @@ class page_xMLM_page_owner_xmlm_mybookings extends page_xMLM_page_owner_xmlm_mai
 		$form->addField('line','confirmation_through');
 
 		$form->addSubmit('Submit');
+		
+		
 		if($form->isSubmitted()){
-			$form->error('booking_in_name_of','Hello');
-			$form->js()->univ()->errorMessage('Value Not Proper')->execute();
+			
+			for ($i=1; $i <=3 ; $i++) { 
+				$booking=$this->add('xMLM/Model_Booking');
+				
+
+				$booking['distributor_id'] = $distributor->id;
+				$booking['property_id'] = $form['hotel_'.$i];
+				$booking['check_in_date']=$form['checkin_date_'.$i];
+				$booking['check_out_date']=$form['checkout_date_'.$i];
+				$booking['no_of_nights']=$form['no_of_nights_'.$i];
+
+				$booking['no_of_adults']= $form['no_of_adults'];
+
+				$booking['no_of_childern'] = $form['no_of_children'];
+				$booking['voucher_no'] = $form['voucher_no'];
+				$booking['booking_through'] = $form['confirmation_through'];
+
+				$booking->save();
+			}
+
+			$form->js(null,$form->js()->reload()->univ()->successMessage(' Update Information'))->execute();
+			// $form->js()->univ()->errorMessage('Value Not Proper')->execute();
 		}
 	}	
 }

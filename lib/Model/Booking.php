@@ -13,9 +13,9 @@ class Model_Booking extends \Model_Document{
 		$this->addField('name')->caption('Booking in Name of');
 		$this->addField('check_in_date')->type('date');
 		$this->addField('check_out_date')->type('date');
-		$this->addField('no_of_nights')->type('money');
-		$this->addField('no_of_adults')->type('money');
-		$this->addField('no_of_childern')->type('money');
+		$this->addField('no_of_nights');
+		$this->addField('no_of_adults');
+		$this->addField('no_of_childern');
 		$this->getElement('status')->defaultValue('request');
 		$this->addField('voucher_no')->type('text');
 
