@@ -208,14 +208,99 @@ class Model_Payout extends \SQL_Model {
 
 			$this->query($q);
 		
-			// get Active Royalty
+			// get Active Royalty : use temp
+			// equal distribution / ratio distribution
+			// zero temp
+			$self_buiness_4_active_royalty = $config['self_buiness_4_active_royalty'];
+			$active_royalty_percentage = $config['active_royalty_percentage'];
+
+			$root = $this->add('xMLM/Model_Distributor');
+			$root->addCondition('path','0')->loadAny();
+
+			$total_monthly_company_bv = $root['session_self_bv'] + $root['session_left_bv'] + $root['session_right_bv'];
+			$total_active_fund = $total_monthly_company_bv * $config['active_royalty_percentage'] / 100;
+
+			$heighest_slab = $this->add('xMLM/Model_BVSlab')->setOrder('name','desc')->tryLoadAny()->get('name');
+
 			$q="
-				TODO THERE	
+				UPDATE
+					xmlm_payouts p
+				JOIN
+					xmlm_distributors d ON p.distributor_id = d.id
+				SET
+					generation_active_royalty_income = (p.session_self_bv / $total_monthly_company_bv) * $total_active_fund
+				WHERE
+					on_date = '$on_date'
+					AND
+					p.session_self_bv >= $self_buiness_4_active_royalty
+
+					AND /* self is on heighest slab */
+					p.generation_level = $heighest_slab
+
+					AND /* left distributir is on heighest slab */
+					(SELECT lft_p.generation_level FROM xmlm_payouts lft_p JOIN xmlm_distributors lft_d ON lft_d.id = d.left_id) = $heighest_slab
+
+					AND /* right distributir is on heighest slab */
+					(SELECT rgt_p.generation_level FROM xmlm_payouts rgt_p JOIN xmlm_distributors rgt_d ON rgt_d.id = d.right_id) = $heighest_slab
 			";
 
 			$this->query($q);
 
 			// get Royalty exclude active royalty achievers
+			$this->query("UPDATE xmlm_distributors SET temp=0");
+			$q="
+				UPDATE
+					xmlm_payouts p
+				JOIN
+					xmlm_distributors d ON p.distributor_id = d.id
+				SET
+					temp = 1 
+				WHERE
+					on_date = '$on_date'
+					AND
+					p.session_self_bv < $self_buiness_4_active_royalty
+
+					AND /* self is on heighest slab */
+					p.generation_level = $heighest_slab
+
+					AND /* left distributir is on heighest slab */
+					(SELECT lft_p.generation_level FROM xmlm_payouts lft_p JOIN xmlm_distributors lft_d ON lft_d.id = d.left_id) = $heighest_slab
+
+					AND /* right distributir is on heighest slab */
+					(SELECT rgt_p.generation_level FROM xmlm_payouts rgt_p JOIN xmlm_distributors rgt_d ON rgt_d.id = d.right_id) = $heighest_slab
+			";
+			
+			$this->query($q);
+
+			$royalty_percentage = $config['royalty_percentage'];			
+			$royalty_fund = $total_monthly_company_bv * $royalty_percentage;
+			$total_sharers = $this->add('xMLM/Model_Payout')->addCondition('on_date',$on_date)->addCondition('temp',1)->count()->getOne();
+			$per_person_royalty = $royalty_fund / $total_sharers;
+
+			$q="
+				UPDATE
+					xmlm_payouts p
+				JOIN
+					xmlm_distributors d ON p.distributor_id = d.id
+				SET
+					generation_royalty_income = $per_person_royalty 
+				WHERE
+					on_date = '$on_date'
+					AND
+					p.session_self_bv < $self_buiness_4_active_royalty
+
+					AND /* self is on heighest slab */
+					p.generation_level = $heighest_slab
+
+					AND /* left distributir is on heighest slab */
+					(SELECT lft_p.generation_level FROM xmlm_payouts lft_p JOIN xmlm_distributors lft_d ON lft_d.id = d.left_id) = $heighest_slab
+
+					AND /* right distributir is on heighest slab */
+					(SELECT rgt_p.generation_level FROM xmlm_payouts rgt_p JOIN xmlm_distributors rgt_d ON rgt_d.id = d.right_id) = $heighest_slab
+			";
+			
+			$this->query($q);
+
 
 		} // END OF PAY GENERATION INCOME
 
@@ -233,7 +318,7 @@ class Model_Payout extends \SQL_Model {
 		$this->query($q);
 
 		// set carried amounts for minimum_payouts and red entries 
-				// Put all back to carried_amountif you are still red
+				// Put all back to carried_amount if you are still red
 		// in payouts as well as store it in distributors
 		$q="
 			UPDATE 
@@ -289,18 +374,18 @@ class Model_Payout extends \SQL_Model {
 		
 		if($pay_generation){
 			// set session fields zero
-			// $q="
-			// 	UPDATE 
-			// 		xmlm_distributors
-			// 	SET
-			// 		session_left_bv=0,
-			// 		session_right_bv=0,
-			// 		session_self_bv=0
-			// ";
-			// $this->query($q);
+			$q="
+				UPDATE 
+					xmlm_distributors
+				SET
+					session_left_bv=0,
+					session_right_bv=0,
+					session_self_bv=0
+			";
+			$this->query($q);
 		}
 
-		// Remove all non Effected Distributors 
+		// Remove all non Effected Distributors
 		$q="
 			DELETE FROM xmlm_payouts
 			WHERE
