@@ -82,7 +82,7 @@ class page_xMLM_page_tests_joining extends page_xMLM_page_tests_base {
     //     $root_dist->login();
 
     //     $standard_kit = $this->add('xMLM/Model_Kit')->loadBy('name','Standard Kit');
-    //     $gold_kit = $this->add('xMLM/Model_Kit')->loadBy('name','Gold');
+    //     $gold_kit = $this->add('xMLM/Model_Kit')->loadBy('name','Gold Kit');
 
     //     $j0a = $this->newJoining($root_dist, 'A', $root_dist, $standard_kit);
     //     $j0ab =$this->newJoining($j0a, 'B', $j0a, 'free');
@@ -114,8 +114,8 @@ class page_xMLM_page_tests_joining extends page_xMLM_page_tests_base {
     //     $payout->generatePayout('2015-05-05',false);
     //     $this->proper_responses['Test_firstClosing'] = array(
     //             'root'=>array('session_left_pv'=>0,'session_right_pv'=>1500,'net_amount'=>840,'carried_amount'=>0),
-    //             '0a'=>array('session_left_pv'=>0,'session_right_pv'=>500, 'net_amount'=>0,'carried_amount'=>200),
-    //             '0b'=>array('session_left_pv'=>2500,'session_right_pv'=>0, 'net_amount'=>0,'carried_amount'=>1000),
+    //             '___0a'=>array('session_left_pv'=>0,'session_right_pv'=>500, 'net_amount'=>0,'carried_amount'=>200),
+    //             '___0b'=>array('session_left_pv'=>2500,'session_right_pv'=>0, 'net_amount'=>0,'carried_amount'=>1000),
     //             );
     //     return null;
     // }
@@ -149,15 +149,15 @@ class page_xMLM_page_tests_joining extends page_xMLM_page_tests_base {
     //     $root_dist = $this->joining('root');
         
     //     $standard_kit = $this->add('xMLM/Model_Kit')->loadBy('name','Standard Kit');
-    //     $gold_kit = $this->add('xMLM/Model_Kit')->loadBy('name','Gold');
+    //     $gold_kit = $this->add('xMLM/Model_Kit')->loadBy('name','Gold Kit');
 
-    //     $j0b = $this->joining('0b');
+    //     $j0b = $this->joining('___0b');
 
     //     $j0abb =$this->newJoining($j0b, 'B', $j0b, 'free');
     //     $j0abb['kit_item_id'] = $standard_kit->id;
     //     $j0abb->save();
 
-    //     $j0aa = $this->newJoining($this->joining('0a'),'A',$root_dist,$gold_kit);
+    //     $j0aa = $this->newJoining($this->joining('___0a'),'A',$root_dist,$gold_kit);
 
     //     return array(
     //             'total_distributors'=>$this->add('xMLM/Model_Distributor')->count()->getOne(),
@@ -174,8 +174,8 @@ class page_xMLM_page_tests_joining extends page_xMLM_page_tests_base {
     //     $payout->generatePayout('2015-05-06',false);
     //     $this->proper_responses['Test_secondClosing'] = array(
     //             'root'=>array('session_left_pv'=>0,'session_right_pv'=>1500,'net_amount'=>840,'carried_amount'=>0),
-    //             '0a'=>array('session_left_pv'=>0,'session_right_pv'=>500, 'net_amount'=>0,'carried_amount'=>200),
-    //             '0b'=>array('session_left_pv'=>2500,'session_right_pv'=>0, 'net_amount'=>0,'carried_amount'=>1000),
+    //             '___0a'=>array('session_left_pv'=>0,'session_right_pv'=>500, 'net_amount'=>0,'carried_amount'=>200),
+    //             '___0b'=>array('session_left_pv'=>2500,'session_right_pv'=>0, 'net_amount'=>0,'carried_amount'=>1000),
     //             );
     //     return null;
     // }

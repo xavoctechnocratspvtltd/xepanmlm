@@ -17,10 +17,13 @@ class page_xMLM_page_owner_xmlm_profile extends page_xMLM_page_owner_xmlm_main{
 		$distributor->getElement('introducer_id')->display(array('form'=>'Readonly'))->group('top~3');
 		$distributor->getElement('kit_item_id')->display(array('form'=>'Readonly'))->group('top~3');
 		$distributor->getElement('Leg')->display(array('form'=>'Readonly'))->group('top~3');
+		$distributor->getElement('kyc_no')->display(array('form'=>'Readonly'));
+		if($distributor['kyc_id'])
+			$distributor->getElement('kyc_id')->display(array('form'=>'Readonly'));
 
 		$form=$container->add('Form_Stacked');
 		// $form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','name','email','mobile_number','pan_no','address','username','password','re_password','name_of_bank','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age'));
-		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','address','pin_code','state_id','district_id','username','password','bank_id','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age','nominee_email'));
+		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','address','pin_code','state_id','district_id','username','password','bank_id','IFCS_Code','nominee_name','account_no','branch_name','relation_with_nominee','nominee_age','nominee_email','kyc_no','kyc_id'));
 		$form->addField('password','re_password')->setterGetter('group','b~4');
 		$form->add('Order')
 			->move('re_password','after','password')

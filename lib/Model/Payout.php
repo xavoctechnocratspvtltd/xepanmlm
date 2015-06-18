@@ -32,9 +32,9 @@ class Model_Payout extends \SQL_Model {
 
 		$this->addField('pair_income')->type('int')->defaultValue(0);
 		$this->addField('introduction_income')->type('int')->defaultValue(0);
-		$this->addField('generation_difference_income')->type('int')->defaultValue(0);
-		$this->addField('generation_royalty_income')->type('int')->defaultValue(0);
-		$this->addField('generation_active_royalty_income')->type('int')->defaultValue(0);
+		$this->addField('generation_difference_income')->type('int')->defaultValue(0)->caption('Gen. Diff. Income');
+		$this->addField('generation_royalty_income')->type('int')->defaultValue(0)->caption('Gen. Royalty');
+		$this->addField('generation_active_royalty_income')->type('int')->defaultValue(0)->caption('Gen. Active Royalty');
 		$this->addField('bonus')->type('int')->defaultValue(0);
 
 		$this->addExpression('total_pay')->set('introduction_income+pair_income+generation_difference_income+bonus+previous_carried_amount')->caption('Total Income');
@@ -114,7 +114,7 @@ class Model_Payout extends \SQL_Model {
 		$q="
 			INSERT INTO xmlm_payouts
 						(id,distributor_id,session_left_pv,session_right_pv, pairs,pair_income, tds,admin_charge,net_amount,bonus,previous_carried_amount, on_date,  session_self_bv, session_left_bv, session_right_bv,session_business_volume,generation_level,generation_gross_amount,introduction_income,generation_difference_income,generation_royalty_income, generation_active_royalty_income, other_deduction_name,other_deduction,session_carried_left_pv,session_carried_right_pv)
-				SELECT 	  0,     id,       session_left_pv,session_right_pv,   0,         0,      0,      0,           0,     0,     carried_amount,       '$on_date',session_self_bv, session_left_bv, session_right_bv,            0,                  0,                    0,        session_intros_amount,             0,                     ,          0,                  0,                          '',                   0,                 0,                      0 FROM xmlm_distributors
+				SELECT 	  0,     id,       session_left_pv,session_right_pv,   0,         0,      0,      0,           0,     0,     carried_amount,       '$on_date',session_self_bv, session_left_bv, session_right_bv,            0,                  0,                    0,        session_intros_amount,             0,                               0,                  0,                          '',                   0,                 0,                      0 FROM xmlm_distributors
 		";
 		$this->query($q);
 

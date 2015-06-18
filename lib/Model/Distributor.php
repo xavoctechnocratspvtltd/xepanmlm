@@ -246,13 +246,17 @@ class Model_Distributor extends \Model_Document {
 
 		if(!isset($this->api->deleted_distributor)) $this->api->deleted_distributor =array();
 		if(in_array($this->id, $this->api->deleted_distributor)) return;
-		$this->api->deleted_distributor[]  = $this->id;
 
 
 		$this->add('xMLM/Model_CreditMovement')->addCondition('joined_distributor_id',$this->id)
 			->each(function($obj){
 				$obj->forceDelete();
 			});
+
+		$this->add('xMLM/Model_FormAllot')
+			->addCondition('distributor_id',$this->id)
+			->deleteAll();
+
 
 		$this->creditMovements()->each(function ($obj){
 			$obj->forceDelete();
@@ -309,6 +313,7 @@ class Model_Distributor extends \Model_Document {
 
 		$this->add('xShop/Model_Customer')->load($this['customer_id'])->forceDelete();
 		$this->delete();
+		$this->api->deleted_distributor[]  = $this->id;
 	}
 
 	function welcomeDistributor(){

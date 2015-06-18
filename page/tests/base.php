@@ -21,7 +21,7 @@ class page_xMLM_page_tests_base extends Page_Tester{
 		if($kit !=='free')
 			$dist['kit_item_id'] = $kit->id;
 
-		$dist['first_name'] = $dist['username'] = $username?:strtolower($sponsor['path'] . $leg);
+		$dist['first_name'] = $dist['username'] = $username?:'___'.strtolower($sponsor['path'] . $leg);
 		$dist['password'] = $password;
 		$dist['re_password'] = $password;
 		$dist['email'] = $dist['username'].'@nebulavcations.com';

@@ -50,7 +50,6 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		$form->getElement('sponsor_id')->getModel()->addCondition($this->api->db->dsql()->orExpr()->where('left_id',null)->where('right_id',null));
 		
 		if($form->isSubmitted()){
-			$form->error('sponsor_id','Oops');
 			if($form['password']!=$form['re_password'])
 				$form->error('password','Password Must Match');
 			$form->save();
