@@ -79,6 +79,7 @@ class page_xMLM_page_tests_base extends Page_Tester{
             // echo "Saving root";
             
             // Admin has rights to entry without having credits ... 
+        	$this->add('xMLM/Model_FormAllot')->set(array('from_no'=>1,'to_no'=>1))->save();
 
             $this->api->auth->login($this->add('Model_Users')->getDefaultSuperUser()->get('username'));
             $root_dist['first_name']="Root";
@@ -91,6 +92,7 @@ class page_xMLM_page_tests_base extends Page_Tester{
             $root_dist['kit_item_id']=$gold_kit->id;
             $root_dist['is_active']=true;
             $root_dist['credit_purchase_points']=100000;
+            $root_dist['kyc_no']=1;
             $root_dist->save();
             $root_dist = $this->add('xMLM/Model_Distributor')->loadRoot();
             $this->api->db->dsql()->table('xshop_memberdetails')->where('id',$root_dist['customer_id'])->set('users_id',$root_dist['user_id'])->update();

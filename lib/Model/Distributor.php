@@ -266,13 +266,13 @@ class Model_Distributor extends \Model_Document {
 		$i_m_in_left = $this->add('xMLM/Model_Distributor')->tryLoadBy('left_id',$this->id);
 		if($i_m_in_left->loaded()){
 			$i_m_in_left['left_id']=null;
-			$i_m_in_left->save();
+			$i_m_in_left->saveAndUnload();
 		}
 
 		$i_m_in_right = $this->add('xMLM/Model_Distributor')->tryLoadBy('right_id',$this->id);
 		if($i_m_in_right->loaded()){
 			$i_m_in_right['right_id']=null;
-			$i_m_in_right->save();
+			$i_m_in_right->saveAndUnload();
 		}
 
 		// I am someones Introducer
@@ -280,6 +280,13 @@ class Model_Distributor extends \Model_Document {
 		foreach ($i_am_intro as $intros) {
 			$intros['introducer_id']=null;
 			$intros->saveAndUnload();
+		}
+
+		// I am someones Sponsor as well
+		$i_am_spn =  $this->add('xMLM/Model_Distributor')->addCondition('sponsor_id',$this->id);
+		foreach ($i_am_spn as $spn) {
+			$spn['sponsor_id']=null;
+			$spn->saveAndUnload();
 		}
 
 		
@@ -292,17 +299,20 @@ class Model_Distributor extends \Model_Document {
 		$this['right_id'] = null;
 		$this['greened_on']=null;
 		try{
-			$this->save();
+			if($this->loaded()) 
+				$dist = $this->saveAs('xMLM/Model_Distributor');
+			else
+				return;
 		}catch(\Exception $e){
 			// echo $this->id;
 			throw $e;
 		}
 			
-		$this->add('xMLM/Model_Distributor')->addCondition('path','like',$this['path'].'A%')
+		$dist->add('xMLM/Model_Distributor')->addCondition('path','like',$this['path'].'A%')
 				->each(function($obj){
 					$obj->forceDelete();
 				});
-		$this->add('xMLM/Model_Distributor')->addCondition('path','like',$this['path'].'B%')
+		$dist->add('xMLM/Model_Distributor')->addCondition('path','like',$this['path'].'B%')
 				->each(function($obj){
 					$obj->forceDelete();
 				});
@@ -311,9 +321,9 @@ class Model_Distributor extends \Model_Document {
 		// if($this['introducer_id']) $this->newInstance()->tryLoad($this['introducer_id'])->forceDelete();
 
 
-		$this->add('xShop/Model_Customer')->load($this['customer_id'])->forceDelete();
-		$this->delete();
-		$this->api->deleted_distributor[]  = $this->id;
+		$this->add('xShop/Model_Customer')->load($dist['customer_id'])->forceDelete();
+		$dist->delete();
+		$dist->api->deleted_distributor[]  = $dist->id;
 	}
 
 	function welcomeDistributor(){

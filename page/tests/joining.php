@@ -6,7 +6,7 @@ class page_xMLM_page_tests_joining extends page_xMLM_page_tests_base {
     public $proper_responses=array(
         "Test_empty"=>'',
         "Test_configTest"=>array('admin_charge'=>10,'other_charge'=>null,'tail_pv'=>500,'minimum_payout_amount'=>500,'include_generation'=>0),
-        'Test_rootCheck'=>array(/*'root_id'=>7,'root_user_id'=>38,*/'session_left_pv'=>0,'session_right_pv'=>0,'session_left_bv'=>0,'session_right_bv'=>0, 'session_self_bv'=>0, 'total_left_pv'=>0,'total_right_pv'=>0,'carried_amount'=>0,'credit_purchase_points'=>100000,'total_intros_amount'=>0,'activities_count'=>0),
+        'Test_rootCheck'=>array(/*'root_id'=>7,'root_user_id'=>38,*/'session_left_pv'=>0,'session_right_pv'=>0,'session_left_bv'=>0,'session_right_bv'=>0, 'session_self_bv'=>0, 'total_left_pv'=>0,'total_right_pv'=>0,'carried_amount'=>0,'credit_purchase_points'=>100000,'total_intros_amount'=>0,'activities_count'=>0,'kyc_no'=>1),
         'Test_fundAvailability'=>array(),
     );
 
@@ -56,6 +56,7 @@ class page_xMLM_page_tests_joining extends page_xMLM_page_tests_base {
                 'credit_purchase_points' => round($root_dist['credit_purchase_points'],0),
                 'total_intros_amount' => round($root_dist['total_intros_amount'],0),
                 'activities_count' => $this->api->db->dsql()->table('xcrm_document_activities')->field('count(*)')->getOne(),
+                'kyc_no' => $root_dist['kyc_no']
                 );
     }
 
