@@ -2,7 +2,7 @@
 namespace xMLM;
 class Model_Location extends \Model_Document{
 	public $table="xmlm_localtions";
-	public $status=array('request','approved','rejected','availed','canceled');
+	public $status=array();
 	public $root_document_name="xMLM\Locations";
 	function init(){
 		parent::init();

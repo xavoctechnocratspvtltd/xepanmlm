@@ -15,6 +15,7 @@ class page_xMLM_page_owner_forms extends page_xMLM_page_owner_main {
 
 		$crud->setModel($forms_alloted,array('created_at','distributor_id','from_no','to_no'),array('created_at','distributor','from_no','to_no'));
 
+		$crud->add('xHR/Controller_Acl');
 
 	}
 

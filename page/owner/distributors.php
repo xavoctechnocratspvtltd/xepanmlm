@@ -106,15 +106,21 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 		$exp = $v->add('xMLM/Controller_Export',array('output_filename'=>'All_Distributors_'.date('l jS \of F Y h:i:s A').'.csv','model'=>$export_model,'fields'=>array('name','email','mobile_number','address','sponsor','introducer','left','right','kit_item','username','created_at','greened_on','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount')));
 		$exp->btn->addClass('atk-box atk-swatch-yellow');
 		$distributor=$this->add('xMLM/Model_Distributor');
+
+		$distributor->actions=array('allow_add'=>false,'allow_edit'=>array(),'allow_del'=>false);
+
 		$distributor->getElement('name')->caption('Distributor Name');
 		$distributor->getElement('greened_on')->caption('Qualified Date');
-		$crud = $this->add('CRUD',array('grid_class'=>'xMLM/Grid_Distributor','allow_add'=>true,'allow_edit'=>false,'allow_del'=>false));		
-		$crud->setModel($distributor,array('status','name','email','mobile_number','address','sponsor','introducer','username','item_name','created_at','is_active','kit_item','greened_on','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
+		$crud = $this->add('CRUD',array('grid_class'=>'xMLM/Grid_Distributor'));
+
+		$crud->setModel($distributor,array('first_name','last_name','email','mobile_number','address','is_active'),array('status','name','email','mobile_number','address','sponsor','introducer','username','item_name','created_at','is_active','kit_item','greened_on','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
 		// $crud->add('xHR/Controller_Acl',array('override'=>array('can_view'=>'All')));
 		if(!$crud->isEditing()){
 			// $crud->grid->add('misc/Export');
 			$crud->grid->addPaginator(25);
 			$crud->grid->addQuickSearch(array('name','sponsor','introducer','username','mobile_number','email'),null,'xMLM/Filter_Distributor');
 		}
+
+		$crud->add('xHR/Controller_Acl');
 	}
 }

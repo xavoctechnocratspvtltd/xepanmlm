@@ -46,7 +46,7 @@ class Model_Distributor extends \Model_Document {
 		$customer_j->addField('member_epan_id','epan_id')->system(true);
 		$this->addCondition('member_epan_id',$this->api->current_website->id);
 
-		$this->addField('pan_no')->group('a~4');
+		$this->addField('pan_no')->group('a~4')->display(array('form'=>'xMLM/PanNumber'));
 		// $customer_j->addField('address')->type('text')->group('a~12')->system(true);
 			
 			// $this->addField('block_no')->group('a~4');
@@ -76,9 +76,9 @@ class Model_Distributor extends \Model_Document {
 		$this->addField('last_password_change')->type('datetime')->system(true)->defaultValue(null);
 
 		$this->hasOne('xMLM/Bank','bank_id')->group('e~6~Bank Info')->mandatory(true);//->system(true);
+		$this->addField('account_no')->group('e~6~bl')->mandatory(true)->display(array('form'=>'xMLM/Number'));//->system(true);
 		
-		$this->addField('IFCS_Code')->group('e~6~bl')->mandatory(true);//->system(true);
-		$this->addField('account_no')->group('e~6')->mandatory(true)->display(array('form'=>'xMLM/Number'));//->system(true);
+		$this->addField('IFCS_Code')->group('e~6')->mandatory(true);//->system(true);
 		$this->addField('branch_name')->caption('Branch')->group('e~6~bl')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
 		$this->addField('kyc_no')->group('kyc~6~Kyc Information')->mandatory(true);
 		$this->add('filestore/Field_Image','kyc_id')->group('kyc~6')->caption('KYC Form');
@@ -166,8 +166,8 @@ class Model_Distributor extends \Model_Document {
 		$alloted_kyc_check->addCondition('to_no','>=',$this['kyc_no']);
 		$alloted_kyc_check->tryLoadANy();
 
-		if($this['kyc_no'] and !$alloted_kyc_check->loaded())
-			throw $this->exception('Form is not alloted','ValidityCheck')->setField('kyc_no');
+		if($this['kyc_no'] and !$alloted_kyc_check->loaded() and !isset($this->forceDelete))
+			throw $this->exception($this['id'].' Form is not alloted','ValidityCheck')->setField('kyc_no');
 
 		// Check Used KYC No
 		$used_kyc_check = $this->add('xMLM/Model_Distributor');
@@ -176,7 +176,8 @@ class Model_Distributor extends \Model_Document {
 			$used_kyc_check->addCondition('id','<>',$this->id);
 
 		$used_kyc_check->tryLoadAny();
-		if($this['kyc_no'] and $used_kyc_check->loaded())
+
+		if($this['kyc_no'] and $used_kyc_check->loaded() )
 			throw $this->exception('KYC No is already used','ValidityCheck')->setField('kyc_no');
 		
 
@@ -184,7 +185,7 @@ class Model_Distributor extends \Model_Document {
 		// $this['address'] = "Block No ". $this['block_no'] .", Building No ". $this['building_no']. ", ". $this['landmark'] . ', PIN-'. $this['pin_code'];
 
 		// Check For available purchase points
-		if($this->dirty['kit_item_id'] AND $this['kit_item_id'] !==""){
+		if($this->dirty['kit_item_id'] AND $this['kit_item_id'] !=""){
 			$kit=$this->kit();
 			if($kit AND !$this->validateKitPurchasePoints($this->kit())){
 				throw $this->exception($this->id.' :: You do not have sufficient credits','Growl');
@@ -247,6 +248,11 @@ class Model_Distributor extends \Model_Document {
 		if(!isset($this->api->deleted_distributor)) $this->api->deleted_distributor =array();
 		if(in_array($this->id, $this->api->deleted_distributor)) return;
 
+		$this->forceDelete = true;
+
+		$this->ref('xMLM/Booking','model')->each(function($obj){
+			$obj->delete();
+		});
 
 		$this->add('xMLM/Model_CreditMovement')->addCondition('joined_distributor_id',$this->id)
 			->each(function($obj){

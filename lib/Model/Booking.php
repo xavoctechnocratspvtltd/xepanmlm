@@ -4,6 +4,11 @@ class Model_Booking extends \Model_Document{
 	public $table="xmlm_booking";
 	public $status=array('request','approved','rejected','availed','canceled');
 	public $root_document_name="xMLM\Booking";
+
+	public $actions=array(
+		'can_manage_attachments'=>false,
+		);
+
 	function init(){
 		parent::init();
 
@@ -29,19 +34,49 @@ class Model_Booking extends \Model_Document{
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function approve(){
 
+	function approve_page($page){
+		$form =$page->add('Form');
+		$form->addField('text','remark');
+		$form->addSubmit('Approve');
+
+		if($form->isSubmitted()){
+			$distributor = $this->ref('distributor_id');
+			$this->approve($form['remark']);
+			$distributor->ref('xMLM/Booking')->addCondition('status','request')->each(function($obj){
+				$obj->reject();
+			});
+			return true;
+		}
+	}
+
+	function approve($remark){
+		$this->setStatus('approved',$remark);
 	}
 
 	function cancel(){
-
+		$this->setStatus('canceled');
 	}
 
 	function reject(){
-
+		$this->setStatus('rejected');
 	}
 	
-	function mark_processed(){
+	// Availed
+	function mark_processed_page($page){
+		$form =$page->add('Form');
+		$form->addField('text','remark');
+		$form->addSubmit('Availed');
 
+		if($form->isSubmitted()){
+			$this->availed($form['remark']);
+			return true;
+		}
+
+
+	}
+
+	function availed($remark){
+		$this->setStatus('availed',$remark);
 	}
 }

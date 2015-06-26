@@ -9,6 +9,13 @@ class Model_FormAllot extends \Model_Document
 	public $table="xmlm_formallots";
 	public $status=array();
 	public $root_document_name='xMLM\FormAllot';
+
+	public $actions =array(
+		'can_manage_attachments' => false,
+		'allow_add'=>array(),
+		'allow_edit'=>array(),
+		'allow_del'=>array(),
+		);
 	/**
 	 * init model
 	 *
@@ -31,6 +38,9 @@ class Model_FormAllot extends \Model_Document
 	}
 
 	function beforeSave(){
+
+		if($this['to_no'] < $this['from_no'])
+			throw $this->exception('Sequence is not proper','ValidityCheck')->setField('to_no');
 
 		$entry_no_check = $this->add('xMLM/Model_FormAllot');
 
@@ -55,7 +65,7 @@ class Model_FormAllot extends \Model_Document
 		$entry_no_check->tryLoadAny();
 
 		if($entry_no_check->loaded())
-			throw $this->exception('Either \'From\' or \'To\' Number is not valid','ValidityCheck')->setField('from_no');
+			throw $this->exception('Either \'From '.$this['from_no'].'\' or \'To '.$this['to_no'].'\' Number is not valid','ValidityCheck')->setField('from_no');
 			
 
 	}
