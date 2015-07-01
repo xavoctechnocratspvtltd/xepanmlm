@@ -27,8 +27,8 @@ class Model_FormAllot extends \Model_Document
 		
 		$this->hasOne('xMLM/Distributor','distributor_id')->display(array('form'=>'autocomplete/Basic'))->mandatory(true);
 
-		$this->addField('from_no')->mandatory(true);
-		$this->addField('to_no')->mandatory(true);
+		$this->addField('from_no')->mandatory(true)->type('int');
+		$this->addField('to_no')->mandatory(true)->type('int');
 		// $this->addField('created_at')->type('datetime')->mandatory(true)->defaultValue($this->api->now);
 
 		$this->addHook('beforeSave',$this);

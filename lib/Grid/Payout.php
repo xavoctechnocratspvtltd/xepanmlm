@@ -42,10 +42,35 @@ class Grid_Payout extends \Grid {
 
 		$order = $this->addOrder();
 			if($this->hasColumn('on_date')) $order->move('on_date','first');
-		$order->move('standard_kit_count','after','pair_income');
-		$order->move('standard_kit_income','after','standard_kit_count');
-		$order->move('gold_kit_count','after','standard_kit_income');
-		$order->move('gold_kit_income','after','gold_kit_count');
+
+		foreach ($this->add('xMLM/Model_Kit') as $kit) {
+			$kit_id = $kit->id;
+			$count_col = strtolower($this->api->normalizeName($kit['name'].'_count'));
+			$income_col = strtolower($this->api->normalizeName($kit['name'].'_income'));
+			if($this->hasColumn($count_col)) $order->move($count_col,'before','total_pay');
+			if($this->hasColumn($income_col)) $order->move($income_col,'before','total_pay');
+
+			$this->addMethod('format_'.$count_col,function($g,$f){
+				if(!isset($g->{$f.'_sum'})) $g->{$f.'_sum'} = 0;
+				$g->{$f.'_sum'} += $g->model[$f];
+			});
+
+			$this->addMethod('format_totals_'.$count_col,function($g,$f){
+				$g->current_row[$f] = $g->{$f.'_sum'};
+			});
+
+			$this->addMethod('format_'.$income_col,function($g,$f){
+				if(!isset($g->{$f.'_sum'})) $g->{$f.'_sum'} = 0;
+				$g->{$f.'_sum'} += $g->model[$f];
+			});
+
+			$this->addMethod('format_totals_'.$income_col,function($g,$f){
+				$g->current_row[$f] = $g->{$f.'_sum'};
+			});
+
+			$this->addFormatter($count_col,$count_col);
+			$this->addFormatter($income_col,$income_col);
+		}
 		$order->now();
 
 		if(!$this->hide_distributor and $this->hasColumn('distributor')){

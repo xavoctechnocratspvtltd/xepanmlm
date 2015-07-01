@@ -7,6 +7,7 @@ class page_xMLM_page_owner_xmlm_mybookings extends page_xMLM_page_owner_xmlm_mai
 		$booking=$tabs->addTabURL('./booking','Bookings');
 		$new_booking=$tabs->addTabURL('./request','Request');
 	}
+	
 	function page_booking(){
 		$booking_model=$this->add('xMLM/Model_Booking');
 		$grid=$this->add('xMLM/Grid_MyBooking');
