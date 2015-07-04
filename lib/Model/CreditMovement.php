@@ -19,7 +19,7 @@ class Model_CreditMovement extends \Model_Document {
 
 		$this->hasOne('xMLM\Distributor','distributor_id')->mandatory(true)->caption('Distributor Name');
 		$this->hasOne('xMLM\Distributor','joined_distributor_id')->mandatory(true)->caption('Used for Distributor');
-		$this->addField('credits')->type('money')->mandatory(true)->caption("Credit Amount");
+		$this->addField('credits')->type('money')->mandatory(true)->caption("Credit amount");
 		$this->addField('credits_given_on')->type('datetime')->defaultValue(null);
 		$this->addField('narration')->mandatory(true)->caption("Remarks");
 

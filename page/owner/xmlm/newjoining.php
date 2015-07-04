@@ -22,7 +22,7 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		
 		$form->setModel($distributor,array('sponsor_id','Leg','introducer_id','kit_item_id','first_name','last_name','date_of_birth','email','mobile_number','pan_no','address','pin_code','state_id','district_id','username','password','bank_id','account_no','IFCS_Code','branch_name','nominee_name','relation_with_nominee','nominee_age','nominee_email','kyc_no','kyc_id'));
 		$form->getElement('kit_item_id')->setEmptyText('Free/Red Entry');
-		$form->addField('password','re_password')->setterGetter('group','b~4');
+		$form->addField('password','re_password','Confirm Password')->setterGetter('group','b~4');
 		$form->add('Order')
 			->move('re_password','after','password')
 			->now();
@@ -50,8 +50,10 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 		$form->getElement('sponsor_id')->getModel()->addCondition($this->api->db->dsql()->orExpr()->where('left_id',null)->where('right_id',null));
 		
 		if($form->isSubmitted()){
+
+			// $form->error('password','Password doesn\'t match');
 			if($form['password']!=$form['re_password'])
-				$form->error('password','Password Must Match');
+				$form->error('password','Password doesn\'t match');
 			$form->save();
 
 			$form->js(null,array($form->js()->reload(),$cr_view->js()->reload()))->univ()->successMessage('Entry Done')->execute();

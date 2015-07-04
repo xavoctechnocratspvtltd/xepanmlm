@@ -21,18 +21,18 @@ class Model_Distributor extends \Model_Document {
 		$this->getElement('status')->DefaultValue('unpaid');
 		$this->addField('customer_id')->type('int')->system(true);
 		$this->addField('user_id')->type('int')->system(true);
-		$this->hasOne('xMLM/Sponsor','sponsor_id')->display(array('form'=>'xMLM/Distributor'))->mandatory(true);
-		$this->hasOne('xMLM/Introducer','introducer_id')->display(array('form'=>'xMLM/Distributor'))->mandatory(true);
+		$this->hasOne('xMLM/Sponsor','sponsor_id')->display(array('form'=>'xMLM/Distributor'))->mandatory("Sponsor is required");
+		$this->hasOne('xMLM/Introducer','introducer_id')->display(array('form'=>'xMLM/Distributor'))->mandatory("Introducer is required");
 
 
 		$user_j = $this->join('users','user_id');
-		$user_j->addField('username')->sortable(true)->group('b~4~Distributor Login')->mandatory(true);
+		$user_j->addField('username')->sortable(true)->group('b~4~Distributor Login')->mandatory(true)->display(array('form'=>'xMLM/LetterCount'));
 		$user_j->addField('password')->type('password')->group('b~4')->mandatory(true)->display(array('form'=>'xMLM/Password'));
 		$user_j->addField('name')->mandatory(true)->mandatory(true)->system(true)->display(array('form'=>'Alpha'));
-			$this->addField('first_name')->group('a~4~Distributor Info')->mandatory(true)->mandatory(true)->display(array('form'=>'Alpha'));
-			$this->addField('last_name')->group('a~4')->mandatory(true)->mandatory(true)->display(array('form'=>'Alpha'));
-			$this->addField('date_of_birth')->type('date')->group('a~4')->mandatory(true)->mandatory(true)->display(array('form'=>'xMLM/BDate'));
-		$user_j->addField('email')->sortable(true)->group('a~4')->mandatory(true)->display(array('form'=>'Email'));
+			$this->addField('first_name')->group('a~4~Distributor Info')->mandatory("First name is required")->display(array('form'=>'Alpha'))->caption('First name');
+			$this->addField('last_name')->group('a~4')->mandatory("Last name is required")->display(array('form'=>'Alpha'))->caption('Last name');
+			$this->addField('date_of_birth')->type('date')->group('a~4')->mandatory("Date of Birth is required")->display(array('form'=>'xMLM/BDate'))->caption('Date of Birth');
+		$user_j->addField('email')->sortable(true)->group('a~4')->mandatory("Email is required")->display(array('form'=>'Email'))->caption('Email Id');
 
 		$user_j->addField('user_is_active','is_active')->system(true)->defaultValue(true);
 		$user_j->addField('user_epan_id','epan_id')->system(true);
@@ -41,23 +41,23 @@ class Model_Distributor extends \Model_Document {
 
 		$customer_j = $this->join('xshop_memberdetails','customer_id');
 		$customer_j->addField('users_id')->type('int')->system(true);
-		$customer_j->addField('mobile_number')->group('a~4')->mandatory(true)->display(array('form'=>'xMLM/MobileNumber'));
+		$customer_j->addField('mobile_number')->group('a~4')->mandatory("Please enter Mobile number")->display(array('form'=>'xMLM/MobileNumber'))->caption('Mobile number');
 		
 		$customer_j->addField('member_epan_id','epan_id')->system(true);
 		$this->addCondition('member_epan_id',$this->api->current_website->id);
 
-		$this->addField('pan_no')->group('a~4')->display(array('form'=>'xMLM/PanNumber'));
+		$this->addField('pan_no')->group('a~4')->display(array('form'=>'xMLM/PanNumber'))->caption('PAN no.');
 		// $customer_j->addField('address')->type('text')->group('a~12')->system(true);
 			
 			// $this->addField('block_no')->group('a~4');
 			// $this->addField('building_no')->group('a~4');
 			// $this->addField('landmark')->group('a~4');
-			$this->addField('address')->type('text')->group('a~12')->mandatory(true);
+			$this->addField('address')->type('text')->group('a~12')->mandatory("Address is required");
 
-			$this->addField('pin_code')->group('a~4')->display(array('form'=>'xMLM/Number'));
+			$this->addField('pin_code')->group('a~4')->display(array('form'=>'xMLM/Number'))->caption('PIN Code');
 
-			$this->hasOne('xMLM/State','state_id')->group('a~4')->mandatory(true)->display(array('form'=>'DropDownNormal'));
-			$this->hasOne('xMLM/District','district_id')->group('a~4')->mandatory(true)->display(array('form'=>'DropDownNormal'));
+			$this->hasOne('xMLM/State','state_id')->group('a~4')->mandatory("State is required")->display(array('form'=>'DropDownNormal'));
+			$this->hasOne('xMLM/District','district_id')->group('a~4')->mandatory("City/District is required")->display(array('form'=>'DropDownNormal'))->caption('City/District');
 
 		$customer_j->addField('is_active')->type('boolean')->defaultValue(true);
 
@@ -75,19 +75,19 @@ class Model_Distributor extends \Model_Document {
 		// $this->addField('re_password')->type('password')->group('b~4')->mandatory(true);
 		$this->addField('last_password_change')->type('datetime')->system(true)->defaultValue(null);
 
-		$this->hasOne('xMLM/Bank','bank_id')->group('e~6~Bank Info')->mandatory(true);//->system(true);
-		$this->addField('account_no')->group('e~6~bl')->mandatory(true)->display(array('form'=>'xMLM/Number'));//->system(true);
+		$this->hasOne('xMLM/Bank','bank_id')->group('e~6~Bank Info')->mandatory("Bank is required");//->system(true);
+		$this->addField('account_no')->group('e~6~bl')->mandatory("Account no is required")->display(array('form'=>'xMLM/Number'))->caption('Account no');
 		
-		$this->addField('IFCS_Code')->group('e~6')->mandatory(true);//->system(true);
-		$this->addField('branch_name')->caption('Branch')->group('e~6~bl')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
-		$this->addField('kyc_no')->group('kyc~6~Kyc Information')->mandatory(true);
-		$this->add('filestore/Field_Image','kyc_id')->group('kyc~6')->caption('KYC Form');
-		$this->addField('nominee_name')->group('f~6~Nominee Details')->mandatory(true)->display(array('form'=>'Alpha'));//->system(true);
-		$this->addField('relation_with_nominee')->enum(explode(",", $config['relations_with_nominee']))->group('f~2')->mandatory(true);//->system(true);
-		$this->addField('nominee_email')->group('f~2');//->system(true);
-		$this->addField('nominee_age')->group('f~2')->mandatory(true)->display(array('form'=>'xMLM/Number'));//->system(true);
+		$this->addField('IFCS_Code')->group('e~6')->mandatory("IFSC Code is required")->display(array('form'=>'Alpha'))->caption('IFSC Code');
+		$this->addField('branch_name')->caption('Branch')->group('e~6~bl')->mandatory("Branch name is required")->display(array('form'=>'Alpha'));//->system(true);
+		$this->addField('kyc_no')->group('kyc~6~Kyc Info')->mandatory("KYC no is required")->caption('KYC no.');
+		$this->add('filestore/Field_Image','kyc_id')->group('kyc~6')->caption('KYC form');
+		$this->addField('nominee_name')->group('f~6~Nominee Details')->mandatory("Nominee name is required")->display(array('form'=>'Alpha'))->caption('Nominee name');
+		$this->addField('relation_with_nominee')->enum(explode(",", $config['relations_with_nominee']))->group('f~2')->mandatory("Relation with nominee is required")->caption('Relation with Nominee');//->system(true);
+		$this->addField('nominee_email')->group('f~2')->caption('Nominee email')->display(array('form'=>'Email'));//->system(true);
+		$this->addField('nominee_age')->group('f~2')->mandatory("Nominee age is required")->display(array('form'=>'xMLM/Range'))->caption("Nominee age");
 
-		$this->addField('Leg')->setValueList(array('A'=>'Left','B'=>'Right'))->mandatory(true);
+		$this->addField('Leg')->setValueList(array('A'=>'Left','B'=>'Right'))->mandatory("Leg is required");
 		$this->addField('path')->type('text')->system(true);
 
 		$this->addField('session_intros_amount')->type('money')->defaultValue(0);
@@ -167,7 +167,7 @@ class Model_Distributor extends \Model_Document {
 		$alloted_kyc_check->tryLoadANy();
 
 		if($this['kyc_no'] and !$alloted_kyc_check->loaded() and !isset($this->forceDelete))
-			throw $this->exception($this['id'].' Form is not alloted','ValidityCheck')->setField('kyc_no');
+			throw $this->exception('Form is not alloted','ValidityCheck')->setField('kyc_no');
 
 		// Check Used KYC No
 		$used_kyc_check = $this->add('xMLM/Model_Distributor');
@@ -178,7 +178,7 @@ class Model_Distributor extends \Model_Document {
 		$used_kyc_check->tryLoadAny();
 
 		if($this['kyc_no'] and $used_kyc_check->loaded() )
-			throw $this->exception('KYC No is already used','ValidityCheck')->setField('kyc_no');
+			throw $this->exception('Someone already has that KYC no. Try another','ValidityCheck')->setField('kyc_no');
 		
 
 		$this['name'] = $this['first_name'].' '. $this['last_name'];
@@ -379,7 +379,7 @@ class Model_Distributor extends \Model_Document {
 			if($from_distributor['credit_purchase_points'] < $kitpoints){
 				return false;		
 			}
-			$from_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this['username'], $this);
+			$from_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this['name'], $this);
 			return true;
 		}
 

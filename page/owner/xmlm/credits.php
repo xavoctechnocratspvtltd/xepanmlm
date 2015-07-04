@@ -9,7 +9,7 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 		$current_distributor = $this->add('xMLM/Model_Distributor')->loadLoggedIn();
 
 		$export_model = $current_distributor->creditMovements()->setOrder('created_at');
-		$export_model->getElement('created_at')->caption('Request Date');
+		$export_model->getElement('created_at')->caption('Request date');
 		$export_model->getElement('narration')->caption('Remark');
 		$export_model->addExpression('credit')->set($export_model->dsql()->fx('IF',array($export_model->dsql()->expr('status="Purchase"'),$export_model->dsql()->expr('credits'),'0')));
 		$export_model->addExpression('debit')->set($export_model->dsql()->fx('IF',array($export_model->dsql()->expr('status="Consumed"'),$export_model->dsql()->expr('credits'),'0')));
@@ -29,9 +29,9 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 
 		$trans_credit = $current_distributor->creditMovements()->setOrder('created_at','desc');
 		$trans_credit->addCondition('status',array('Purchase'));
-		$trans_cr_col->add('H3')->setHTML('Credits<br/><small>'.$trans_credit->sum('credits')->getOne().' /-</small>')->addClass('text-center');
+		$trans_cr_col->add('H3')->setHTML('Credit<br/><small>'.$trans_credit->sum('credits')->getOne().' /-</small>')->addClass('text-center');
 		
-
+		$trans_credit->getElement('created_at')->caption('Request date');
 		$grid = $trans_cr_col->add('Grid');
 		$grid->setModel($trans_credit,array('created_at','credits'));
 		$grid->addPaginator(20);
@@ -40,7 +40,8 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 		$trans_debit = $current_distributor->creditMovements()->setOrder('created_at','desc');
 		$trans_debit->addCondition('status',array('Consumed','Collapsed'));
 		
-		$trans_dr_col->add('H3')->setHTML('Debits<br/><small>'.$trans_debit->sum('credits')->getOne().' /-</small>')->addClass('text-center');
+		$trans_dr_col->add('H3')->setHTML('Debit<br/><small>'.$trans_debit->sum('credits')->getOne().' /-</small>')->addClass('text-center');
+		$trans_debit->getElement('created_at')->caption('Request date');		
 		$grid = $trans_dr_col->add('Grid');
 		$grid->setModel($trans_debit,array('created_at','credits','narration'));
 		// $grid->add('xMLM/Controller_Export');
@@ -57,7 +58,7 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 
 		$credit_request_model = $this->add('xMLM/Model_Credit_Request');
 		$credit_request_model->addCondition('distributor_id',$current_distributor->id);
-		$form->addField('Readonly','request_date')->set($this->api->today);
+		$form->addField('Readonly','request_date','Request date')->set($this->api->today);
 		$form->setModel($credit_request_model,array('distributor_id','credits','narration','attachment_id'));
 		// $form->addField('DropDown','request_for')->setEmptyText("Please select kit")->validateNotNull()->setModel('xMLM/Kit');
 		// $form->addfield('Number','qty')->validateNotNull();
@@ -66,9 +67,9 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 
 		if($form->isSubmitted()){
 			if($form['credits'] > 500000)
-				$form->displayError('credits','Credit Limit : 5,00,000/-');
+				$form->displayError('credits','Credit Limit Should be less than or equals to 5,00,000/-');
 			if($form['credits'] < 6000)
-				$form->displayError('credits','Must be greater then : 6,000/-');
+				$form->displayError('credits','Credit Limit should be greater than or equals to 6,000/-');
 			
 			$form->save();
 

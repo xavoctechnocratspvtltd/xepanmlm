@@ -61,7 +61,7 @@ class View_Tools_MamberAccount extends \componentBase\View_Component{
 			$tree_tab=$tab->addTabURL('xMLM_page_owner_xmlm_treeview','Tree View');
 			$downline_tab=$tab->addTabURL($this->api->url('xMLM_page_owner_xmlm_downlineview',array('reset_filter'=>true)),'Downline View');
 			// $invoice_tab=$tab->addTabURL('xMLM_page_owner_xmlm_invoice','Invoice');
-			$credits_tab=$tab->addTabURL('xMLM_page_owner_xmlm_credits','Credits Management');
+			$credits_tab=$tab->addTabURL('xMLM_page_owner_xmlm_credits','Credit Management');
 			$credits_tab=$tab->addTabURL('xMLM_page_owner_xmlm_mybookings','My Booking(s)');
 			// $logout_tab=$tab->addTabURL('xMLM_page_owner_xmlm_logout','Logout');
 		}

@@ -61,6 +61,7 @@ class Grid_Distributor extends \Grid{
 		// $spec_assos_j4->addField('color_value','value')->display(array('form'=>'Readonly'))->caption('Color');
 		// $model->addCondition('color_specification_id',$specification->fieldQuery('id'));
 
+		$model->getElement('greened_on')->caption('Qualified Date');
 		$m=parent::setModel($model,$fields);
 
 		if($this->hasColumn('item_name')) $this->removeColumn('item_name');
@@ -78,8 +79,8 @@ class Grid_Distributor extends \Grid{
 	}
 
 	function formatRow(){
-		$sp = "<div class='atk-size-micro atk-move-left'>sp: ".$this->model['sponsor']."</div>";
-		$int = "<div class='atk-size-micro atk-move-right'>in: ".$this->model['introducer']."</div>";
+		$sp = "<div class='atk-size-micro atk-move-left'>SP: ".$this->model['sponsor']."</div>";
+		$int = "<div class='atk-size-micro atk-move-right'>IN: ".$this->model['introducer']."</div>";
 		
 		if($this->model['greened_on'])
 			$name_class="atk-clear-fix atk-effect-success atk-size-mega";
@@ -90,8 +91,8 @@ class Grid_Distributor extends \Grid{
 				"<br/><small style='color: ". $this->model->ref('kit_item_id')->get('color_value') ."'>". $this->model['kit_item'] ."</small>".
 				"</div>";
 
-		$left = "<div class='atk-size-micro atk-move-left'>A: ".$this->model['left']."</div>";
-		$right = "<div class='atk-size-micro atk-move-right'>B: ".$this->model['right']."</div>";
+		$left = "<div class='atk-size-micro atk-move-left'>L: ".$this->model['left']."</div>";
+		$right = "<div class='atk-size-micro atk-move-right'>R: ".$this->model['right']."</div>";
 
 
 		$this->current_row_html['name']= $sp.$int.$name.$left.$right;
@@ -99,9 +100,9 @@ class Grid_Distributor extends \Grid{
 
 
 		$un = "<div class='text-center'>".$this->model['username']."</div>";
-		$jn = "<div class='atk-size-micro'>Joined On: ".date("d M Y",strtotime($this->model['created_at']))."</div>";
+		$jn = "<div class='atk-size-micro'>Joining Date: ".date("d M Y",strtotime($this->model['created_at']))."</div>";
 		if($this->model['greened_on'])
-			$grn = "<div class='atk-size-micro'>Qualified On: ".date("d M Y",strtotime($this->model['greened_on']))."</div>";
+			$grn = "<div class='atk-size-micro'>Qualified Date: ".date("d M Y",strtotime($this->model['greened_on']))."</div>";
 		else{
 			if($this->api->auth->isLoggedIn() && $this->api->auth->model->isFrontEndUser())
 				$grn = "<div class='atk-size-micro'>gn: <a href='#green' onclick=\"$.univ.frameURL('Pay Now For Distributor ".$this->model['name']."','".($this->api->url($this->pay_vp->getURL(),array('red_distributor_id'=>$this->model->id))->getURL())."')\">Pay Now</a></div>";
