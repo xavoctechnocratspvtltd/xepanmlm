@@ -27,8 +27,21 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$lc= $cols->addColumn(6);
 		$rc= $cols->addColumn(6);
 
+
 		$form = $lc->add('Form');
 		$form->addField('Readonly','on_date')->set($this->api->now);
+
+		if($config['trimming_applicable']){
+			$updt_btn = $rc->add('Button')->set('Update');
+			$chv = $rc->add('xMLM/View_ClosingHint');
+
+			$tb_f = $form->addField('Number','trimming_base')->set(0)->setFieldHint("Trimming applicable over the binary payouts");
+			$tp_f = $form->addField('Number','trimming_percentage')->set(0)->setFieldHint("percentage figure (Not % sign) ");
+			
+			$updt_btn->js('click',$chv->js()->reload(array('hint_trimming_base'=>$tb_f->js()->val(),'hint_trimming_percentage'=>$tp_f->js()->val())));
+		}
+
+
 		if($config['include_generation'])
 			$form->addField('Checkbox','close_generation','Close Generation Income Also');
 		$field=$form->addField('line','captcha');
@@ -45,9 +58,19 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 			try{
 				$this->api->db->beginTransaction();
 					$close_generation = false;
+					$trimming_base = 0;
+					$trimming_percentage = 0;
+
 					if($config['include_generation'])
 						$close_generation = $form['close_generation'];
-					$payout_m->generatePayout($form['on_date'],$close_generation);
+
+					if($config['trimming_applicable']){
+						$trimming_base = $form['trimming_base'];
+						$trimming_percentage = $form['trimming_percentage'];
+					}
+
+					$payout_m->generatePayout($form['on_date'],$close_generation, $trimming_base, $trimming_percentage);
+
 				$this->api->db->commit();
 			}catch(\Exception $e){
 				$this->api->db->rollback();

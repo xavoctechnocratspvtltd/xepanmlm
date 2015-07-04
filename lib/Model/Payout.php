@@ -23,6 +23,8 @@ class Model_Payout extends \SQL_Model {
 		// $this->addField('session_direct_count');
 
 		$this->addField('pairs')->type('int')->defaultValue(0);
+		$this->addField('trimming_base')->type('int')->defaultValue(0);
+		$this->addField('trimming_percentage')->type('int')->defaultValue(0);
 		
 		$this->addField('session_business_volume')->type('int')->defaultValue(0);
 		$this->addField('generation_level')->type('int')->defaultValue(0);
@@ -97,7 +99,7 @@ class Model_Payout extends \SQL_Model {
 		return $this->ref('distributor_id');
 	}
 
-	function generatePayout($on_date,$pay_generation){
+	function generatePayout($on_date,$pay_generation, $trimming_base=0, $trimming_percentage=0){
 		$config = $this->add('xMLM/Model_Configuration')->tryLoadAny();
 		$pair_pv = $config['tail_pv'];
 		$admin_charge = $config['admin_charge'];
@@ -113,8 +115,8 @@ class Model_Payout extends \SQL_Model {
 		// copy all distributors in here
 		$q="
 			INSERT INTO xmlm_payouts
-						(id,distributor_id,session_left_pv,session_right_pv, pairs,pair_income, tds,admin_charge,net_amount,bonus,previous_carried_amount, on_date,  session_self_bv, session_left_bv, session_right_bv,session_business_volume,generation_level,generation_gross_amount,introduction_income,generation_difference_income,generation_royalty_income, generation_active_royalty_income, other_deduction_name,other_deduction,session_carried_left_pv,session_carried_right_pv)
-				SELECT 	  0,     id,       session_left_pv,session_right_pv,   0,         0,      0,      0,           0,     0,     carried_amount,       '$on_date',session_self_bv, session_left_bv, session_right_bv,            0,                  0,                    0,        session_intros_amount,             0,                               0,                  0,                          '',                   0,                 0,                      0 FROM xmlm_distributors
+						(id,distributor_id,session_left_pv,session_right_pv, pairs,pair_income, tds,admin_charge,net_amount,bonus,previous_carried_amount, on_date,  session_self_bv, session_left_bv, session_right_bv,session_business_volume,generation_level,generation_gross_amount,introduction_income,generation_difference_income,generation_royalty_income, generation_active_royalty_income, other_deduction_name,other_deduction,session_carried_left_pv,session_carried_right_pv, trimming_base, trimming_percentage)
+				SELECT 	  0,     id,       session_left_pv,session_right_pv,   0,         0,      0,      0,           0,     0,     carried_amount,       '$on_date',session_self_bv, session_left_bv, session_right_bv,            0,                  0,                    0,        session_intros_amount,             0,                               0,                  0,                          '',                   0,                 0,                      0,             $trimming_base,  $trimming_percentage    FROM xmlm_distributors
 		";
 		$this->query($q);
 
@@ -304,11 +306,33 @@ class Model_Payout extends \SQL_Model {
 
 		} // END OF PAY GENERATION INCOME
 
+
+		$trimming_query="pairs";
+		$trimming_base_cond ="";
+		if($config['trimming_applicable']){
+			// TRIMMING ON PAIR FIELD ... 
+			// Why its here ... not above
+			// Let total pairs be accurate and then cut pairincome as per trimming only 
+			$trimming_query=" (pairs - (pairs * $trimming_percentage / 100.00)) ";
+			$trimming_base_cond =" AND pairs >= $trimming_base";
+		}
+
+		$q="
+			UPDATE
+				xmlm_payouts payouts
+			SET
+				pair_income = $trimming_query
+			WHERE
+				on_date = '$on_date'
+				$trimming_base_cond
+		";
+
+		$this->query($q);
+
 		$q="
 			UPDATE 
 				xmlm_payouts payouts
 			SET
-				pair_income = pairs,
 				TDS = (payouts.previous_carried_amount + pair_income + introduction_income + generation_difference_income + generation_royalty_income + generation_active_royalty_income + bonus) * IF(length((select pan_no from xmlm_distributors where id=payouts.distributor_id))=10,10,20) / 100,
 				admin_charge = (payouts.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus) * $admin_charge / 100,
 				net_amount = (payouts.previous_carried_amount + pair_income + introduction_income + generation_difference_income + bonus) - (TDS + admin_charge)
