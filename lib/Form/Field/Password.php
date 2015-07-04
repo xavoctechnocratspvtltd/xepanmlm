@@ -11,7 +11,7 @@ class Form_Field_Password extends \Form_Field_Password {
             }
         }
         if($this->value != $this->owner->get('re_password'))
-            $this->owner->getElement('re_password')->displayFieldError('must be same as password');
+            $this->owner->getElement('re_password')->displayFieldError('Password doesn\'t match');
         return parent::validate();
     }
 
