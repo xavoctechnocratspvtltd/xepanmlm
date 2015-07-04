@@ -256,6 +256,7 @@ class Model_Distributor extends \Model_Document {
 
 		$this->add('xMLM/Model_CreditMovement')->addCondition('joined_distributor_id',$this->id)
 			->each(function($obj){
+				$obj->forceDelete = true;
 				$obj->forceDelete();
 			});
 
@@ -272,12 +273,14 @@ class Model_Distributor extends \Model_Document {
 		$i_m_in_left = $this->add('xMLM/Model_Distributor')->tryLoadBy('left_id',$this->id);
 		if($i_m_in_left->loaded()){
 			$i_m_in_left['left_id']=null;
+			$i_m_in_left->forceDelete = true;
 			$i_m_in_left->saveAndUnload();
 		}
 
 		$i_m_in_right = $this->add('xMLM/Model_Distributor')->tryLoadBy('right_id',$this->id);
 		if($i_m_in_right->loaded()){
 			$i_m_in_right['right_id']=null;
+			$i_m_in_right->forceDelete=true;
 			$i_m_in_right->saveAndUnload();
 		}
 
@@ -285,6 +288,7 @@ class Model_Distributor extends \Model_Document {
 		$i_am_intro =  $this->add('xMLM/Model_Distributor')->addCondition('introducer_id',$this->id);
 		foreach ($i_am_intro as $intros) {
 			$intros['introducer_id']=null;
+			$intros->forceDelete = true;
 			$intros->saveAndUnload();
 		}
 
@@ -292,6 +296,7 @@ class Model_Distributor extends \Model_Document {
 		$i_am_spn =  $this->add('xMLM/Model_Distributor')->addCondition('sponsor_id',$this->id);
 		foreach ($i_am_spn as $spn) {
 			$spn['sponsor_id']=null;
+			$spn->forceDelete = true;
 			$spn->saveAndUnload();
 		}
 
@@ -316,10 +321,12 @@ class Model_Distributor extends \Model_Document {
 			
 		$dist->add('xMLM/Model_Distributor')->addCondition('path','like',$this['path'].'A%')
 				->each(function($obj){
+					$obj->forceDelete = true;
 					$obj->forceDelete();
 				});
 		$dist->add('xMLM/Model_Distributor')->addCondition('path','like',$this['path'].'B%')
 				->each(function($obj){
+					$obj->forceDelete = true;
 					$obj->forceDelete();
 				});
 
