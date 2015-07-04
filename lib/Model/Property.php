@@ -7,9 +7,9 @@ class Model_Property extends \Model_Document{
 	function init(){
 		parent::init();
 		$this->hasOne('xMLM/Location','location_id');
-		$this->addField('name')->Caption('Hotels Name');
+		$this->addField('name')->Caption('Hotel Name');
 		$this->addField('rate')->type('money');
-		$this->addField('booking_through');
+		$this->addField('booking_through')->Caption('Booking through');
 		$this->hasMany('xMLM/Booking','property_id');
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

@@ -6,7 +6,7 @@ class Model_Credit_Approved extends Model_CreditMovement{
 	public $root_documnet_name="xMLM\Model_CreditMovement";
 	public $actions=array(
 			'can_mark_processed'=>array('caption'=>'Process'),
-			'can_cancel'=>array(),
+			'can_reject'=>array(),
 			'allow_add'=>false,
 			'can_manage_attachments'=>false,
 		);

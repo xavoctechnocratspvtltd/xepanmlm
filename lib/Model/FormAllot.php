@@ -25,7 +25,7 @@ class Model_FormAllot extends \Model_Document
 	{
 		parent::init();
 		
-		$this->hasOne('xMLM/Distributor','distributor_id')->display(array('form'=>'autocomplete/Basic'))->mandatory(true);
+		$this->hasOne('xMLM/Distributor','distributor_id')->display(array('form'=>'autocomplete/Basic'))->mandatory(true)->caption('Distributor name');
 
 		$this->addField('from_no')->mandatory(true)->type('int');
 		$this->addField('to_no')->mandatory(true)->type('int');
@@ -33,6 +33,7 @@ class Model_FormAllot extends \Model_Document
 
 		$this->addHook('beforeSave',$this);
 
+		$this->getElement('created_at')->Caption('Form request date');
 		// $this->add('dynamic_model/Controller_AutoCreator');
 
 	}

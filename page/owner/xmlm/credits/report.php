@@ -10,9 +10,8 @@ class page_xMLM_page_owner_xmlm_credits_report extends page_xMLM_page_owner_main
 		$form->addField('DatePicker','from_date');
 		$form->addField('DatePicker','to_date');
 		$form->addField('autocomplete/Basic','distributor')->setModel($distributer);
-		$form->addField('DropDown','status')->setValueList(array('approved'=>'approved','Purchase'=>'Purchase',
-																 'Consumed'=>'Consumed','Collapsed'=>'Collapsed',
-																 'Canceled'=>'Canceled','Request'=>'Request'))
+		$form->addField('DropDown','status')->setValueList(array('approved'=>'Approved','Purchase'=>'Purchase',
+																 'Consumed'=>'Consumed','Rejected'=>'Rejected','Request'=>'Request'))
 											->setEmptyText('Please Select Status');
 		$form->addSubmit('Get Report');
 

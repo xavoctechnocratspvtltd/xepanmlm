@@ -5,20 +5,20 @@ namespace xMLM;
 class Model_CreditMovement extends \Model_Document {
 	public $table ="xmlm_credits";
 
-	public $status = array('approved','Purchase','Consumed','Collapsed','Canceled','Request');
+	public $status = array('approved','Purchase','Consumed','Collapsed','Rejected','Request');
 	public $root_document_name = 'xMLM\CreditMovement';
 
 	public $actions=array(
 			'allow_add'=>array(),
 			'allow_edit'=>array(),
-			'allow_del'=>array(),
+			'allow_del'=>array()
 		);
 
 	function init(){
 		parent::init();
 
-		$this->hasOne('xMLM\Distributor','distributor_id')->mandatory(true)->caption('Distributor Name');
-		$this->hasOne('xMLM\Distributor','joined_distributor_id')->mandatory(true)->caption('Used for Distributor');
+		$this->hasOne('xMLM\Distributor','distributor_id')->mandatory(true)->caption('Distributor name');
+		$this->hasOne('xMLM\Distributor','joined_distributor_id')->mandatory(true)->caption('Used for distributor');
 		$this->addField('credits')->type('money')->mandatory("Credits is required")->caption("Credit amount");
 		$this->addField('credits_given_on')->type('datetime')->defaultValue(null);
 		$this->addField('narration')->mandatory('Remarks is required')->caption("Remarks");
@@ -56,26 +56,26 @@ class Model_CreditMovement extends \Model_Document {
 		$this->setStatus('approved',$transaction_details);
 	}
 
-	function cancel_page($page){
+	function reject_page($page){
 		$form = $page->add('Form');
 		$form->addField('text','reason');
-		$form->addSubmit('Cancel');
+		$form->addSubmit('ok');
 
 		if($form->isSubmitted()){
-			$this->cancel($form['reason']);
+			$this->reject($form['reason']);
 			return true;
 		}
 	}
 
-	function cancel($reason){
+	function reject($reason){
 		$this->distributor()->nitifyViaEmail("Credit Request Canceled","Dear Distributor,<br> Your credit request has been canceled by administrator due to following reason: <br/> '$reason' <br/><br/> -- Reagrds <br/> System");
-		$this->setStatus('Canceled',$reason);
+		$this->setStatus('Rejected',$reason);
 	}
 
 	function mark_processed_page($p){
 		$form = $p->add('Form_Stacked');
 		$form->addField('text','remark');
-		$form->addSubmit('Process');
+		$form->addSubmit('Ok');
 		if($form->isSubmitted()){
 			$this->mark_processed();
 			$this->setStatus('Purchase',$form['remark']);

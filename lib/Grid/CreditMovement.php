@@ -9,7 +9,7 @@ class Grid_CreditMovement extends \Grid {
 	function init(){
 		parent::init();
 
-		$this->add('VirtualPage')->addColumn('Attachement','Attach',array('icon'=>'attach'),$this)->set(function($p){
+		$this->add('VirtualPage')->addColumn('Attachement','Attachment',array('icon'=>'attach'),$this)->set(function($p){
 			$req= $p->add('xMLM/Model_CreditMovement')->tryLoad($p->id);
 			if($req['attachment_id']){
 				$p->add('HtmlElement')
@@ -27,6 +27,8 @@ class Grid_CreditMovement extends \Grid {
 	function setModel($model,$fields=null){
 		if(!$fields)
 			$fields=array('distributor_id','distributor','status','created_at','credits_given_on','credit','debit','credits');
+		
+		$model->getElement('created_at')->caption('Request date');
 		$m = parent::setModel($model,$fields);
 		
 		if($this->hasColumn('attachment')) $this->removeColumn('attachment');

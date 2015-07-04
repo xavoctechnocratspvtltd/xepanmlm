@@ -12,7 +12,6 @@ class Grid_Property extends \Grid{
 		if($this->hasColumn('created_date'))$this->removeColumn('created_date');
 		if($this->hasColumn('updated_date'))$this->removeColumn('updated_date');
 		if($this->hasColumn('item_name'))$this->removeColumn('item_name');
-		if($this->hasColumn('item_name'))$this->removeColumn('item_name');
 		return $m;		
 	}
 	function formatRow(){
