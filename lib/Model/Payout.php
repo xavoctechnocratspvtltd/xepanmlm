@@ -34,9 +34,9 @@ class Model_Payout extends \SQL_Model {
 
 		$this->addField('pair_income')->type('int')->defaultValue(0)->caption('Pair income');
 		$this->addField('introduction_income')->type('int')->defaultValue(0);
-		$this->addField('generation_difference_income')->type('int')->defaultValue(0)->caption('Gen. Diff. Income');
-		$this->addField('generation_royalty_income')->type('int')->defaultValue(0)->caption('Gen. Royalty');
-		$this->addField('generation_active_royalty_income')->type('int')->defaultValue(0)->caption('Gen. Active Royalty');
+		$this->addField('generation_difference_income')->type('int')->defaultValue(0)->caption('Gen. diff. income');
+		$this->addField('generation_royalty_income')->type('int')->defaultValue(0)->caption('Gen. royalty');
+		$this->addField('generation_active_royalty_income')->type('int')->defaultValue(0)->caption('Gen. active royalty');
 		$this->addField('bonus')->type('int')->defaultValue(0);
 
 		$this->addExpression('total_pay')->set('introduction_income+pair_income+generation_difference_income+bonus+previous_carried_amount')->caption('Total income');
@@ -47,7 +47,7 @@ class Model_Payout extends \SQL_Model {
 		$this->addField('other_deduction_name')->defaultValue(0);
 		$this->addField('other_deduction')->type('money')->defaultValue(0);
 		
-		$this->addExpression('total_deduction')->set('tds+admin_charge+other_deduction')->caption('Total deuction');
+		$this->addExpression('total_deduction')->set('tds+admin_charge+other_deduction')->caption('Total deduction');
 
 		$this->addField('net_amount')->type('money')->defaultValue(0)->caption('Net amount');
 		$this->addField('carried_amount')->type('money')->defaultValue(0)->caption('Carried amount');
@@ -56,8 +56,8 @@ class Model_Payout extends \SQL_Model {
 
 		foreach ($this->add('xMLM/Model_Kit') as $kit) {
 			$kit_id = $kit->id;
-			$kit_name = "";
-			$kit_name = $name_array =implode(" ",explode('_', $kit['name']));
+			// $kit_name = "";
+			// $kit_name = $name_array =implode(" ",explode('_', $kit['name']));
 			// foreach ($name_array as $value) {
 			// 	$kit_name .= $value." ";
 			// }
@@ -75,7 +75,7 @@ class Model_Payout extends \SQL_Model {
 					->addCondition('kit_item_id',$kit_id)
 					->count();
 
-			})->caption(ucfirst(strtolower($kit_name.' count')));
+			})->caption(ucfirst(strtolower($kit['name'].' count')));
 
 			$this->addExpression(strtolower($this->api->normalizeName($kit['name'].'_income')))->set(function($m,$q)use($kit_id){
 				$last_payout_date=$this->add('xMLM/Model_Payout',array("table_alias"=>'p'.$kit_id));
@@ -95,7 +95,7 @@ class Model_Payout extends \SQL_Model {
 					->addCondition('kit_item_id',$kit_id)
 					->sum('intro_value');
 
-			})->caption(ucfirst(strtolower($kit_name.' income')));
+			})->caption(ucfirst(strtolower($kit['name'].' income')));
 		}
 
 		$this->setOrder('on_date');

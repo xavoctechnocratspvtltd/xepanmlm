@@ -1,9 +1,9 @@
 <?php
 
-class page_xMLM_page_owner_xmlm_credits_canceled extends page_xMLM_page_owner_main{
+class page_xMLM_page_owner_xmlm_credits_rejected extends page_xMLM_page_owner_main{
 	
 	function page_index(){
-		$credit_model = $this->add('xMLM/Model_Credit_Canceled');
+		$credit_model = $this->add('xMLM/Model_Credit_Rejected');
 
 		$crud = $this->add('CRUD',array('grid_class'=>'xMLM/Grid_CreditMovement'));
 		$crud->setModel($credit_model,array('created_at','distributor','credits','narration'));

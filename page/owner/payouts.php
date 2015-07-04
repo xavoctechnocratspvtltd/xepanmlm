@@ -156,8 +156,8 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$config = $this->add('xMLM/Model_Configuration')->tryLoadAny();
 
 		$cols = $this->add('Columns');
-		$lc= $cols->addColumn(6);
-		$rc= $cols->addColumn(6);
+		$lc= $cols->addColumn(3);
+		$rc= $cols->addColumn(3);
 
 		$form = $lc->add('Form');
 		$from_date_field = $form->addField('DatePicker','from_date','From date');
@@ -183,13 +183,13 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 
 		$q=$payout_model->dsql();
 
-		$payout_model->addExpression('total_pair_income')->set($q->expr('sum(IF(net_amount>0,pair_income,0))'));
-		$payout_model->addExpression('total_introduction_income')->set($q->expr('sum(IF(net_amount>0,introduction_income,0))'));
-		$payout_model->addExpression('total_total_pay')->set($q->expr('sum(IF(net_amount>0,(introduction_income+pair_income+generation_difference_income+bonus),0))'));
-		$payout_model->addExpression('total_tds')->set($q->expr('sum(IF(net_amount>0,tds,0))'));
-		$payout_model->addExpression('total_admin_charge')->set($q->expr('sum(IF(net_amount>0,admin_charge,0))'));
-		$payout_model->addExpression('total_total_deduction')->set($q->expr('sum(IF(net_amount>0,(tds+admin_charge+other_deduction),0))'));
-		$payout_model->addExpression('total_net_amount')->set($q->expr('sum(net_amount)'));
+		$payout_model->addExpression('total_pair_income')->set($q->expr('sum(IF(net_amount>0,pair_income,0))'))->caption('total pair income');
+		$payout_model->addExpression('total_introduction_income')->set($q->expr('sum(IF(net_amount>0,introduction_income,0))'))->caption('Total introduction income');
+		$payout_model->addExpression('total_total_pay')->set($q->expr('sum(IF(net_amount>0,(introduction_income+pair_income+generation_difference_income+bonus),0))'))->caption('Total pay');
+		$payout_model->addExpression('total_tds')->set($q->expr('sum(IF(net_amount>0,tds,0))'))->caption('Total tds');
+		$payout_model->addExpression('total_admin_charge')->set($q->expr('sum(IF(net_amount>0,admin_charge,0))'))->caption('Total admin charge');
+		$payout_model->addExpression('total_total_deduction')->set($q->expr('sum(IF(net_amount>0,(tds+admin_charge+other_deduction),0))'))->caption('Total deduction');
+		$payout_model->addExpression('total_net_amount')->set($q->expr('sum(net_amount)'))->caption('Total net amount');
 		// $payout_model->addExpression('carried_amount')->set($q->expr('sum(xmlm_payouts.carried_amount)'));
 
 		$payout_model->_dsql()->group('distributor_id');
@@ -244,13 +244,13 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$this->template->loadTemplate('view/page/payoutinout');
 		$distributer=$this->add('xMLM/Model_Distributor');
 		$form=$this->add('Form',null,'form');
-		$form->addField('DatePicker','from_date');
-		$form->addField('DatePicker','to_date');
+		$form->addField('DatePicker','from_date','From date');
+		$form->addField('DatePicker','to_date','To date');
 		$form->addField('autocomplete/Basic','distributor')->setModel($distributer);
 		$form->addSubmit('Get Report');
 
 		$distributor_model = $this->add('xMLM/Model_Distributor');
-		$distributor_model->getElement('name')->caption('Distributor Name');
+		// $distributor_model->getElement('name')->caption('Distributor Name');
 		$fields=array('date','name'); // I had given username here, client changed it to name
 		$amount_field = array();
 
@@ -272,7 +272,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
                 		->addCondition('kit_item_id',$kit_id);
 
                 return $solds->count();
-            })->sortable(true);
+            })->sortable(true)->caption(ucfirst(strtolower($kit['name'].' count')));
 
             $amount_field[] = $fields[] = $this->api->normalizeName($kit['name']).'_sold';
         }
@@ -290,7 +290,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	            
 	            return $intros->sum('sale_price');
 
-	    	})->sortable(true);
+	    	})->sortable(true)->caption('Total income');
 	    
 	    $amount_field[] = $fields[]= 'total_income';
 
@@ -301,7 +301,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	            		->addCondition('on_date','<',$m->api->nextDate($to_date));
 	            return $exp->sum('net_amount');
 
-	    	})->sortable(true)->caption('Total Payout');
+	    	})->sortable(true)->caption('Total payout');
 
 	    $amount_field[] = $fields[]= 'total_expense';
 
@@ -466,11 +466,11 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$this->add('View')->set("Tabular Records");
 		$grid = $this->add('Grid');
 		
-		$grid->addColumn('closing_date');
-		$grid->addColumn('total_joining_fund');
-		$grid->addColumn('total_payouts');
-		$grid->addColumn('closing_fund');
-		$grid->addColumn('closing_payouts');
+		$grid->addColumn('closing_date',null,'Closing date');
+		$grid->addColumn('total_joining_fund',null,'Total joining found');
+		$grid->addColumn('total_payouts',null,'Total payouts');
+		$grid->addColumn('closing_fund',null,'Closing fund');
+		$grid->addColumn('closing_payouts',null,'Closing payouts');
 
 		$grid->setSource($grid_data);
 

@@ -2,7 +2,7 @@
 
 namespace xMLM;
 
-class Model_Credit_Canceled extends Model_CreditMovement{
+class Model_Credit_Rejected extends Model_CreditMovement{
 	public $root_documnet_name="xMLM\Model_CreditMovement";
 	public $actions=array(
 			// 'can_mark_processed'=>array(),
@@ -13,6 +13,6 @@ class Model_Credit_Canceled extends Model_CreditMovement{
 
 	function init(){
 		parent::init();
-		$this->addCondition('status','Canceled');
+		$this->addCondition('status','Rejected');
 	}
 }

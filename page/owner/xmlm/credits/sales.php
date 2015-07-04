@@ -7,13 +7,13 @@ class page_xMLM_page_owner_xmlm_credits_sales extends page_xMLM_page_owner_main{
 
 		$distributer=$this->add('xMLM/Model_Distributor');
 		$form=$this->add('Form');
-		$form->addField('DatePicker','from_date');
-		$form->addField('DatePicker','to_date');
+		$form->addField('DatePicker','from_date','From date');
+		$form->addField('DatePicker','to_date','To date');
 		$form->addField('autocomplete/Basic','distributor')->setModel($distributer);
 		$form->addSubmit('Get Report');
 
 		$distributor_model = $this->add('xMLM/Model_Distributor');
-		$fields=array('date','username');
+		$fields=array('date','username','name');
 		$amount_field = array();
 
         $from_date = $this->api->stickyGET('from_date')?:'1970-01-01';
@@ -34,7 +34,7 @@ class page_xMLM_page_owner_xmlm_credits_sales extends page_xMLM_page_owner_main{
                 		->addCondition('kit_item_id',$kit_id);
 
                 return $solds->count();
-            })->sortable(true);
+            })->sortable(true)->caption(ucfirst(strtolower($kit['name'].' sold')));
 
             $amount_field[] = $fields[] = $this->api->normalizeName($kit['name']).'_sold';
         }
@@ -52,7 +52,7 @@ class page_xMLM_page_owner_xmlm_credits_sales extends page_xMLM_page_owner_main{
 	            
 	            return $intros->sum('sale_price');
 
-	    	})->sortable(true);
+	    	})->sortable(true)->caption('Total income');
 
 	    $amount_field[] = $fields[]= 'total_income';
 
