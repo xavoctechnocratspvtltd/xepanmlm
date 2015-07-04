@@ -38,22 +38,32 @@ class page_xMLM_page_tests_base extends Page_Tester{
 
 		if($rd['left_id']){
 			try{
-				$rd->ref('left_id')->forceDelete();
+				$lid = $rd->ref('left_id');
+				$lid->forceDelete = true;
+				$lid->forceDelete();
 			}catch(\Exception $e){
 				// echo $rd['left_id'];
 				throw $e;
 			}
 		}
 		if($rd['right_id']){
-			$rd->ref('right_id')->forceDelete();
+			$rid= $rd->ref('right_id');
+			$rid->forceDelete=true;
+			$rid->forceDelete();
 		}
 
-		if($rd->loaded()) $rd->forceDelete();
+		if($rd->loaded()){
+			$rd->forceDelete = true;
+			$rd->forceDelete();	
+		} 
 
 		// remove all users
 		$this->add('Model_Users')
 			->addCondition('username','<>',array('admin','root'))
-			->each(function($obj){$obj->forceDelete();});
+			->each(function($obj){
+				$obj->forceDelete = true;
+				$obj->forceDelete();
+			});
 
 			
 
