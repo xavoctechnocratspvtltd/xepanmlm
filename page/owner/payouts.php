@@ -29,7 +29,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 
 
 		$form = $lc->add('Form');
-		$form->addField('Readonly','on_date')->set($this->api->now);
+		$form->addField('Readonly','on_date','Date')->set($this->api->now);
 
 		if($config['trimming_applicable']){
 			$updt_btn = $rc->add('Button')->set('Update');
@@ -43,9 +43,10 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 
 
 		if($config['include_generation'])
-			$form->addField('Checkbox','close_generation','Close Generation Income Also');
+			$form->addField('Checkbox','close_generation','Close Generation Income');
 		$field=$form->addField('line','captcha');
-		$field->belowField()->add('H5')->set('Please enter the code shown above');
+		$field->setAttr('PlaceHolder','Please enter the code shown above');
+		// $field->belowField()->add('H5')->set('Please enter the code shown above');
 		$field->add('x_captcha/Controller_Captcha');
 		$form->addSubmit('Close');
 
@@ -93,8 +94,8 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$rc= $cols->addColumn(6);
 
 		$form = $lc->add('Form');
-		$closings_field = $form->addField('DropDown','closings')->setEmptyText('Please select any closing')->setModel($payouts_list);
-		$form->addField('autocomplete/Basic','distributor')->setModel('xMLM/Distributor');
+		$closings_field = $form->addField('DropDown','closings','Closing')->setEmptyText('Please select any closing')->setModel($payouts_list);
+		$form->addField('autocomplete/Basic','distributor','Distributor name')->setModel('xMLM/Distributor');
 		$form->addSubmit('Get Details');
 
 		$payout_model = $this->add('xMLM/Model_Payout');
@@ -115,7 +116,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		if(!$g_on_date and !$g_dist_id)
 			$payout_model->addCondition('id',-1);
 
-		$payout_grid = $this->add('xMLM/Grid_Payout',array('hide_distributor'=>false));//,'generation_income'=>$config['include_generation']));
+		$payout_grid = $this->add('xMLM/Grid_Payout',array('hide_distributor'=>false,'sno_caption'=>'No'));//,'generation_income'=>$config['include_generation']));
 		$payout_grid->setModel($payout_model);
 			
 		if($payout_model->count()->getOne()){
@@ -124,6 +125,8 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 
 		$payout_grid->addPaginator(100);
 		$payout_grid->addSno();
+
+		// $kit_array = $this->add('xMLM/Model_Kit')->getKitUcFirst();
 
 		$payout_grid->add('xMLM/Controller_Export',
 				array('output_filename'=>'Payout_'.$g_on_date."_".$g_dist_name.'.csv','model'=>$payout_model,
@@ -157,8 +160,8 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 		$rc= $cols->addColumn(6);
 
 		$form = $lc->add('Form');
-		$from_date_field = $form->addField('DatePicker','from_date');
-		$to_date_field = $form->addField('DatePicker','to_date');
+		$from_date_field = $form->addField('DatePicker','from_date','From date');
+		$to_date_field = $form->addField('DatePicker','to_date','To date');
 		
 		$form->addSubmit('Get Details');
 
