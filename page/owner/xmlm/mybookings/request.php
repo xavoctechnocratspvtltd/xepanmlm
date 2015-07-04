@@ -31,7 +31,7 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 				$property->addCondition('location_id',$_GET['location_'.$i]);
 			}
 
-			$hotel_field = $form->addField('DropDownNormal','hotel_'.$i)->setEmptyText('Please Select Hotel')->validateNotNull();
+			$hotel_field = $form->addField('DropDownNormal','hotel_'.$i)->setEmptyText('Please Select Hotel')->validateNotNull("Location is required");
 			$hotel_field->setModel($property);
 
 			if($_GET['location_'.$i]){
@@ -52,16 +52,16 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 
 			$no_of_nights_field = $form->addField('line','no_of_nights_'.$i)->validateNotNull();
 
-			// var diff = new Date(Date.parse(to) - Date.parse(from));
-			// $checkout_field->js('change',$no_of_nights_field->js()->val($diff));
-			// $checkin_field->js('change',$no_of_nights_field->js()->val($diff));
+			// $diff =  "var diff = new Date(Date.parse('$checkout_field') - Date.parse('$checkin_field'));";
+			// $checkout_field->js('change',$no_of_nights_field->js()->val($diff)->_enclose());
+			// $checkin_field->js('change',$no_of_nights_field->js()->val($diff)->_enclose());
 
 			// $location_fileds->js('change',$form->js()->atk4_form('reloadField','hotel_'.$i,array($this->api->url(),'location_'.$i=>$location_fileds->js()->val())));
 
 		}
 
-		$form->addField('DropDown','no_of_adults','No of Adults')->setValueList(array('0'=>0,'1'=>1,'2'=>2));
-		$form->addField('DropDown','no_of_children','No of Children')->setValueList(array('0'=>0,'1'=>1,'2'=>2));
+		$form->addField('DropDown','no_of_adults','Adults')->setValueList(array('0'=>0,'1'=>1,'2'=>2));
+		$form->addField('DropDown','no_of_children','Children')->setValueList(array('0'=>0,'1'=>1,'2'=>2));
 		$form->addField('line','voucher_no')->validateNotNull(" Voucher no is required");
 		$form->addField('line','confirmation_through','Booking Through')->validateNotNull('Booking through is required');
 

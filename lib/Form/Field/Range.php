@@ -25,7 +25,7 @@ class Form_Field_Range extends \Form_Field_Line {
             }
 
             if($this->value > 100 or $this->value < 0){
-                $this->displayFieldError('Nominee age must not be above 100 or upto 60 years'.$this->value);
+                $this->displayFieldError('Nominee age must not be above 100 years');
             }
         }
         return parent::validate();

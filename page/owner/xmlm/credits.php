@@ -10,7 +10,7 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 
 		$export_model = $current_distributor->creditMovements()->setOrder('created_at');
 		$export_model->getElement('created_at')->caption('Request date');
-		$export_model->getElement('narration')->caption('Remark');
+		// $export_model->getElement('narration')->caption('Remark');
 		$export_model->addExpression('credit')->set($export_model->dsql()->fx('IF',array($export_model->dsql()->expr('status="Purchase"'),$export_model->dsql()->expr('credits'),'0')));
 		$export_model->addExpression('debit')->set($export_model->dsql()->fx('IF',array($export_model->dsql()->expr('status="Consumed"'),$export_model->dsql()->expr('credits'),'0')));
 		
@@ -20,12 +20,12 @@ class page_xMLM_page_owner_xmlm_credits extends page_xMLM_page_owner_xmlm_main{
 		$req_col = $cols->addColumn(4);
 
 		$trans_col->add('View')->setHTML('Credits Movement <div class="atk-size-micro">Current Credits Available : '.$current_distributor['credit_purchase_points'].'</div>')->addClass('text-center atk-swatch-ink atk-size-exa atk-box');
-		$exp = $trans_col->add('xMLM/Controller_Export',array('output_filename'=>'distributor_credit_repot.csv','model'=>$export_model,'fields'=>array('status','credit','debit','created_at','narration'),'totals'=>array('credit','debit')));
+		$exp = $trans_col->add('xMLM/Controller_Export',array('output_filename'=>'distributor_credit_repot.csv','add_sno'=>'No','model'=>$export_model,'fields'=>array('status','credit','debit','created_at','narration'),'totals'=>array('credit','debit')));
 		$exp->btn->addClass('atk-box atk-swatch-yellow atk-move-center');
 
 		$trans_cr_dr_col = $trans_col->add('Columns');
-		$trans_cr_col = $trans_cr_dr_col->addColumn(6);
-		$trans_dr_col = $trans_cr_dr_col->addColumn(6);
+		$trans_cr_col = $trans_cr_dr_col->addColumn(5);
+		$trans_dr_col = $trans_cr_dr_col->addColumn(7);
 
 		$trans_credit = $current_distributor->creditMovements()->setOrder('created_at','desc');
 		$trans_credit->addCondition('status',array('Purchase'));

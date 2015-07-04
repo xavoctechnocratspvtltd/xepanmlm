@@ -1,24 +1,24 @@
 div(id="{$_name}" class=" {$class}" style=" {$style}")
-	.atk-row.atk-form-row
-		.atk-col-4
+	.atk-row.atk-form-row.atk-push
+		.atk-col-2
 			| Distributor Name
-		.atk-col-8
+		.atk-col-3
 			| {$distributor_name}
-	.atk-row.atk-form-row
-		.atk-col-4
+	.atk-row.atk-form-row.atk-push
+		.atk-col-2
 			| Booking in name of
-		.atk-col-8.atk-form-field
+		.atk-col-3.atk-form-field
 			| {$booking_in_name_of}
 	br
 	.atk-table.atk-table-zebra.atk-table-bordered.atk4_grid
 		table
 			tr
-				th Preference
-				th Location
-				th HotelName
-				th Check In
-				th Check Out
-				th No Of Nights
+				th &nbsp;&nbsp;Preference
+				th &nbsp;&nbsp;Location
+				th &nbsp;&nbsp;HotelName
+				th &nbsp;&nbsp;Check In
+				th &nbsp;&nbsp;Check Out
+				th &nbsp;&nbsp;No Of Nights
 			tr
 				td 1
 				td.atk-form-row.atk-form-field
@@ -56,22 +56,22 @@ div(id="{$_name}" class=" {$class}" style=" {$style}")
 				td.atk-form-row.atk-form-field
 					| {$no_of_nights_3}
 	br
-	.atk-row.atk-form-row
+	.atk-row.atk-form-row.atk-push
 		.atk-col-2
-			| No Of Adults
+			| Adults
 		.atk-col-2
 			| {$no_of_adults}
-	.atk-row.atk-form-row
+	.atk-row.atk-form-row.atk-push
 		.atk-col-2
-			| No Of Children
+			| Children
 		.atk-col-2
 			| {$no_of_children}
-	.atk-row.atk-form-row
+	.atk-row.atk-form-row.atk-push
 		.atk-col-2
 			| Voucher No
 		.atk-col-2
 			| {$voucher_no}
-	.atk-row.atk-form-row
+	.atk-row.atk-form-row.atk-push
 		.atk-col-2
 			| Confirmation Through
 		.atk-col-2

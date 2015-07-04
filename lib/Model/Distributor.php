@@ -54,7 +54,7 @@ class Model_Distributor extends \Model_Document {
 			// $this->addField('landmark')->group('a~4');
 			$this->addField('address')->type('text')->group('a~12')->mandatory("Address is required");
 
-			$this->addField('pin_code')->group('a~4')->display(array('form'=>'xMLM/Number'))->caption('PIN Code');
+			$this->addField('pin_code')->group('a~4')->display(array('form'=>'xMLM/Pincode'))->caption('PIN Code')->mandatory('Pin code is required');
 
 			$this->hasOne('xMLM/State','state_id')->group('a~4')->mandatory("State is required")->display(array('form'=>'DropDownNormal'));
 			$this->hasOne('xMLM/District','district_id')->group('a~4')->mandatory("City/District is required")->display(array('form'=>'DropDownNormal'))->caption('City/District');

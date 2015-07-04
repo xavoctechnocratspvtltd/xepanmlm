@@ -19,9 +19,9 @@ class Model_CreditMovement extends \Model_Document {
 
 		$this->hasOne('xMLM\Distributor','distributor_id')->mandatory(true)->caption('Distributor Name');
 		$this->hasOne('xMLM\Distributor','joined_distributor_id')->mandatory(true)->caption('Used for Distributor');
-		$this->addField('credits')->type('money')->mandatory(true)->caption("Credit amount");
+		$this->addField('credits')->type('money')->mandatory("Credits is required")->caption("Credit amount");
 		$this->addField('credits_given_on')->type('datetime')->defaultValue(null);
-		$this->addField('narration')->mandatory(true)->caption("Remarks");
+		$this->addField('narration')->mandatory('Remarks is required')->caption("Remarks");
 
 		$this->add('filestore/Field_Image','attachment_id');//->mandatory(true);
 

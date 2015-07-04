@@ -37,7 +37,7 @@ class Controller_Export extends \AbstractController {
 		// Add Headers First
 		$header=array();
 		if($this->add_sno)
-			$header[] ="Sno";
+			$header[] = $this->add_sno===true?"Sno":$this->add_sno;
 		foreach ($this->fields as $f) {
 			if($fn = $this->model->hasElement($f)){
 				$f= $fn->caption()?:$f;

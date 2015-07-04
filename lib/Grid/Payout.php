@@ -19,6 +19,9 @@ class Grid_Payout extends \Grid {
 		$m = parent::setModel($model,$fields);
 
 		if($this->hide_distributor and $this->hasColumn('distributor')) $this->removeColumn('distributor');
+
+		if($this->hasColumn('trimming_base')) $this->removeColumn('trimming_base');
+		if($this->hasColumn('trimming_percentage')) $this->removeColumn('trimming_percentage');
 		if($this->hasColumn('pairs')) $this->removeColumn('pairs');
 		if($this->hasColumn('session_left_pv')) $this->removeColumn('session_left_pv');
 		if($this->hasColumn('session_right_pv')) $this->removeColumn('session_right_pv');
