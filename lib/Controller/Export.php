@@ -6,6 +6,7 @@ class Controller_Export extends \AbstractController {
 	public $fields=null;
 	public $add_sno = true;
 	public $totals=array();
+	public $total_values=array();
 	public $row_separator="\n";
 	public $column_separator=",";
 	public $output=null;
@@ -36,8 +37,10 @@ class Controller_Export extends \AbstractController {
 	function getData(){
 		// Add Headers First
 		$header=array();
-		if($this->add_sno)
+		if($this->add_sno){
 			$header[] = $this->add_sno===true?"Sno":$this->add_sno;
+			$this->total_values[]= "Total";
+		}
 		foreach ($this->fields as $f) {
 			if($fn = $this->model->hasElement($f)){
 				$f= $fn->caption()?:$f;
@@ -57,6 +60,13 @@ class Controller_Export extends \AbstractController {
             foreach ($this->fields as $f){
             	// if(!in_array($col, $this->fields)) continue;
             	$col= $row[$f];
+            	if(in_array($f, $this->totals)){
+            		if(!isset($this->total_values[$f])) $this->total_values[$f] = 0;
+            		$this->total_values[$f] += $col;
+            	}else{
+            		$this->total_values[$f]="";
+            	}
+
                 $cols[] = "\"" . preg_replace("/\"/", "\"\"", $col) . "\"";
             }
             if ($this->output){
@@ -64,6 +74,9 @@ class Controller_Export extends \AbstractController {
             }
             $this->output .= implode($this->column_separator, $cols);
 		}
+		
+        $this->output .= $this->row_separator;
+        $this->output .= implode($this->column_separator, $this->total_values);
 	}
 
 	function setOutput($type=null, $disposition=null, $filename=null){

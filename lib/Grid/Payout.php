@@ -80,6 +80,7 @@ class Grid_Payout extends \Grid {
 			$this->addFormatter($count_col,$count_col);
 			$this->addFormatter($income_col,$income_col);
 		}
+		
 		$order->now();
 
 		if(!$this->hide_distributor and $this->hasColumn('distributor')){
@@ -204,8 +205,9 @@ class Grid_Payout extends \Grid {
         // $q = $this->api->db->dsql();//->debug();
         // $q->table($sub_q->render(), 'grandTotals'); // alias is mandatory if you pass table as DSQL
         foreach ($fields as $field) {
-            $sub_q->field($sub_q->sum('xmlm_payouts.'.$field), $field);
+            $sub_q->field($sub_q->sum($m->getElement($field)), $field);
         }
+
         $sub_q->field($sub_q->count(), 'total_cnt');
 
         // execute DSQL
