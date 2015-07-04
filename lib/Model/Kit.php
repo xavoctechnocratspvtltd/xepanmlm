@@ -78,5 +78,17 @@ class Model_Kit extends \xShop\Model_Item {
 		return $this->specification('Capping');
 	}
 
+	function getKitUcFirst(){
+		$kit_name = array();
+		foreach ($this->add('xMLM/Model_Kit') as $kit) {
+			$name = implode(" ",explode('_', $kit['name']));
+			$kit_name[] = $name." count";
+			$kit_name[] = $name." income";
+		}
+
+		return $kit_name;
+
+	}
+
 
 }

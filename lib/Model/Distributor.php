@@ -28,11 +28,11 @@ class Model_Distributor extends \Model_Document {
 		$user_j = $this->join('users','user_id');
 		$user_j->addField('username')->sortable(true)->group('b~4~Distributor Login')->mandatory(true)->display(array('form'=>'xMLM/LetterCount'));
 		$user_j->addField('password')->type('password')->group('b~4')->mandatory(true)->display(array('form'=>'xMLM/Password'));
-		$user_j->addField('name')->mandatory(true)->mandatory(true)->system(true)->display(array('form'=>'Alpha'));
+		$user_j->addField('name')->mandatory(true)->mandatory(true)->system(true)->display(array('form'=>'Alpha'))->caption('Distributor name');
 			$this->addField('first_name')->group('a~4~Distributor Info')->mandatory("First name is required")->display(array('form'=>'Alpha'))->caption('First name');
 			$this->addField('last_name')->group('a~4')->mandatory("Last name is required")->display(array('form'=>'Alpha'))->caption('Last name');
 			$this->addField('date_of_birth')->type('date')->group('a~4')->mandatory("Date of Birth is required")->display(array('form'=>'xMLM/BDate'))->caption('Date of Birth');
-		$user_j->addField('email')->sortable(true)->group('a~4')->mandatory("Email is required")->display(array('form'=>'Email'))->caption('Email Id');
+		$user_j->addField('email')->sortable(true)->group('a~4')->mandatory("Email is required")->display(array('form'=>'Email'))->caption('Email id');
 
 		$user_j->addField('user_is_active','is_active')->system(true)->defaultValue(true);
 		$user_j->addField('user_epan_id','epan_id')->system(true);
@@ -109,12 +109,12 @@ class Model_Distributor extends \Model_Document {
 		
 		$this->addField('total_pairs')->type('int')->defaultValue(0);
 
-		$this->addField('carried_amount')->type('money')->defaultValue(0);
+		$this->addField('carried_amount')->type('money')->defaultValue(0)->caption('Carried amount');
 		$this->addField('credit_purchase_points')->type('money')->defaultValue(0);
 		$this->addField('temp')->system(true)->defaultValue(0);
 
 
-		$this->addField('greened_on')->type('datetime')->defaultValue(null);
+		$this->addField('greened_on')->type('datetime')->defaultValue(null)->caption('Qualified date');
 
 		$this->hasMany('xMLM/Sponsor','sponsor_id',null,'SponsoredDistributors');
 		$this->hasMany('xMLM/Introducer','introducer_id',null,'IntroducedDistributors');
@@ -135,6 +135,7 @@ class Model_Distributor extends \Model_Document {
 				);
 
 		$this->setOrder('greened_on','desc');
+		$this->getElement('created_at')->caption('Joining date');
 		// $this->api->auth->addEncryptionHook($this);
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
