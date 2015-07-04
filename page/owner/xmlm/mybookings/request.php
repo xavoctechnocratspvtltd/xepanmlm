@@ -39,8 +39,16 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 			}
 		
 			$checkin_field = $form->addField('DatePicker','checkin_date_'.$i)->validateNotNull();
+			$checkin_field->options=[
+                    		'minDate'=>$this->js(null, 'new Date'),
+                    		'onSelect'=>$checkin_field->js()->datepicker('option','minDate',$checkin_field->js()->datepicker('getDate'))->_enclose()
+                		];
 
 			$checkout_field = $form->addField('DatePicker','checkout_date_'.$i)->validateNotNull();
+			$checkout_field->options=[
+                    		'minDate'=>$this->js(null, 'new Date'),
+                    		'onSelect'=>$checkout_field->js()->datepicker('option','minDate',$checkout_field->js()->datepicker('getDate'))->_enclose()
+                		];
 
 			$no_of_nights_field = $form->addField('line','no_of_nights_'.$i)->validateNotNull();
 
@@ -52,10 +60,10 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 
 		}
 
-		$form->addField('line','no_of_adults');
-		$form->addField('line','no_of_children');
-		$form->addField('line','voucher_no');
-		$form->addField('line','confirmation_through');
+		$form->addField('DropDown','no_of_adults','No of Adults')->setValueList(array('0'=>0,'1'=>1,'2'=>2));
+		$form->addField('DropDown','no_of_children','No of Children')->setValueList(array('0'=>0,'1'=>1,'2'=>2));
+		$form->addField('line','voucher_no')->validateNotNull(" Voucher no is required");
+		$form->addField('line','confirmation_through','Booking Through')->validateNotNull('Booking through is required');
 
 		$form->addSubmit('Submit');
 		
@@ -81,7 +89,7 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 				$booking->save();
 			}
 
-			$form->js(null,$form->js()->reload()->univ()->successMessage(' Update Information'))->execute();
+			$form->js(null,$form->js()->reload()->univ()->successMessage(' Request Submitted successfully'))->execute();
 			// $form->js()->univ()->errorMessage('Value Not Proper')->execute();
 		}
 	}	

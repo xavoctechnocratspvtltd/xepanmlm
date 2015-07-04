@@ -10,7 +10,7 @@ class page_xMLM_page_owner_xmlm_mybookings extends page_xMLM_page_owner_xmlm_mai
 	
 	function page_booking(){
 		$booking_model=$this->add('xMLM/Model_Booking');
-		$grid=$this->add('xMLM/Grid_MyBooking');
+		$grid=$this->add('xMLM/Grid_MyBooking',array('sno_caption'=>'no'));
 		$grid->setModel($booking_model);
 		
 		$order = $grid->addOrder();

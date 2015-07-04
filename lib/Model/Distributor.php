@@ -379,7 +379,7 @@ class Model_Distributor extends \Model_Document {
 			if($from_distributor['credit_purchase_points'] < $kitpoints){
 				return false;		
 			}
-			$from_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this['name'], $this);
+			$from_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this['username'], $this);
 			return true;
 		}
 
@@ -392,7 +392,7 @@ class Model_Distributor extends \Model_Document {
 			// throw new \Exception("Not sufficient credit points", 1);
 			return false;
 		}
-		$logged_in_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this->id." [".$this['username']."]",$this);
+		$logged_in_distributor->consumePurchasePoints($kitpoints,"Joining of ".$this['username']."",$this);
 		return true;
 	}
 
