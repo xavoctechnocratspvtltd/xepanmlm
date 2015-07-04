@@ -22,10 +22,10 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 		$v=$bg->add('View_Badge')->set('Total Blocked IDs')->setCount($data)->setCountSwatch('ink');
 
 		$tab = $this->add('Tabs');
-		$red_tab = $tab->addTabURL('./unpaid','Unpaid Ids');
-		$green_tab = $tab->addTabURL('./paid','Paid Ids');
-		$inactive_tab = $tab->addTabURL('./unactive','UnActive / Blocked');
-		$inactive_tab = $tab->addTabURL('./all','All Distributors');
+		$red_tab = $tab->addTabURL('./unpaid','Unpaid distributors');
+		$green_tab = $tab->addTabURL('./paid','Paid distributors');
+		$inactive_tab = $tab->addTabURL('./unactive','Inactive / Blocked distributors');
+		$inactive_tab = $tab->addTabURL('./all','All distributors');
 		
 		
 		
