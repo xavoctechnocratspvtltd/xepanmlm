@@ -12,7 +12,7 @@ class page_xMLM_page_owner_bookings extends page_xMLM_page_owner_main {
 		$tab->addTabURL('./approved','Approved');
 		$tab->addTabURL('./availed','Availed');
 		$tab->addTabURL('./reject','Rejected');
-		$tab->addTabURL('./cancel','Canceled');
+		// $tab->addTabURL('./cancel','Canceled');
 	}
 
 	function page_request(){
