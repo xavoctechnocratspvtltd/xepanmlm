@@ -15,6 +15,8 @@ class Model_RepurchaseItem extends \Model_Document {
 		$this->addField('bv')->type('int')->mandatory('BV is required')->defaultValue(0);
 		$this->addField('mrp')->type('money')->caption('MRP')->mandatory('MRP is required');
 
+		$this->hasMany('xMLM/RepurchaseItem','repurchaseitem_id');
+
 	}
 
 }

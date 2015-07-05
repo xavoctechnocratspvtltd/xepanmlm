@@ -115,6 +115,7 @@ class Model_Distributor extends \Model_Document {
 
 
 		$this->addField('greened_on')->type('datetime')->defaultValue(null)->caption('Qualified date');
+		$this->addField('ansestors_updated')->type('boolean')->defaultValue(false)->system(true);
 
 		$this->hasMany('xMLM/Sponsor','sponsor_id',null,'SponsoredDistributors');
 		$this->hasMany('xMLM/Introducer','introducer_id',null,'IntroducedDistributors');
@@ -197,11 +198,12 @@ class Model_Distributor extends \Model_Document {
 			$this['is_active']=true;
 			$this['capping']=$kit->getCapping();
 
-			if($this->loaded()){
-				$this->updateAnsestors($kit->getPV(),$kit->getBV());
-				$introducer = $this->introducer();
-				$introducer->addSessionIntro($kit->getIntro());
-			}
+			// ======== 11 days free look period =========== in cron now
+			// if($this->loaded()){
+				// $this->updateAnsestors($kit->getPV(),$kit->getBV());
+				// $introducer = $this->introducer();
+				// $introducer->addSessionIntro($kit->getIntro());
+			// }
 		}
 
 		if(!$this->loaded()){
