@@ -107,6 +107,7 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 		$exp = $v->add('xMLM/Controller_Export',array('output_filename'=>'All_Distributors_'.date('l jS \of F Y h:i:s A').'.csv','model'=>$export_model,'fields'=>array('name','email','mobile_number','address','sponsor','introducer','left','right','kit_item','username','created_at','greened_on','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount')));
 		$exp->btn->addClass('atk-box atk-swatch-yellow');
 		$distributor=$this->add('xMLM/Model_Distributor');
+		$distributor->_dsql()->del('order')->order('created_at desc');
 
 		$distributor->actions=array('allow_add'=>false,'allow_edit'=>array(),'allow_del'=>false);
 

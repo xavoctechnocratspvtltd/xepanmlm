@@ -29,7 +29,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 
 
 		$form = $lc->add('Form');
-		$form->addField('Readonly','on_date','Date')->set($this->api->now);
+		$form->addField('DatePicker','on_date','Date')->set($this->api->now);
 
 		if($config['trimming_applicable']){
 			$updt_btn = $rc->add('Button')->set('Update');
