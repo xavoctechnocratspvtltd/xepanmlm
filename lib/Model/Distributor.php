@@ -78,7 +78,7 @@ class Model_Distributor extends \Model_Document {
 		$this->hasOne('xMLM/Bank','bank_id')->group('e~6~Bank Info')->mandatory("Bank is required");//->system(true);
 		$this->addField('account_no')->group('e~6~bl')->mandatory("Account no is required")->display(array('form'=>'xMLM/Number'))->caption('Account no');
 		
-		$this->addField('IFCS_Code')->group('e~6')->mandatory("IFSC Code is required")->display(array('form'=>'Alpha'))->caption('IFSC Code');
+		$this->addField('IFCS_Code')->group('e~6')->mandatory("IFSC Code is required")->display(array('form'=>'AlphaNumeric'))->caption('IFSC Code');
 		$this->addField('branch_name')->caption('Branch')->group('e~6~bl')->mandatory("Branch name is required")->display(array('form'=>'Alpha'));//->system(true);
 		$this->addField('kyc_no')->group('kyc~6~Kyc Info')->mandatory("KYC no is required")->caption('KYC no.');
 		$this->add('filestore/Field_Image','kyc_id')->group('kyc~6')->caption('KYC form');
@@ -228,12 +228,12 @@ class Model_Distributor extends \Model_Document {
 			$sponsor = $this->sponsor();
 			$sponsor[($leg=='A'?'left':'right').'_id'] = $this->id;
 			$sponsor->saveAndUnload();
-			if($this['greened_on']){
-				$kit=$this->kit();
-				$this->updateAnsestors($kit->getPV(),$kit->getBV());
-				$introducer = $this->introducer();
-				$introducer->addSessionIntro($kit->getIntro());
-			}
+			// if($this['greened_on']){
+			// 	$kit=$this->kit();
+			// 	$this->updateAnsestors($kit->getPV(),$kit->getBV());
+			// 	$introducer = $this->introducer();
+			// 	$introducer->addSessionIntro($kit->getIntro());
+			// }
 			$this->welcomeDistributor();
 			$this->forget('leg');
 
