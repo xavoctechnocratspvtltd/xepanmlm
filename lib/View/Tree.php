@@ -54,7 +54,7 @@ class View_Tree extends \View {
 		$reload_js = $this->js()->reload(array('start_id'=>$model->id));
 		$t=$this->template->cloneRegion('Node');
 		$t->setHTML('username','<a href="#xepan" onclick="'.$reload_js->render().'">'.$model['username'].'</a>');
-		$t->set('class',$model['greened_on']?'atk-effect-success':'atk-effect-danger');
+		$t->set('class',($model['greened_on'] && $model['ansestors_updated'])?'atk-effect-success':($model['greened_on']?'atk-effect-warning':'atk-effect-danger'));
 		$t->set('title',
 				$model['name'].
 				"<br/>Jn: ". date("d M Y", strtotime($model['created_at'])). 
