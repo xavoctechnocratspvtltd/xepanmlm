@@ -3,6 +3,16 @@ class page_xMLM_page_owner_xmlm_dashboard extends page_xMLM_page_owner_xmlm_main
     function init(){
 		parent::init();
 
+        $date_view = $this->add('View')->set($this->api->now)->addClass('atk-swatch-red atk-align-center atk-size-zetta');
+            $form = $this->add('Form')->addClass('atk-box'); 
+            $form->addField('DatePicker','change_date');
+            $form->addSubmit('Change Date');
+        if($form->isSubmitted()){
+            $form->api->setDate($form['change_date']);
+            $form->js(null,$date_view->js()->reload())->univ()->successMessage('Date Changed')->execute();
+        }
+
+
        	$container=$this->add('View')->addClass('container');
         $distributor=$this->add('xMLM/Model_Distributor');
         
