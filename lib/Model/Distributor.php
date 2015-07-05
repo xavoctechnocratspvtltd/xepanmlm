@@ -191,10 +191,12 @@ class Model_Distributor extends \Model_Document {
 			if($kit AND !$this->validateKitPurchasePoints($this->kit())){
 				throw $this->exception($this->id.' :: You do not have sufficient credits','Growl');
 			}
+			
 			$this['status']='paid';
 			$this['greened_on']=$this->api->now;
 			$this['is_active']=true;
 			$this['capping']=$kit->getCapping();
+
 			if($this->loaded()){
 				$this->updateAnsestors($kit->getPV(),$kit->getBV());
 				$introducer = $this->introducer();

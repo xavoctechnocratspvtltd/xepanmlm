@@ -23,7 +23,7 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 
 		$location = $this->add('xMLM/Model_Location');
 		for($i=1;$i<=3;$i++){
-			$location_fileds = $form->addField('DropDownNormal','location_'.$i)->setEmptyText('Please Select Location')->validateNotNull(true);
+			$location_fileds = $form->addField('DropDown','location_'.$i)->setEmptyText('Please Select Location')->validateNotNull(true);
 			$location_fileds->setModel($location);
 
 			$property = $this->add('xMLM/Model_Property');
@@ -31,7 +31,7 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 				$property->addCondition('location_id',$_GET['location_'.$i]);
 			}
 
-			$hotel_field = $form->addField('DropDownNormal','hotel_'.$i)->setEmptyText('Please Select Hotel')->validateNotNull("Location is required");
+			$hotel_field = $form->addField('DropDown','hotel_'.$i)->setEmptyText('Please Select Hotel')->validateNotNull("Location is required");
 			$hotel_field->setModel($property);
 
 			if($_GET['location_'.$i]){
@@ -52,7 +52,7 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 
 			$no_of_nights_field = $form->addField('line','no_of_nights_'.$i)->validateNotNull();
 
-			// $diff =  "var diff = new Date(Date.parse('$checkout_field') - Date.parse('$checkin_field'));";
+			// $diff =  "alert(daydiff(parseDate($('#first').val()), parseDate($('#second').val())));";
 			// $checkout_field->js('change',$no_of_nights_field->js()->val($diff)->_enclose());
 			// $checkin_field->js('change',$no_of_nights_field->js()->val($diff)->_enclose());
 
