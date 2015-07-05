@@ -21,12 +21,13 @@ class View_ClosingHint extends \View {
 
 		$last_closing_date=$last_payout->get('on_date')?:"1970-01-01";
 
+
 		// Total Joining Fund 
 		$total_binay_fund = $this->add('xMLM/Model_Kit');
 		$total_binay_fund->join('xmlm_distributors.kit_item_id')
 				->addField('greened_on');
 		$total_binay_fund = $total_binay_fund
-						->addCondition('greened_on','<=',$last_payout['on_date'])
+						->addCondition('greened_on','>',$last_payout['on_date'])
 						->sum('pv_value')->getOne();
 		$total_binay_fund *= $fund_times;
 
