@@ -82,8 +82,10 @@ class Grid_Distributor extends \Grid{
 		$sp = "<div class='atk-size-micro atk-move-left'>SP: ".$this->model['sponsor']."</div>";
 		$int = "<div class='atk-size-micro atk-move-right'>IN: ".$this->model['introducer']."</div>";
 		
-		if($this->model['greened_on'])
+		if($this->model['greened_on'] && $this->model['ansestors_updated'])
 			$name_class="atk-clear-fix atk-effect-success atk-size-mega";
+		elseif($this->model['greened_on'])
+			$name_class="atk-clear-fix atk-effect-warning atk-size-mega";
 		else
 			$name_class="atk-clear-fix atk-effect-danger atk-size-mega";
 
