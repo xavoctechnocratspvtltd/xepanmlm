@@ -26,6 +26,7 @@ class Plugins_mlmmenuadd extends \componentBase\Plugin {
                 $admin_m->addItem(array('Forms Management','icon'=>'gauge-1'),'xMLM_page_owner_forms');
                 $admin_m->addItem(array('Repurchase Management','icon'=>'gauge-1'),'xMLM_page_owner_repurchase');
                 $admin_m->addItem(array('Configuration','icon'=>'gauge-1'),'xMLM_page_owner_configuration');
+                $admin_m->addItem(array('Update FreeLook','icon'=>'gauge-1'),'xMLM_page_cron_freelookfinish');
         
 	}
 }
