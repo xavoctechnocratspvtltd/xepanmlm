@@ -26,7 +26,9 @@ class page_xMLM_page_cron_freelookfinish extends Page
 			$kit=$distributors->kit();
 			$distributors->updateAnsestors($kit->getPV(),$kit->getBV());
 			$introducer = $distributors->introducer();
-			$introducer->addSessionIntro($kit->getIntro());			
+			$introducer->addSessionIntro($kit->getIntro());
+			$distributors['updated_ansestos'] = true;
+			$distributors->saveAndUnload();			
 		}
 
 	}
