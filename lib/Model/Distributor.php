@@ -66,7 +66,7 @@ class Model_Distributor extends \Model_Document {
 		$this->addCondition('type',50);
 
 		// Other technical fields for MLM purpose here
-		$this->hasOne('xMLM/Kit','kit_item_id')->defaultValue(null);
+		$this->hasOne('xMLM/Kit','kit_item_id')->defaultValue(null)->caption('Startup Package');
 		$this->addField('capping')->type('int')->system(true);
 
 		$this->hasOne('xMLM/Left','left_id')->defaultValue(null);
@@ -80,8 +80,9 @@ class Model_Distributor extends \Model_Document {
 		
 		$this->addField('IFCS_Code')->group('e~6')->mandatory("IFSC Code is required")->display(array('form'=>'AlphaNumeric'))->caption('IFSC Code');
 		$this->addField('branch_name')->caption('Branch')->group('e~6~bl')->mandatory("Branch name is required")->display(array('form'=>'Alpha'));//->system(true);
-		$this->addField('kyc_no')->group('kyc~6~Kyc Info')->mandatory("KYC no is required")->caption('KYC no.');
-		$this->add('filestore/Field_Image','kyc_id')->group('kyc~6')->caption('KYC form');
+		$this->addField('kyc_no')->group('kyc~4~Kyc Info')->mandatory("KYC no is required")->caption('KYC no.');
+		$this->add('filestore/Field_Image','kyc_id')->group('kyc~4')->caption('KYC form');
+		$this->add('filestore/Field_Image','address_proof_id')->group('kyc~4')->caption('Address proof');
 		$this->addField('nominee_name')->group('f~6~Nominee Details')->mandatory("Nominee name is required")->display(array('form'=>'Alpha'))->caption('Nominee name');
 		$this->addField('relation_with_nominee')->enum(explode(",", $config['relations_with_nominee']))->group('f~2')->mandatory("Relation with nominee is required")->caption('Relation with Nominee');//->system(true);
 		$this->addField('nominee_email')->group('f~2')->caption('Nominee email')->display(array('form'=>'Email'));//->system(true);

@@ -33,7 +33,7 @@ class Model_Payout extends \SQL_Model {
 		$this->addField('previous_carried_amount')->type('money')->defaultValue(0)->caption('Previous carried amount');
 
 		$this->addField('pair_income')->type('int')->defaultValue(0)->caption('Pair income');
-		$this->addField('introduction_income')->type('int')->defaultValue(0);
+		$this->addField('introduction_income')->type('int')->defaultValue(0)->caption('Direct sales income');
 		$this->addField('generation_difference_income')->type('int')->defaultValue(0)->caption('Gen. diff. income');
 		$this->addField('generation_royalty_income')->type('int')->defaultValue(0)->caption('Gen. royalty');
 		$this->addField('generation_active_royalty_income')->type('int')->defaultValue(0)->caption('Gen. active royalty');

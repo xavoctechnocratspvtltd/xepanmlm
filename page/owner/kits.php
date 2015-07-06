@@ -6,8 +6,8 @@ class page_xMLM_page_owner_kits extends page_xMLM_page_owner_main {
 	function page_index(){
 		// parent::init();
 
-		$this->app->title='Kit Management';
-		$this->app->layout->template->trySetHTML('page_title','<i class="fa fa-dashboard icon-gauge"></i> Kit Management');
+		$this->app->title='Startup Package Management';
+		$this->app->layout->template->trySetHTML('page_title','<i class="fa fa-dashboard icon-gauge"></i> Startup Package Management');
 		
 		$crud = $this->add('CRUD');
 		$crud->setModel('xMLM/Kit',array('name','code','created_at','sale_price','pv_value','bv_value','rp_value','cap_value','intro_value','color_value','is_publish'));

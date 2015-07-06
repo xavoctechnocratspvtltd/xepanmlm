@@ -115,7 +115,7 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 		// $distributor->getElement('greened_on')->caption('Qualified Date');
 		$crud = $this->add('CRUD',array('grid_class'=>'xMLM/Grid_Distributor'));
 
-		$crud->setModel($distributor,array('first_name','last_name','email','mobile_number','address','is_active'),array('status','name','email','mobile_number','address','sponsor','introducer','username','item_name','created_at','is_active','kit_item','greened_on','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
+		$crud->setModel($distributor,array('first_name','last_name','email','mobile_number','address','is_active','bank_id','account_no','IFCS_Code','branch_name'),array('status','name','email','mobile_number','address','sponsor','introducer','username','item_name','created_at','is_active','kit_item','greened_on','session_left_pv','session_right_pv','total_left_pv','total_right_pv','carried_amount','greened_on','left','right'));
 		// $crud->add('xHR/Controller_Acl',array('override'=>array('can_view'=>'All')));
 		if(!$crud->isEditing()){
 			// $crud->grid->add('misc/Export');
