@@ -58,6 +58,7 @@ class View_Tree extends \View {
 		$t->set('title',
 				$model['name'].
 				"<br/>Jn: ". date("d M Y", strtotime($model['created_at'])). 
+				"<br/>Gr: ". date("d M Y", strtotime($model['greened_on'])). 
 				"<br/>Kit: ". $model['kit_item'] .
 				"<br/>Intro: ". $model['introducer'] .
 				"<br/><table border=1>
@@ -85,9 +86,14 @@ class View_Tree extends \View {
 							<td>". $model->newInstance()->addCondition('path','like',$model['path'].'B%')->count()->getOne() ."</td>
 						</tr>
 						<tr>
+							<td>Orange</td>
+							<td>". $model->newInstance()->addCondition('path','like',$model['path'].'A%')->addCondition('ansestors_updated',false)->count()->getOne() ."</td>
+							<td>". $model->newInstance()->addCondition('path','like',$model['path'].'B%')->addCondition('ansestors_updated',false)->count()->getOne() ."</td>
+						</tr>
+						<tr>
 							<td>Green</td>
-							<td>". $model->newInstance()->addCondition('path','like',$model['path'].'A%')->addCondition('greened_on','<>',null)->count()->getOne() ."</td>
-							<td>". $model->newInstance()->addCondition('path','like',$model['path'].'B%')->addCondition('greened_on','<>',null)->count()->getOne() ."</td>
+							<td>". $model->newInstance()->addCondition('path','like',$model['path'].'A%')->addCondition('greened_on','<>',null)->addCondition('ansestors_updated',true)->count()->getOne() ."</td>
+							<td>". $model->newInstance()->addCondition('path','like',$model['path'].'B%')->addCondition('greened_on','<>',null)->addCondition('ansestors_updated',true)->count()->getOne() ."</td>
 						</tr>
 					</table>
 					"

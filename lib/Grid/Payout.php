@@ -52,35 +52,43 @@ class Grid_Payout extends \Grid {
 		$order = $this->addOrder();
 			if($this->hasColumn('on_date')) $order->move('on_date','first');
 
+		// foreach ($this->add('xMLM/Model_Kit') as $kit) {
+		// 	$kit_id = $kit->id;
+		// 	$count_col = strtolower($this->api->normalizeName($kit['name'].'_count'));
+		// 	$income_col = strtolower($this->api->normalizeName($kit['name'].'_income'));
+		// 	if($this->hasColumn($count_col)) $order->move($count_col,'before','total_pay');
+		// 	if($this->hasColumn($income_col)) $order->move($income_col,'before','total_pay');
+
+		// 	$this->addMethod('format_'.$count_col,function($g,$f){
+		// 		if(!isset($g->{$f.'_sum'})) $g->{$f.'_sum'} = 0;
+		// 		$g->{$f.'_sum'} += $g->model[$f];
+		// 	});
+
+		// 	$this->addMethod('format_totals_'.$count_col,function($g,$f){
+		// 		$g->current_row[$f] = $g->{$f.'_sum'};
+		// 	});
+
+		// 	$this->addMethod('format_'.$income_col,function($g,$f){
+		// 		if(!isset($g->{$f.'_sum'})) $g->{$f.'_sum'} = 0;
+		// 		$g->{$f.'_sum'} += $g->model[$f];
+		// 	});
+
+		// 	$this->addMethod('format_totals_'.$income_col,function($g,$f){
+		// 		$g->current_row[$f] = $g->{$f.'_sum'};
+		// 	});
+
+		// 	$this->addFormatter($count_col,$count_col);
+		// 	$this->addFormatter($income_col,$income_col);
+		// }
+
+
+
 		foreach ($this->add('xMLM/Model_Kit') as $kit) {
-			$kit_id = $kit->id;
 			$count_col = strtolower($this->api->normalizeName($kit['name'].'_count'));
 			$income_col = strtolower($this->api->normalizeName($kit['name'].'_income'));
-			if($this->hasColumn($count_col)) $order->move($count_col,'before','total_pay');
-			if($this->hasColumn($income_col)) $order->move($income_col,'before','total_pay');
-
-			$this->addMethod('format_'.$count_col,function($g,$f){
-				if(!isset($g->{$f.'_sum'})) $g->{$f.'_sum'} = 0;
-				$g->{$f.'_sum'} += $g->model[$f];
-			});
-
-			$this->addMethod('format_totals_'.$count_col,function($g,$f){
-				$g->current_row[$f] = $g->{$f.'_sum'};
-			});
-
-			$this->addMethod('format_'.$income_col,function($g,$f){
-				if(!isset($g->{$f.'_sum'})) $g->{$f.'_sum'} = 0;
-				$g->{$f.'_sum'} += $g->model[$f];
-			});
-
-			$this->addMethod('format_totals_'.$income_col,function($g,$f){
-				$g->current_row[$f] = $g->{$f.'_sum'};
-			});
-
-			$this->addFormatter($count_col,$count_col);
-			$this->addFormatter($income_col,$income_col);
+			if($this->hasColumn($count_col)) $this->removeColumn($count_col);
+			if($this->hasColumn($income_col)) $this->removeColumn($income_col);
 		}
-		
 		$order->now();
 
 		if(!$this->hide_distributor and $this->hasColumn('distributor')){
@@ -89,14 +97,15 @@ class Grid_Payout extends \Grid {
 		// $this->addFormatter('introduction_income','introduction_income');
 		
 		if($this->hasColumn('greened_on')) $this->removeColumn('greened_on');
-		if($this->hasColumn('introduction_income')) $this->removeColumn('introduction_income');
+		// if($this->hasColumn('introduction_income')) $this->removeColumn('introduction_income');
 
 		// $this->addColumn('total_pay','total_pay');
 		$this->addColumn('total_deduction','total_deduction');
 		$order
 			->move('total_pay','before','tds')
 			->move('total_deduction','after','admin_charge')
-			->move('total_deduction','after','admin_charge');
+			->move('total_deduction','after','admin_charge')
+			->move('introduction_income','before','total_pay');
 		
 		if($this->hasColumn('generation_active_royalty_income'))
 			$order->move('generation_active_royalty_income','before','total_pay');		

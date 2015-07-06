@@ -121,6 +121,7 @@ class Model_Distributor extends \Model_Document {
 		$this->hasMany('xMLM/Introducer','introducer_id',null,'IntroducedDistributors');
 		$this->hasMany('xMLM/CreditMovement','distributor_id');
 		$this->hasMany('xMLM/Booking','distributor_id');
+		$this->hasMany('xMLM/RepurchaseEntry','distributor_id');
 
 		
 		$this->addHook('beforeSave',array($this,'beforeSaveDistributor'));
@@ -260,6 +261,12 @@ class Model_Distributor extends \Model_Document {
 		});
 
 		$this->add('xMLM/Model_CreditMovement')->addCondition('joined_distributor_id',$this->id)
+			->each(function($obj){
+				$obj->forceDelete = true;
+				$obj->forceDelete();
+			});
+
+		$this->add('xMLM/Model_RepurchaseEntry')->addCondition('distributor_id',$this->id)
 			->each(function($obj){
 				$obj->forceDelete = true;
 				$obj->forceDelete();

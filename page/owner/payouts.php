@@ -258,7 +258,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
         $to_date = $this->api->stickyGET('to_date')?:$this->api->today;
 
 		foreach ($this->add('xMLM/Model_Kit') as $kit) {
-            $kit_id= $kit->id;
+            $kit_id = $kit->id;
 
             $distributor_model->addExpression($this->api->normalizeName($kit['name']).'_sold')->set(function($m,$q)use($kit_id, $from_date, $to_date){
             	$mycrds = $m->add('xMLM/Model_CreditMovement');
@@ -319,6 +319,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	    
 	    $this->template->set('total_income',$m->sum('total_income')->getOne());
 	    $this->template->set('total_expense',$m->sum('total_expense')->getOne());
+	    $this->template->set('provision_payout',$m->sum('carried_amount')->getOne());
 
         if($this->api->stickyGET('distributor')){
         	$distributor_model->addCondition('id',$_GET['distributor']);
