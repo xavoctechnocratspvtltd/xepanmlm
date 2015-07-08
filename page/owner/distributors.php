@@ -26,6 +26,7 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 		$green_tab = $tab->addTabURL('./paid','Paid distributors');
 		$inactive_tab = $tab->addTabURL('./unactive','Inactive / Blocked distributors');
 		$inactive_tab = $tab->addTabURL('./all','All distributors');
+		$kyc_tab = $tab->addTabURL('./kyc','KYC');
 		
 		
 		
@@ -125,5 +126,31 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 		}
 
 		$crud->add('xHR/Controller_Acl');
+	}
+
+	function page_kyc(){
+		$grid = $this->add('Grid');
+		$grid->setModel('xMLM/Model_Distributor',array('name','kyc_no','kyc_id','address_proof_id'));
+		
+		$grid->addQuickSearch(array('name','kyc_no'));
+		$grid->addPaginator($ipp=100);
+		
+		$grid->addMethod('format_kyc_id',function($g,$f){
+			if($g->model['kyc_id'])
+				$g->current_row_html[$f] = '<img style="width:100px;" src="'.$g->model['kyc'].'/>';
+			else
+				$g->current_row_html[$f] = " ";
+		});
+		$grid->addFormatter('kyc_id','kyc_id');
+
+		$grid->addMethod('format_address_proof_id',function($g,$f){
+			if($g->model['address_proof_id'])
+				$g->current_row_html[$f] = '<img style="width:100px;" src="'.$g->model['address_proof'].'/>';
+			else
+				$g->current_row_html[$f] = " ";
+
+		});
+		$grid->addFormatter('address_proof_id','address_proof_id');
+		
 	}
 }

@@ -67,9 +67,51 @@ class Model_CreditMovement extends \Model_Document {
 		}
 	}
 
+	function parseEmailBody(){
+
+		$dist=$this->distributor();
+		$distributer_mail=$this->distributor()->get('email');
+
+		$config_model=$this->add('xMLM/Model_Configuration');
+		$config_model->tryLoadAny();
+				
+		$email_body=$config_model['credit_movement_email_matter']?:"Rejected Distributor Send Mail Layout Is Empty";
+		
+		//REPLACING VALUE INTO ORDER DETAIL TEMPLATES
+		$email_body = str_replace("{{name}}", $dist['name'], $email_body);
+		$email_body = str_replace("{{mobile_number}}", $dist['mobile_number']?$dist['mobile_number']:" ", $email_body);
+		$email_body = str_replace("{{email}}", $dist['email']?$dist['email']:" ", $email_body);
+		$email_body = str_replace("{{status}}", $this['status']?$this['status']:" ", $email_body);
+		$email_body = str_replace("{{credits}}", $this['credits']?$this['credits']:" ", $email_body);
+		$email_body = str_replace("{{credits_given_on}}", $this['credits_given_on']?$this['credits_given_on']:" ", $email_body);
+		$email_body = str_replace("{{state}}", $dist['state']?$dist['state']:" ", $email_body);
+		$email_body = str_replace("{{district}}", $dist['district']?$dist['district']:" ", $email_body);
+		$email_body = str_replace("{{address}}", $dist['address']?$dist['address']:" ", $email_body);
+		$email_body = str_replace("{{narration}}", $this['narration']?$this['narration']:" ", $email_body);
+
+		return $email_body;
+	}
+
+
 	function reject($reason){
-		$this->distributor()->nitifyViaEmail("Credit Request Canceled","Dear Distributor,<br> Your credit request has been canceled by administrator due to following reason: <br/> '$reason' <br/><br/> -- Reagrds <br/> System");
+		// $this->distributor()->nitifyViaEmail("Credit Request Canceled","Dear Distributor,<br> Your credit request has been canceled by administrator due to following reason: <br/> '$reason' <br/><br/> -- Reagrds <br/> System");
+		if(!$this->loaded()) throw $this->exception('Model Must Be Loaded Before Email Send');
+		
+		$dist=$this->distributor();
+
+		
+		$config_model=$this->add('xMLM/Model_Configuration');
+		$config_model->tryLoadAny();
+
+		$distributer_mail=$this->distributor()->get('email');
+		$subject= $config_model['credit_movement_email_subject']." ".$dist['name'];
+		$email_body = $this->parseEmailBody();
+			// echo "string". $email_body;
+			// exit;
+
+		$this->sendEmail($distributer_mail,$subject,$email_body,null,null);
 		$this->setStatus('Rejected',$reason);
+			return true;		
 	}
 
 	function mark_processed_page($p){
@@ -96,7 +138,13 @@ class Model_CreditMovement extends \Model_Document {
 	}
 
 	function email_authorities($total=false){
-		$email = $this->add('xMLM/Model_Configuration')->tryLoadANy()->get('credit_manager_email_id');
+		$cc = array();
+		$emails = $this->add('xMLM/Model_Configuration')->tryLoadANy()->get('credit_manager_email_id');
+		$email = $emails[0];
+		unset($emails[0]);
+		$emails = array_values($emails);
+		$cc = $emails;
+
 		if(!$email) return;
 
 		if(!$total){
@@ -110,7 +158,7 @@ class Model_CreditMovement extends \Model_Document {
 
 		$tm=$this->add( 'TMail_Transport_PHPMailer' );	
 		try{
-			$tm->send($email, $email,$subject, $email_body);
+			$tm->send($email, $email,$subject, $email_body,$cc);
 		}catch( \phpmailerException $e ) {
 			$this->api->js(null,'$("#form-'.$_REQUEST['form_id'].'")[0].reset()')->univ()->errorMessage( $e->errorMessage() . " " . $email )->execute();
 		}catch( \Exception $e ) {

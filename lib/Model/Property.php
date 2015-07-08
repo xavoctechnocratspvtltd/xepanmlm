@@ -10,6 +10,9 @@ class Model_Property extends \Model_Document{
 		$this->addField('name')->Caption('Hotel Name');
 		$this->addField('rate')->type('money');
 		$this->addField('booking_through')->Caption('Booking through');
+		$this->addField('contact_number')->caption('Contact number');
+		$this->addField('email_id')->caption('Email id');
+
 		$this->hasMany('xMLM/Booking','property_id');
 		$this->add('dynamic_model/Controller_AutoCreator');
 	}

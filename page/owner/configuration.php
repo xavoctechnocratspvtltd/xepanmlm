@@ -45,6 +45,34 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 		$banks_crud->setModel('xMLM/Bank');
 		$banks_crud->grid->addPaginator($ipp=50);
 
+		$mail_tab = $tabs->addTab('Mail configuration');
+		$mt=$mail_tab->add('Tabs');
+		$wt=$mt->addTab('Wel-Come mail Configuration');
+		$mail_form = $wt->add('Form_Stacked');
+		$mail_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('welcome_email_subject','welcome_email_matter'));
+		$mail_form->addSubmit('update');
+		if($mail_form->isSubmitted()){
+			$mail_form->Update();
+			$mail_form->js(null,$mail_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
+		}
+
+		$ct=$mt->addTab('Credit movement mail');
+		$credit_form = $ct->add('Form_Stacked');
+		$credit_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('credit_movement_email_subject','credit_movement_email_matter'));
+		$credit_form->addSubmit('update');
+		if($credit_form->isSubmitted()){
+			$credit_form->Update();
+			$credit_form->js(null,$credit_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
+		}
 		
+
+		$bt=$mt->addTab('Booking approve mail');
+		$booking_form = $bt->add('Form_Stacked');
+		$booking_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('booking_approve_email_subject','booking_approve_email_matter'));
+		$booking_form->addSubmit('update');
+		if($booking_form->isSubmitted()){
+			$booking_form->Update();
+			$booking_form->js(null,$booking_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
+		}
 	}
 }
