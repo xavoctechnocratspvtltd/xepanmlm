@@ -140,7 +140,7 @@ class Model_Distributor extends \Model_Document {
 		$this->setOrder('greened_on','desc');
 		$this->getElement('created_at')->caption('Joining date');
 		// $this->api->auth->addEncryptionHook($this);
-		// $this->add('dynamic_model/Controller_AutoCreator');
+		$this->add('dynamic_model/Controller_AutoCreator');
 	}
 
 	

@@ -56,7 +56,7 @@ class Model_Configuration extends \SQL_Model {
 
 
 
-		// $this->add('dynamic_model/Controller_AutoCreator');
+		$this->add('dynamic_model/Controller_AutoCreator');
 
 	}
 }
