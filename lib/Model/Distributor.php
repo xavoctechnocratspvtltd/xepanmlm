@@ -403,14 +403,16 @@ class Model_Distributor extends \Model_Document {
 		$config_model=$this->add('xMLM/Model_Configuration');
 		$config_model->tryLoadAny();
 
-		$distributer_mail=$this['email'];
-		$subject= $config_model['welcome_email_subject']." ".$this['name'];
-		$email_body = $this->parseEmailBody();
-			// echo "string". $email_body;
-			// exit;
+		if($config_model['welcome_email_matter']){
+			$distributer_mail=$this['email'];
+			$subject= $config_model['welcome_email_subject']." ".$this['name'];
+			$email_body = $this->parseEmailBody();
 
 			$this->sendEmail($distributer_mail,$subject,$email_body,null,null);
 			return true;		
+		}else
+			throw new \Exception("Welcome Email Matter is Empty",'Growl');
+
 		
 	}
 
