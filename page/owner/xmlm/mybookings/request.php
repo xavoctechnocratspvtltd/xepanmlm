@@ -142,7 +142,13 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 		
 		$forms->add('Controller_FormBeautifier');		
 		if($forms->isSubmitted()){
-			
+
+			$old_booking=$this->add('xMLM/Model_Booking');
+			$old_booking->addCondition('voucher_no',$forms['voucher_no']);
+			$old_booking->tryLoadAny();
+			if($old_booking->loaded())
+				$forms->error('voucher_no','Voucher Number is Allready Exist');
+
 			for ($i=1; $i <=3 ; $i++) { 
 				$booking=$this->add('xMLM/Model_Booking');
 				
