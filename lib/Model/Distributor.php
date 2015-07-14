@@ -409,11 +409,7 @@ class Model_Distributor extends \Model_Document {
 			$email_body = $this->parseEmailBody();
 
 			$this->sendEmail($distributer_mail,$subject,$email_body,null,null);
-			return true;		
-		}else
-			throw new \Exception("Welcome Email Matter is Empty",'Growl');
-
-		
+		}		
 	}
 
 	function creditMovements(){
