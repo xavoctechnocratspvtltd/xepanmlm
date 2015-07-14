@@ -12,15 +12,15 @@ class page_xMLM_page_owner_dashboard extends page_xMLM_page_owner_main {
 		$col = $this->add('Columns');
 		$col1 = $col->addColumn('4');
 
-		$date_view = $col1->add('View')->set($this->api->now)->addClass('atk-size-zetta atk-swatch-red atk-align-center');
-		$form = $col1->add('Form')->addClass('atk-box');
-		$form->addField('DatePicker','change_date')->set($this->api->today);
-		$form->addSubmit('Change');
+		// $date_view = $col1->add('View')->set($this->api->now)->addClass('atk-size-zetta atk-swatch-red atk-align-center');
+		// $form = $col1->add('Form')->addClass('atk-box');
+		// $form->addField('DatePicker','change_date')->set($this->api->today);
+		// $form->addSubmit('Change');
 
-		if($form->isSubmitted()){
-			$this->api->setDate($form['change_date']);
-			$form->js(null,$date_view->js()->reload())->reload()->execute();
-		}
+		// if($form->isSubmitted()){
+		// 	$this->api->setDate($form['change_date']);
+		// 	$form->js(null,$date_view->js()->reload())->reload()->execute();
+		// }
 
 		//For Space
 		$this->add('View')->setStyle('margin-top','30px');
