@@ -31,41 +31,103 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 		$b_right=$b_col->addColumn(7);
 		// $b_l_c=$b_left->add('View')->set('Booking Name of');
 		// $b_l_c->js(true)->closest('div.atk-form-row')->appendTo($b_left);
+		$location = $this->add('xMLM/Model_Location');
+		$location_fileds= $forms->addField('DropDown','location','Location')->setEmptyText('Please Select Location')->validateNotNull(true)->setterGetter('group','g~5~Preferances');
+		$location_fileds->setModel($location);
+		
+		$property = $this->add('xMLM/Model_Property');
+		if($this->api->StickyGET('location')){
+			$property->addCondition('location_id',$_GET['location']);
+		}
 
+		$hotel_field = $forms->addField('DropDown','hotel','Hotel Name')->setEmptyText('Please Select Hotel')->validateNotNull("Location is required")->setterGetter('group','g~3');
+		$hotel_field->setModel($property);
 
+		if($_GET['location']){
+			$hotel_field->getModel()->addCondition('location_id',$_GET['location']);
+		}
+		
+		$checkin_field = $forms->addField('DatePicker','checkin_date','Checkin Date')->validateNotNull()->setterGetter('group','g~4');
+		$checkin_field->options=[
+                		'minDate'=>$this->js(null, 'new Date'),
+                		'onSelect'=>$checkin_field->js()->datepicker('option','minDate',$checkin_field->js()->datepicker('getDate'))->_enclose()
+            		];
+	
+		$location_fileds1= $forms->addField('DropDown','location_1','Location')->setEmptyText('Please Select Location')->validateNotNull(true)->setterGetter('group','g~5');
+		$location_fileds1->setModel($location);
+		
+		$property = $this->add('xMLM/Model_Property');
+		if($this->api->StickyGET('location_1')){
+			$property->addCondition('location_id',$_GET['location_1']);
+		}
+
+		$hotel_field1 = $forms->addField('DropDown','hotel_1','Hotel Name')->setEmptyText('Please Select Hotel')->validateNotNull("Location is required")->setterGetter('group','g~3');
+		$hotel_field1->setModel($property);
+
+		if($_GET['location_1']){
+			$hotel_field1->getModel()->addCondition('location_id',$_GET['location_1']);
+		}
+		
+		$checkin_field1 = $forms->addField('DatePicker','checkin_date_1','Checkin Date')->validateNotNull()->setterGetter('group','g~4');
+		$checkin_field1->options=[
+                		'minDate'=>$this->js(null, 'new Date'),
+                		'onSelect'=>$checkin_field1->js()->datepicker('option','minDate',$checkin_field1->js()->datepicker('getDate'))->_enclose()
+            		];
+        $location_fileds2= $forms->addField('DropDown','location_2','Location')->setEmptyText('Please Select Location')->validateNotNull(true)->setterGetter('group','g~5');
+		$location_fileds2->setModel($location);
+		
+		$property = $this->add('xMLM/Model_Property');
+		if($this->api->StickyGET('location_2')){
+			$property->addCondition('location_id',$_GET['location_2']);
+		}
+
+		$hotel_field2 = $forms->addField('DropDown','hotel_2','Hotel Name')->setEmptyText('Please Select Hotel')->validateNotNull("Location is required")->setterGetter('group','g~3');
+		$hotel_field2->setModel($property);
+
+		if($_GET['location_2']){
+			$hotel_field1->getModel()->addCondition('location_id',$_GET['location_2']);
+		}
+		
+		$checkin_field2 = $forms->addField('DatePicker','checkin_date_2','Checkin Date')->validateNotNull()->setterGetter('group','g~4');
+		$checkin_field2->options=[
+                		'minDate'=>$this->js(null, 'new Date'),
+                		'onSelect'=>$checkin_field2->js()->datepicker('option','minDate',$checkin_field2->js()->datepicker('getDate'))->_enclose()
+            		];    		    		
+		$location_fileds->js('change',$forms->js()->atk4_form('reloadField','hotel',array($this->api->url(),'location'=>$location_fileds->js()->val())));
+		$location_fileds1->js('change',$forms->js()->atk4_form('reloadField','hotel_1',array($this->api->url(),'location_1'=>$location_fileds1->js()->val())));
+		$location_fileds2->js('change',$forms->js()->atk4_form('reloadField','hotel_2',array($this->api->url(),'location_2'=>$location_fileds2->js()->val())));
 		// $l_col=$this->add('Columns');
 		// $l_left=$l_col->addColumn(3);
 		// $l_mid=$l_col->addColumn(3);
 		// $l_right=$l_col->addColumn(3);
 
-		$location = $this->add('xMLM/Model_Location');
 		for($i=1;$i<=3;$i++){
 
-			$location_fileds= $forms->addField('DropDown','location_'.$i,'Location')->setEmptyText('Please Select Location')->validateNotNull(true)->setterGetter('group',$i.'~4~Preferance -'.$i);
-			$location_fileds->setModel($location);
-		// $location_fileds->js(true)->closest('div.atk-form-row')->appendTo($l_left);
+		// 	$location_fileds= $forms->addField('DropDown','location_'.$i,'Location')->setEmptyText('Please Select Location')->validateNotNull(true)->setterGetter('group',$i.'~4~Preferance -'.$i);
+		// 	$location_fileds->setModel($location);
+		// // $location_fileds->js(true)->closest('div.atk-form-row')->appendTo($l_left);
 
-			$property = $this->add('xMLM/Model_Property');
-			if($this->api->StickyGET('location_'.$i)){
-				$property->addCondition('location_id',$_GET['location_'.$i]);
-			}
+		// 	$property = $this->add('xMLM/Model_Property');
+		// 	if($this->api->StickyGET('location_'.$i)){
+		// 		$property->addCondition('location_id',$_GET['location_'.$i]);
+		// 	}
 
-			$hotel_field = $forms->addField('DropDown','hotel_'.$i,'Hotel Name')->setEmptyText('Please Select Hotel')->validateNotNull("Location is required")->setterGetter('group',$i.'~4');
-			$hotel_field->setModel($property);
-			// $hotel_field->js(true)->closest('div.atk-form-row')->appendTo($l_mid);
+		// 	$hotel_field = $forms->addField('DropDown','hotel_'.$i,'Hotel Name')->setEmptyText('Please Select Hotel')->validateNotNull("Location is required")->setterGetter('group',$i.'~4');
+		// 	$hotel_field->setModel($property);
+		// 	// $hotel_field->js(true)->closest('div.atk-form-row')->appendTo($l_mid);
 
-			if($_GET['location_'.$i]){
-				$hotel_field->getModel()->addCondition('location_id',$_GET['location_'.$i]);
-			}
+		// 	if($_GET['location_'.$i]){
+		// 		$hotel_field->getModel()->addCondition('location_id',$_GET['location_'.$i]);
+		// 	}
 		
-			$checkin_field = $forms->addField('DatePicker','checkin_date_'.$i,'Checkin Date')->validateNotNull()->setterGetter('group',$i.'~4');
-			$checkin_field->options=[
-                    		'minDate'=>$this->js(null, 'new Date'),
-                    		'onSelect'=>$checkin_field->js()->datepicker('option','minDate',$checkin_field->js()->datepicker('getDate'))->_enclose()
-                		];
+		// 	$checkin_field = $forms->addField('DatePicker','checkin_date_'.$i,'Checkin Date')->validateNotNull()->setterGetter('group',$i.'~4');
+		// 	$checkin_field->options=[
+  //                   		'minDate'=>$this->js(null, 'new Date'),
+  //                   		'onSelect'=>$checkin_field->js()->datepicker('option','minDate',$checkin_field->js()->datepicker('getDate'))->_enclose()
+  //               		];
 			// $checkin_field->js(true)->closest('div.atk-form-row')->appendTo($l_right);
 
-			$location_fileds->js('change',$forms->js()->atk4_form('reloadField','hotel_'.$i,array($this->api->url(),'location_'.$i=>$location_fileds->js()->val())));
+			// $location_fileds->js('change',$forms->js()->atk4_form('reloadField','hotel_'.$i,array($this->api->url(),'location_'.$i=>$location_fileds->js()->val())));
 			// $location_fileds->js('change',$this->js()->univ()->alert("sdfsf"));
 		}
 
@@ -87,8 +149,14 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 
 				$booking['distributor_id'] = $distributor->id;
 				$booking['name'] = $forms['booking_in_name_of'];
-				$booking['property_id'] = $forms['hotel_'.$i];
-				$booking['check_in_date']=$forms['checkin_date_'.$i];
+				$booking['property_id'] = $forms['hotel'];
+				$booking['property_id'] = $forms['hotel_1'];
+				$booking['property_id'] = $forms['hotel_2'];
+				
+				$booking['check_in_date']=$forms['checkin_date'];
+				$booking['check_in_date']=$forms['checkin_date_1'];
+				$booking['check_in_date']=$forms['checkin_date_2'];
+
 				$booking['check_out_date']=$forms['checkout_date_'.$i];
 				$booking['no_of_nights']=$forms['no_of_nights_'.$i];
 
