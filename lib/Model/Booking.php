@@ -14,7 +14,7 @@ class Model_Booking extends \Model_Document{
 
 		$this->hasOne('xMLM/Distributor','distributor_id')->Caption('Distributor name');
 		$this->hasOne('xMLM/Property','property_id')->Caption('Hotel name');
-
+		$booking_through=$this->ref('property_id')->get('booking_through');
 		$this->addField('name')->caption('Booking in name of');
 		$this->addField('check_in_date')->type('date')->caption('Check in date');
 		$this->addField('check_out_date')->type('date')->caption('Check out date');
@@ -24,13 +24,11 @@ class Model_Booking extends \Model_Document{
 		$this->getElement('status')->defaultValue('request');
 		$this->addField('voucher_no')->type('text')->caption('Voucher no');
 		$this->addField('confirmation_code')->system(true);
+		$this->addField('booking_through')->set($booking_through);
 
 		$this->addExpression('location')->set(function($m,$q){
 			return $m->refSQL('property_id')->fieldQuery('location');
 		});
-		$this->addExpression('booking_through')->set(function($m,$q){
-			return $m->refSQL('property_id')->fieldQuery('booking_through');
-		})->caption('Booking through');
 
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
