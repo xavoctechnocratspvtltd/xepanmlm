@@ -3,7 +3,12 @@
 namespace xMLM;
 
 class Model_Kit extends \xShop\Model_Item {
-	
+	public $actions=array(
+			'allow_add'=>array(),
+			'allow_edit'=>array(),
+			'allow_del'=>array(),
+			'can_view'=>array(),
+		);
 	function init(){
 		parent::init();
 

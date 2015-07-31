@@ -4,6 +4,12 @@ class Model_Property extends \Model_Document{
 	public $table="xmlm_property";
 	public $status=array();
 	public $root_document_name="xMLM\Properties";
+	public $actions=array(
+			'allow_add'=>array(),
+			'allow_edit'=>array(),
+			'allow_del'=>array(),
+			'can_view'=>array(),
+		);
 	function init(){
 		parent::init();
 		$this->hasOne('xMLM/Location','location_id');
