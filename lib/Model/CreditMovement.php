@@ -140,6 +140,7 @@ class Model_CreditMovement extends \Model_Document {
 	function email_authorities($total=false){
 		$cc = array();
 		$emails = $this->add('xMLM/Model_Configuration')->tryLoadANy()->get('credit_manager_email_id');
+		$emails=explode(",", $emails);
 		$email = $emails[0];
 		unset($emails[0]);
 		$emails = array_values($emails);
