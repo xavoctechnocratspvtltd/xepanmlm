@@ -30,6 +30,10 @@ class Model_Booking extends \Model_Document{
 			return $m->refSQL('property_id')->fieldQuery('location');
 		});
 
+		$this->addExpression('city')->set(function($m,$q){
+			return $m->refSQL('property_id')->fieldQuery('city');
+		});
+
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 

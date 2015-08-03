@@ -15,6 +15,7 @@ class Model_Location extends \Model_Document{
 
 		// $this->hasOne('xMLM/Distributor','distributor_id')->Caption('Distributor Name');
 		$this->addField('name');
+		$this->hasMany('xMLM/City','location_id');
 		$this->hasMany('xMLM/Property','location_id');
 
 		$this->add('dynamic_model/Controller_AutoCreator');

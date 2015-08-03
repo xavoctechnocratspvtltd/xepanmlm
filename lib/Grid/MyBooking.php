@@ -19,6 +19,7 @@ class Grid_MyBooking extends \Grid{
 		$order = $this->addOrder();
 		$order->move('location','after','name');
 		$order->move('booking_through','after','voucher_no');
+		$order->move('city','after','location');
 		$order->now();
 
 		$this->addSno();

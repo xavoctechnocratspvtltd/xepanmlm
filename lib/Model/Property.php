@@ -13,6 +13,7 @@ class Model_Property extends \Model_Document{
 	function init(){
 		parent::init();
 		$this->hasOne('xMLM/Location','location_id');
+		$this->hasOne('xMLM/City','city_id');
 		$this->addField('name')->Caption('Hotel Name');
 		$this->addField('rate')->type('money');
 		$this->addField('booking_through')->Caption('Booking through');
