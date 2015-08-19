@@ -5,6 +5,9 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 	
 	function init(){
 		parent::init();
+
+		$this->add('xMLM/Controller_Acl');
+
 		if($this->api->auth->model['type']!=100){
 			$this->add('View_Error')->set('You are not Authorized.');
 		return;

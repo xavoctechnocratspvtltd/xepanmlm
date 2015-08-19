@@ -5,6 +5,8 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 	
 	function page_index(){
 
+		$this->add('xMLM/Controller_Acl');
+
 		$this->app->title='Distributors Management';
 		$this->app->layout->template->trySetHTML('page_title','<i class="fa fa-dashboard icon-gauge"></i> Distributors Management');
 
@@ -33,6 +35,8 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 	}
 
 	function page_unpaid(){		
+		$this->add('xMLM/Controller_Acl');
+
 		$export_model=$this->add('xMLM/Model_UnpaidIds');
 		$export_model->getElement('name')->caption('Distributor name');
 		$export_model->getElement('greened_on')->caption('Qualified date');
@@ -56,6 +60,8 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 	}
 
 	function page_paid(){
+		$this->add('xMLM/Controller_Acl');
+
 		$export_model=$this->add('xMLM/Model_PaidIds');
 		$export_model->getElement('name')->caption('Distributor name');
 		$export_model->getElement('greened_on')->caption('Qualified date');
@@ -81,6 +87,8 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 	}
 
 	function page_unactive(){
+		$this->add('xMLM/Controller_Acl');
+
 		$export_model=$this->add('xMLM/Model_BlockedIds');
 		$export_model->getElement('name')->caption('Distributor name');
 		$export_model->getElement('greened_on')->caption('Qualified date');
@@ -101,6 +109,8 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 	}
 
 	function page_all(){
+		$this->add('xMLM/Controller_Acl');
+
 		$export_model=$this->add('xMLM/Model_Distributor');
 		$export_model->getElement('name')->caption('Distributor name');
 		$export_model->getElement('greened_on')->caption('Qualified date');
@@ -129,6 +139,8 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 	}
 
 	function page_kyc(){
+		$this->add('xMLM/Controller_Acl');
+		
 		$grid = $this->add('Grid');
 		$grid->setModel('xMLM/Model_Distributor',array('name','kyc_no','kyc_id','address_proof_id'));
 		

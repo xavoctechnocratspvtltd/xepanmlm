@@ -6,12 +6,14 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	function init(){
 		parent::init();
 
+		
 		$this->app->title='Payouts Management';
 		$this->app->layout->template->trySetHTML('page_title','<i class="fa fa-dashboard icon-gauge"></i> Payouts Management');
 
 	}
 
 	function page_index(){
+		$this->add('xMLM/Controller_Acl');
 		$tabs= $this->add('Tabs');
 		$tabs->addTabURL('./gen_pay','Generate Payout');
 		$tabs->addTabURL('./old_pays','Payouts');
@@ -21,6 +23,8 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	}
 
 	function page_gen_pay(){
+		$this->add('xMLM/Controller_Acl');
+
 		$config = $this->add('xMLM/Model_Configuration')->tryLoadAny();
 
 		$cols = $this->add('Columns');
@@ -82,6 +86,8 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	}
 
 	function page_old_pays(){
+		$this->add('xMLM/Controller_Acl');
+
 		$config = $this->add('xMLM/Model_Configuration')->tryLoadAny();
 
 		$payouts_list=$this->add('xMLM/Model_Payout');
@@ -153,6 +159,8 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	}
 
 	function page_report_pays(){
+		$this->add('xMLM/Controller_Acl');
+
 		$config = $this->add('xMLM/Model_Configuration')->tryLoadAny();
 
 		$cols = $this->add('Columns');
@@ -241,6 +249,8 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	}
 
 	function page_inout(){
+		$this->add('xMLM/Controller_Acl');
+		
 		$this->template->loadTemplate('view/page/payoutinout');
 		$distributer=$this->add('xMLM/Model_Distributor');
 		$form=$this->add('Form',null,'form');
@@ -343,6 +353,7 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 	}
 
 	function page_analysis(){
+		$this->add('xMLM/Controller_Acl');
 
 		$this->add('View')
 			->setHTML('Under Construction, Tentative Data, DATA TO BE RESET <br/>[FUND = (KIT PV * 4) + Introduction Income of Kit] ... Working ON Carried Amount')
