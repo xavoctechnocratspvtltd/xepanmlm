@@ -20,7 +20,7 @@ class page_xMLM_page_cron_freelookfinish extends Page
 		$distributors = $this->add('xMLM/Model_Distributor');
 		$distributors->addCondition('ansestors_updated',false);
 		$distributors->addCondition('is_active',true);
-		$distributors->addCondition('greened_on','<',date('Y-m-d H:i:s',strtotime($this->api->now.' -10 day')));
+		$distributors->addCondition('greened_on','<',date('Y-m-d H:i:s',strtotime($this->api->now.' -11 day')));
 
 		foreach ($distributors as $dist) {
 			$kit=$distributors->kit();
