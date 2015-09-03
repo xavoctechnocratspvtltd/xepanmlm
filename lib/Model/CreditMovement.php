@@ -156,9 +156,8 @@ class Model_CreditMovement extends \Model_Document {
 		}else{
 			$pendings = $this->add('xMLM/Model_Credit_Request')->count()->getOne();
 			$config_model=$this->add('xMLM/Model_Configuration');
-			$subject = $config_model['credit_movement_email_subject'];
-			// $email_body = $config_model['credit_movement_email_matter'];
-			$email_body=$this->parseEmailBody();
+			$subject ="Credit Request Pending::"$pendings; //$config_model['credit_movement_email_subject'];
+			$email_body="Hi<br/>There are $pendings Credit Request Pending<br/><br/> Please Check<br/><br/>--Regards <br/><a href='http://xepan.org'>xEpan</a> System";//$this->parseEmailBody();
 		}
 
 		$tm=$this->add( 'TMail_Transport_PHPMailer' );	
