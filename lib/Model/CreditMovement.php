@@ -149,17 +149,21 @@ class Model_CreditMovement extends \Model_Document {
 		if(!$email) return;
 
 		if(!$total){
-			$subject = "Credit Request :: ". $this['distributor']. ' :: ' . $this['distributor_id'];
-			$email_body = "Hi<br/> There is a Credit Request pending from ". $this['distributor'].' <br/><br/> Please check <br/><br/>--Regards <br/><a href="http://xepan.org">xEpan</a> System';
+			$config_model=$this->add('xMLM/Model_Configuration');
+			$subject = $config_model['credit_movement_email_subject']. ":: ". $this['distributor']. ' :: ' . $this['distributor_id'];
+			// $email_body = $config_model['credit_movement_email_matter'];			
+			$email_body=$this->parseEmailBody();
 		}else{
 			$pendings = $this->add('xMLM/Model_Credit_Request')->count()->getOne();
-			$subject = "Credit Requests Pending :: ". $pendings;
-			$email_body = "Hi<br/> There are $pendings Credit Requests pending <br/><br/> Please check <br/><br/>--Regards <br/><a href='http://xepan.org'>xEpan</a> System";
+			$config_model=$this->add('xMLM/Model_Configuration');
+			$subject = $config_model['credit_movement_email_subject'];
+			// $email_body = $config_model['credit_movement_email_matter'];
+			$email_body=$this->parseEmailBody();
 		}
 
 		$tm=$this->add( 'TMail_Transport_PHPMailer' );	
 		try{
-			$tm->send($email, $email,$subject, $email_body,$cc);
+			$tm->send($email,$email,$subject, $email_body,$cc);
 		}catch( \phpmailerException $e ) {
 			$this->api->js(null,'$("#form-'.$_REQUEST['form_id'].'")[0].reset()')->univ()->errorMessage( $e->errorMessage() . " " . $email )->execute();
 		}catch( \Exception $e ) {
