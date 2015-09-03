@@ -93,13 +93,13 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 			$orange_form->js(null,$orange_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
 		}
 
-		// $green_dis=$mt->addTab('Green Distributord mail');
-		// $green_form = $green_dis->add('Form_Stacked');
-		// $green_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('orange_email_subject','orange_email_matter'));
-		// $green_form->addSubmit('update');
-		// if($green_form->isSubmitted()){
-		// 	$green_form->Update();
-		// 	$green_form->js(null,$green_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
-		// }
+		$green_dis=$mt->addTab('Green Distributord mail');
+		$green_form = $green_dis->add('Form_Stacked');
+		$green_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('green_email_subject','green_email_matter'));
+		$green_form->addSubmit('update');
+		if($green_form->isSubmitted()){
+			$green_form->Update();
+			$green_form->js(null,$green_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
+		}
 	}
 }
