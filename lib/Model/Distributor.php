@@ -200,6 +200,85 @@ class Model_Distributor extends \Model_Document {
 			$this['greened_on']=$this->api->now;
 			$this['is_active']=true;
 			$this['capping']=$kit->getCapping();
+			
+			$tm=$this->add( 'TMail_Transport_PHPMailer' );
+			// $msg=$this->add( 'GiTemplate' );
+			// $msg->loadTemplate( 'mail/registerdistributerwhenidorange');
+
+			$cc = array();
+			$emails = $this->add('xMLM/Model_Configuration')->tryLoadANy()->get('when_id_becomes_orange');
+			$emails=explode(",", $emails);
+			$email = $emails[0];
+			// unset($emails[0]);
+			$emails = array_values($emails);
+			// throw new \Exception("coming", 1);
+			$cc = $emails;
+
+			if(!$email) throw new \Exception("not found ".$email, 1);
+			;
+			
+			$config_model=$this->add('xMLM/Model_Configuration');
+			$config_model->tryLoadAny();
+
+			if($config_model['orange_email_matter']){
+				// $distributer_mail=$this['email'];
+				$subject= $config_model['orange_email_subject']." ".$this['name'];
+				$email_body=$config_model['orange_email_matter']?:"Orange Distributor Send Mail Layout Is Empty";
+		
+				//REPLACING VALUE INTO ORDER DETAIL TEMPLATES
+				$email_body = str_replace("{{sponsor_name}}", $this['sponsor'], $email_body);
+				$email_body = str_replace("{{introducer_name}}", $this['introducer'], $email_body);
+				$email_body = str_replace("{{name}}", $this['name'], $email_body);
+				$email_body = str_replace("{{first_name}}", $this['first_name'], $email_body);
+				$email_body = str_replace("{{last_name}}", $this['last_name'], $email_body);
+				$email_body = str_replace("{{Username}}", $this['username'], $email_body);
+				$email_body = str_replace("{{password}}", $this['password'], $email_body);
+				$email_body = str_replace("{{mobile_number}}", $this['mobile_number']?$this['mobile_number']:" ", $email_body);
+				$email_body = str_replace("{{email}}", $this['email']?$this['email']:" ", $email_body);
+				$email_body = str_replace("{{date_of_birth}}", $this['date_of_birth']?$this['date_of_birth']:" ", $email_body);
+				$email_body = str_replace("{{address}}", $this['address']?$this['address']:" ", $email_body);
+				$email_body = str_replace("{{state}}", $this['state']?$this['state']:" ", $email_body);
+				$email_body = str_replace("{{district}}", $this['district']?$this['district']:" ", $email_body);
+				$email_body = str_replace("{{address}}", $this['address']?$this['address']:" ", $email_body);
+				// $email_body = str_replace("{{users_id}}", $this['users_id']?$this['user_id']:" ", $email_body);
+				$email_body = str_replace("{{pan_no}}", $this['pan_no']?$this['pan_no']:" ", $email_body);
+				$email_body = str_replace("{{pin_code}}", $this['pin_code']?$this['pin_code']:" ", $email_body);
+				$email_body = str_replace("{{user_type}}", $this['type']?$this['type']:" ", $email_body);
+				$email_body = str_replace("{{bank}}", $this['bank']?$this['bank']:" ", $email_body);
+				$email_body = str_replace("{{account_no}}", $this['account_no']?$this['account_no']:" ", $email_body);
+				$email_body = str_replace("{{IFCS_Code}}", $this['IFCS_Code']?$this['IFCS_Code']:" ", $email_body);
+				$email_body = str_replace("{{branch_name}}", $this['branch_name']?$this['branch_name']:" ", $email_body);
+				$email_body = str_replace("{{kyc_no}}", $this['kyc_no']?$this['kyc_no']:" ", $email_body);
+				$email_body = str_replace("{{nominee_name}}", $this['nominee_name']?$this['nominee_name']:" ", $email_body);
+				$email_body = str_replace("{{relations_with_nominee}}", $this['relations_with_nominee']?$this['relations_with_nominee']:" ", $email_body);
+				$email_body = str_replace("{{nominee_age}}", $this['nominee_age']?$this['nominee_age']:" ", $email_body);
+				$email_body = str_replace("{{nominee_email}}", $this['nominee_email']?$this['nominee_email']:" ", $email_body);
+				$email_body = str_replace("{{kit}}", $this['kit_item']?$this['kit_item']:" ", $email_body);
+				$email_body = str_replace("{{leg}}", $this['Leg']?$this['Leg']:" ", $email_body);
+
+				// return $email_body;
+			}	
+
+			// $msg->trySetHTML('first_name',$this['first_name']);
+			// $msg->trySetHTML('last_name',$this['last_name']);
+			// $msg->trySet('name',$this['name']);
+
+			// $email_body=$msg->render();
+
+			// $subject ="Your Epan Got An Enquiry !!!";
+			
+			if(!$email) return;
+			// throw new \Exception($email_body, 1);
+			
+			try{
+				$tm->send($email,$email,$subject,$email_body,null,$cc);
+				// $tm->send($email, $emails,$subject, $email_body);
+				
+			}catch( \phpmailerException $e ) {
+				$this->js(true)->univ()->errorMessage($e->getMessage());
+			}catch( \Exception $e ) {
+				throw $e;
+			}
 
 			// ======== 11 days free look period =========== in cron now
 			// if($this->loaded()){

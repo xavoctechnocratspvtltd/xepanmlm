@@ -19,6 +19,8 @@ class Model_Configuration extends \SQL_Model {
 		$this->addField('include_generation')->type('boolean')->defaultValue(true);
 		$this->addField('trimming_applicable')->type('boolean')->defaultValue(true);
 		$this->addField('credit_manager_email_id')->defaultValue(true);
+		$this->addField('when_id_becomes_green')->defaultValue(true);
+		$this->addField('when_id_becomes_orange')->defaultValue(true);
 		$this->addField('days_allowed_for_green')->type('int')->defaultValue(45);
 		$this->addField('relations_with_nominee')->type('text')->defaultValue('Father,Mother,Spouse,Sibling,Friend,Son,Daughter');
 
@@ -53,8 +55,24 @@ class Model_Configuration extends \SQL_Model {
 														{{voucher_no}},{{confirmation_through}},{{check_in_date}},{{check_out_date}},
 														{{distributor_name}},{{distributor_mobile_number}},{{distributor_email}},
 														{{distributor_address}},{{distributor_state}},{{distributor_district}},{{distributor_pin_code}}');
+		
+		$this->addField('orange_email_subject')->hint('Booking Approved Email Subject: this email send to member');
+		$this->addField('orange_email_matter')->type('text')->display(array('form'=>'RichText'))
+													->hint('{{booking_in_name_of}}, {{location}} {{hotel_name}},{{hotel_email_id}},{{hotel_contact_number}},{{hotel_confirmation_code}},
+														{{adults}}, {{children}},
+														{{voucher_no}},{{confirmation_through}},{{check_in_date}},{{check_out_date}},
+														{{distributor_name}},{{distributor_mobile_number}},{{distributor_email}},
+														{{distributor_address}},{{distributor_state}},{{distributor_district}},{{distributor_pin_code}}');													
 
+		$this->addField('green_email_subject')->hint('Booking Approved Email Subject: this email send to member');
+		$this->addField('green_email_matter')->type('text')->display(array('form'=>'RichText'))
+													->hint('{{booking_in_name_of}}, {{location}} {{hotel_name}},{{hotel_email_id}},{{hotel_contact_number}},{{hotel_confirmation_code}},
+														{{adults}}, {{children}},
+														{{voucher_no}},{{confirmation_through}},{{check_in_date}},{{check_out_date}},
+														{{distributor_name}},{{distributor_mobile_number}},{{distributor_email}},
+														{{distributor_address}},{{distributor_state}},{{distributor_district}},{{distributor_pin_code}}');													
 
+		
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 
