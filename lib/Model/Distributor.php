@@ -215,7 +215,6 @@ class Model_Distributor extends \Model_Document {
 			$cc = $emails;
 
 			if(!$email) throw new \Exception("not found ".$email, 1);
-			;
 			
 			$config_model=$this->add('xMLM/Model_Configuration');
 			$config_model->tryLoadAny();

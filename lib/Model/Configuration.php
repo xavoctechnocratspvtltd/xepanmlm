@@ -21,6 +21,8 @@ class Model_Configuration extends \SQL_Model {
 		$this->addField('credit_manager_email_id')->defaultValue(true);
 		$this->addField('when_id_becomes_green')->defaultValue(true);
 		$this->addField('when_id_becomes_orange')->defaultValue(true);
+		$this->addField('credit_request_approve_email')->defaultValue(true);
+		$this->addField('credit_request_processing_email')->defaultValue(true);
 		$this->addField('days_allowed_for_green')->type('int')->defaultValue(45);
 		$this->addField('relations_with_nominee')->type('text')->defaultValue('Father,Mother,Spouse,Sibling,Friend,Son,Daughter');
 
@@ -72,7 +74,12 @@ class Model_Configuration extends \SQL_Model {
 														{{distributor_name}},{{distributor_mobile_number}},{{distributor_email}},
 														{{distributor_address}},{{distributor_state}},{{distributor_district}},{{distributor_pin_code}}');													
 
-		
+		$this->addField('credit_approve_email_subject')->hint('Creadit Movement/Approved Distributor  Email Subject : this mail send to Distributor When Creadit Request Approved');
+		$this->addField('credit_approve_email_matter')->hint('Creadit Movement/Approved Distributor  Email Body : ,
+													 {{name}},{{mobile_number}},{{email}},{{status}},
+													 {{credits}},{{credits_given_on}},{{state}},
+													 {{district}},{{address}},{{narration}}'
+													 )->type('text')->display(array('form'=>'RichText'));
 
 		$this->add('dynamic_model/Controller_AutoCreator');
 

@@ -48,7 +48,57 @@ class Model_CreditMovement extends \Model_Document {
 
 		if($form->isSubmitted()){
 			$this->approve($form['transaction_details']);
+			$tm=$this->add( 'TMail_Transport_PHPMailer' );
+			// $msg=$this->add( 'GiTemplate' );
+			// $msg->loadTemplate( 'mail/registerdistributerwhenidorange');
+			$dist=$this->distributor();
+			// $distributer_mail=$this->distributor()->get('email');
+
+			$cc = array();
+			$emails = $this->add('xMLM/Model_Configuration')->tryLoadANy()->get('credit_request_approve_email');
+			$emails=explode(",", $emails);
+			$email = $emails[0];
+			// unset($emails[0]);
+			$emails = array_values($emails);
+			// throw new \Exception("coming", 1);
+			$cc = $emails;
+
+			if(!$email) throw new \Exception("not found ".$email, 1);
+			
+			$config_model=$this->add('xMLM/Model_Configuration');
+			$config_model->tryLoadAny();
+
+			if($config_model['credit_movement_email_matter']){
+				// $distributer_mail=$this['email'];
+				$subject= $config_model['credit_movement_email_subject']." ".$this['name'];
+				$email_body=$config_model['credit_movement_email_matter']?:"Credit Request Approve Send Mail Layout Is Empty";
+		
+				//REPLACING VALUE INTO ORDER DETAIL TEMPLATES
+				$email_body = str_replace("{{name}}", $dist['name'], $email_body);
+				$email_body = str_replace("{{mobile_number}}", $dist['mobile_number']?$dist['mobile_number']:" ", $email_body);
+				$email_body = str_replace("{{email}}", $dist['email']?$dist['email']:" ", $email_body);
+				$email_body = str_replace("{{status}}", $this['status']?$this['status']:" ", $email_body);
+				$email_body = str_replace("{{credits}}", $this['credits']?$this['credits']:" ", $email_body);
+				$email_body = str_replace("{{credits_given_on}}", $this['credits_given_on']?$this['credits_given_on']:" ", $email_body);
+				$email_body = str_replace("{{state}}", $dist['state']?$dist['state']:" ", $email_body);
+				$email_body = str_replace("{{district}}", $dist['district']?$dist['district']:" ", $email_body);
+				$email_body = str_replace("{{address}}", $dist['address']?$dist['address']:" ", $email_body);
+				$email_body = str_replace("{{narration}}", $this['narration']?$this['narration']:" ", $email_body);
+
+			}	
+			if(!$email) return;
+				throw new \Exception($email_body, 1);
+				
+			try{
+				$tm->send($email,$email,$subject,$email_body,null,$cc);
+			}catch( \phpmailerException $e ) {
+				$this->js(true)->univ()->errorMessage($e->getMessage());
+			}catch( \Exception $e ) {
+				throw $e;
+			}
 			return true;
+
+
 		}
 	}
 
@@ -156,7 +206,7 @@ class Model_CreditMovement extends \Model_Document {
 		}else{
 			$pendings = $this->add('xMLM/Model_Credit_Request')->count()->getOne();
 			$config_model=$this->add('xMLM/Model_Configuration');
-			$subject ="Credit Request Pending::"$pendings; //$config_model['credit_movement_email_subject'];
+			$subject ="Credit Request Pending::".$pendings; //$config_model['credit_movement_email_subject'];
 			$email_body="Hi<br/>There are $pendings Credit Request Pending<br/><br/> Please Check<br/><br/>--Regards <br/><a href='http://xepan.org'>xEpan</a> System";//$this->parseEmailBody();
 		}
 
