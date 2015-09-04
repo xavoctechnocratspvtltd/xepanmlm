@@ -64,15 +64,15 @@ class Model_CreditMovement extends \Model_Document {
 			// throw new \Exception("coming", 1);
 			$cc = $emails;
 
-			if(!$email) throw new \Exception("not found ".$email, 1);
+			if(!$email) throw new \Exception("Email not found ".$email, 1);
 			
 			$config_model=$this->add('xMLM/Model_Configuration');
 			$config_model->tryLoadAny();
 
-			if($config_model['credit_movement_email_matter']){
+			if($config_model['credit_approve_email_matter']){
 				// $distributer_mail=$this['email'];
-				$subject= $config_model['credit_movement_email_subject']." ".$this['name'];
-				$email_body=$config_model['credit_movement_email_matter']?:"Credit Request Approve Send Mail Layout Is Empty";
+				$subject= $config_model['credit_approve_email_subject']." ".$this['name'];
+				$email_body=$config_model['credit_approve_email_matter']?:"Credit Request Approve Send Mail Layout Is Empty";
 		
 				//REPLACING VALUE INTO ORDER DETAIL TEMPLATES
 				$email_body = str_replace("{{name}}", $dist['name'], $email_body);
@@ -166,12 +166,61 @@ class Model_CreditMovement extends \Model_Document {
 	}
 
 	function mark_processed_page($p){
+		$dist=$this->distributor();
 		$form = $p->add('Form_Stacked');
 		$form->addField('text','remark');
 		$form->addSubmit('Ok');
 		if($form->isSubmitted()){
 			$this->mark_processed();
 			$this->setStatus('Purchase',$form['remark']);
+			$tm=$this->add( 'TMail_Transport_PHPMailer' );
+			// $msg=$this->add( 'GiTemplate' );
+			// $msg->loadTemplate( 'mail/registerdistributerwhenidorange');
+			// $distributer_mail=$dist->get('email');
+			// throw new \Exception($dist->id, 1);
+			
+			$cc = array();
+			$emails = $this->add('xMLM/Model_Configuration')->tryLoadANy()->get('credit_request_processing_email');
+			$emails=explode(",", $emails);
+			$email = $emails[0];
+			// unset($emails[0]);
+			$emails = array_values($emails);
+			// throw new \Exception("coming", 1);
+			$cc = $emails;
+
+			if(!$email) throw new \Exception("not found ".$email, 1);
+			
+			$config_model=$this->add('xMLM/Model_Configuration');
+			$config_model->tryLoadAny();
+
+			if($config_model['credit_processed_email_matter']){
+				// $distributer_mail=$this['email'];
+				$subject= $config_model['credit_processed_email_subject']." ".$this['name'];
+				$email_body=$config_model['credit_processed_email_matter']?:"Credit Request Approve Send Mail Layout Is Empty";
+		
+				//REPLACING VALUE INTO ORDER DETAIL TEMPLATES
+				$email_body = str_replace("{{name}}", $dist['name'], $email_body);
+				$email_body = str_replace("{{mobile_number}}", $dist['mobile_number']?$dist['mobile_number']:" ", $email_body);
+				$email_body = str_replace("{{email}}", $dist['email']?$dist['email']:" ", $email_body);
+				$email_body = str_replace("{{status}}", $this['status']?$this['status']:" ", $email_body);
+				$email_body = str_replace("{{credits}}", $this['credits']?$this['credits']:" ", $email_body);
+				$email_body = str_replace("{{credits_given_on}}", $this['credits_given_on']?$this['credits_given_on']:" ", $email_body);
+				$email_body = str_replace("{{state}}", $dist['state']?$dist['state']:" ", $email_body);
+				$email_body = str_replace("{{district}}", $dist['district']?$dist['district']:" ", $email_body);
+				$email_body = str_replace("{{address}}", $dist['address']?$dist['address']:" ", $email_body);
+				$email_body = str_replace("{{narration}}", $this['narration']?$this['narration']:" ", $email_body);
+
+			}	
+			if(!$email) return;
+				// throw new \Exception($email_body, 1);
+				
+			try{
+				$tm->send($email,$email,$subject,$email_body,null,$cc);
+			}catch( \phpmailerException $e ) {
+				$this->js(true)->univ()->errorMessage($e->getMessage());
+			}catch( \Exception $e ) {
+				throw $e;
+			}
 			return true;
 		}
 	}

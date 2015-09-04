@@ -110,5 +110,14 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 			$approve_credit_request_form->Update();
 			$approve_credit_request_form->js(null,$approve_credit_request_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
 		}
+
+		$processed_credit_request=$mt->addTab('Credit Request Processed mail');
+		$processed_credit_request_form = $processed_credit_request->add('Form_Stacked');
+		$processed_credit_request_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('credit_processed_email_subject','credit_processed_email_matter'));
+		$processed_credit_request_form->addSubmit('update');
+		if($processed_credit_request_form->isSubmitted()){
+			$processed_credit_request_form->Update();
+			$processed_credit_request_form->js(null,$processed_credit_request_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
+		}
 	}
 }
