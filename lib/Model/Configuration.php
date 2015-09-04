@@ -44,6 +44,7 @@ class Model_Configuration extends \SQL_Model {
 													 )->type('text')->display(array('form'=>'RichText'));
 
 		$this->addField('credit_movement_email_subject')->hint('Creadit Movement/Rejected Distributor  Email Subject : this mail send to Rejected Distributor');
+		
 		$this->addField('credit_movement_email_matter')->hint('Creadit Movement/Rejected Distributor  Email Body : ,
 													 {{name}},{{mobile_number}},{{email}},{{status}},
 													 {{credits}},{{credits_given_on}},{{state}},
@@ -51,6 +52,7 @@ class Model_Configuration extends \SQL_Model {
 													 )->type('text')->display(array('form'=>'RichText'));
 		
 		$this->addField('booking_approve_email_subject')->hint('Booking Approved Email Subject: this email send to member');
+		
 		$this->addField('booking_approve_email_matter')->type('text')->display(array('form'=>'RichText'))
 													->hint('{{booking_in_name_of}}, {{location}} {{hotel_name}},{{hotel_email_id}},{{hotel_contact_number}},{{hotel_confirmation_code}},
 														{{adults}}, {{children}},
@@ -59,34 +61,79 @@ class Model_Configuration extends \SQL_Model {
 														{{distributor_address}},{{distributor_state}},{{distributor_district}},{{distributor_pin_code}}');
 		
 		$this->addField('orange_email_subject')->hint('Booking Approved Email Subject: this email send to member');
+		
 		$this->addField('orange_email_matter')->type('text')->display(array('form'=>'RichText'))
-													->hint('{{booking_in_name_of}}, {{location}} {{hotel_name}},{{hotel_email_id}},{{hotel_contact_number}},{{hotel_confirmation_code}},
-														{{adults}}, {{children}},
-														{{voucher_no}},{{confirmation_through}},{{check_in_date}},{{check_out_date}},
-														{{distributor_name}},{{distributor_mobile_number}},{{distributor_email}},
-														{{distributor_address}},{{distributor_state}},{{distributor_district}},{{distributor_pin_code}}');													
+													->hint('{{sponsor_name}},{{introducer_name}},{{Username}},{{password}}
+													 {{name}},{{first_name}},{{last_name}},
+													 {{mobile_number}},{{email}},{{date_of_birth}},
+													 {{address}},{{state}},{{district}}
+													 {{pan_no}},{{pin_code}},
+													 {{user_type}},{{bank}},{{account_no}},
+													 {{IFCS_Code}},{{branch_name}},{{kyc_no}},
+													 {{nominee_name}},{{relations_with_nominee}}
+													 {{nominee_age}}, {{nominee_email}},
+													 {{kit}}, {{leg}}');													
 
 		$this->addField('green_email_subject')->hint('Booking Approved Email Subject: this email send to member');
+		
 		$this->addField('green_email_matter')->type('text')->display(array('form'=>'RichText'))
-													->hint('{{booking_in_name_of}}, {{location}} {{hotel_name}},{{hotel_email_id}},{{hotel_contact_number}},{{hotel_confirmation_code}},
-														{{adults}}, {{children}},
-														{{voucher_no}},{{confirmation_through}},{{check_in_date}},{{check_out_date}},
-														{{distributor_name}},{{distributor_mobile_number}},{{distributor_email}},
-														{{distributor_address}},{{distributor_state}},{{distributor_district}},{{distributor_pin_code}}');													
+													->hint('{{sponsor_name}},{{introducer_name}},{{Username}},{{password}}
+													 {{name}},{{first_name}},{{last_name}},
+													 {{mobile_number}},{{email}},{{date_of_birth}},
+													 {{address}},{{state}},{{district}}
+													 {{pan_no}},{{pin_code}},
+													 {{user_type}},{{bank}},{{account_no}},
+													 {{IFCS_Code}},{{branch_name}},{{kyc_no}},
+													 {{nominee_name}},{{relations_with_nominee}}
+													 {{nominee_age}}, {{nominee_email}},
+													 {{kit}}, {{leg}}');													
 
 		$this->addField('credit_approve_email_subject')->hint('Creadit Movement/Approved Distributor  Email Subject : this mail send to Distributor When Creadit Request Approved');
+		
 		$this->addField('credit_approve_email_matter')->hint('Creadit Movement/Approved Distributor  Email Body : ,
 													 {{name}},{{mobile_number}},{{email}},{{status}},
 													 {{credits}},{{credits_given_on}},{{state}},
 													 {{district}},{{address}},{{narration}}'
 													 )->type('text')->display(array('form'=>'RichText'));
+		
 		$this->addField('credit_processed_email_subject')->hint('Creadit Movement/Approved Distributor  Email Subject : this mail send to Distributor When Creadit Request Approved');
+		
 		$this->addField('credit_processed_email_matter')->hint('Creadit Movement/Approved Distributor  Email Body : ,
 													 {{name}},{{mobile_number}},{{email}},{{status}},
 													 {{credits}},{{credits_given_on}},{{state}},
 													 {{district}},{{address}},{{narration}}'
 													 )->type('text')->display(array('form'=>'RichText'));
 
+
+		$this->addField('green_distributor_email_subject')->hint('When Distributor Id Is Green : this email send to Green Distributor');
+		
+		$this->addField('green_distributor_mail_matter')->type('text')->display(array('form'=>'RichText'))
+													->hint('{{sponsor_name}},{{introducer_name}},{{Username}},{{password}}
+													 {{name}},{{first_name}},{{last_name}},
+													 {{mobile_number}},{{email}},{{date_of_birth}},
+													 {{address}},{{state}},{{district}}
+													 {{pan_no}},{{pin_code}},
+													 {{user_type}},{{bank}},{{account_no}},
+													 {{IFCS_Code}},{{branch_name}},{{kyc_no}},
+													 {{nominee_name}},{{relations_with_nominee}}
+													 {{nominee_age}}, {{nominee_email}},
+													 {{kit}}, {{leg}}');
+		
+		$this->addField('orange_distributor_email_subject')->hint('When Distributor Id Is Orange : this email send to Orange Distributor');
+		
+		$this->addField('orange_distributor_mail_matter')->type('text')->display(array('form'=>'RichText'))
+													->hint('{{sponsor_name}},{{introducer_name}},{{Username}},{{password}}
+													 {{name}},{{first_name}},{{last_name}},
+													 {{mobile_number}},{{email}},{{date_of_birth}},
+													 {{address}},{{state}},{{district}}
+													 {{pan_no}},{{pin_code}},
+													 {{user_type}},{{bank}},{{account_no}},
+													 {{IFCS_Code}},{{branch_name}},{{kyc_no}},
+													 {{nominee_name}},{{relations_with_nominee}}
+													 {{nominee_age}}, {{nominee_email}},
+													 {{kit}}, {{leg}}');
+
+		
 		$this->add('dynamic_model/Controller_AutoCreator');
 
 	}
