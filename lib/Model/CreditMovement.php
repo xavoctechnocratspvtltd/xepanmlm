@@ -42,6 +42,8 @@ class Model_CreditMovement extends \Model_Document {
 	}
 
 	function approve_page($page){
+
+		$dist = $this->distributor();
 		$form = $page->add('Form');
 		$form->addField('text','transaction_details');
 		$form->addSubmit('ok');
@@ -51,9 +53,8 @@ class Model_CreditMovement extends \Model_Document {
 			$tm=$this->add( 'TMail_Transport_PHPMailer' );
 			// $msg=$this->add( 'GiTemplate' );
 			// $msg->loadTemplate( 'mail/registerdistributerwhenidorange');
-			$dist=$this->distributor();
-			// $distributer_mail=$this->distributor()->get('email');
-
+			// $distributer_mail=$dist->get('email');
+			
 			$cc = array();
 			$emails = $this->add('xMLM/Model_Configuration')->tryLoadANy()->get('credit_request_approve_email');
 			$emails=explode(",", $emails);
@@ -87,7 +88,7 @@ class Model_CreditMovement extends \Model_Document {
 
 			}	
 			if(!$email) return;
-				throw new \Exception($email_body, 1);
+				// throw new \Exception($email_body, 1);
 				
 			try{
 				$tm->send($email,$email,$subject,$email_body,null,$cc);
