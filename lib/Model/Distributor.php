@@ -263,7 +263,7 @@ class Model_Distributor extends \Model_Document {
 			try{
 				$tm->send($email,$email,$subject,$email_body,null,$cc);
 				// $tm->send($email, $emails,$subject, $email_body);
-1			}catch( \phpmailerException $e ) {
+			}catch( \phpmailerException $e ) {
 				$this->js(true)->univ()->errorMessage($e->getMessage());
 			}catch( \Exception $e ) {
 				throw $e;
