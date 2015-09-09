@@ -22,7 +22,7 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 		$basic_tab = $tabs->addTab('Business Info');
 
 		$form = $basic_tab->add('Form_Stacked');
-		$form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('admin_charge','other_charge_name','other_charge','tail_pv','minimum_payout_amount','include_generation','trimming_applicable','days_allowed_for_green','relations_with_nominee','credit_manager_email_id','when_id_becomes_green','when_id_becomes_orange','credit_request_approve_email','credit_request_processing_email'));
+		$form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('admin_charge','other_charge_name','other_charge','tail_pv','minimum_payout_amount','include_generation','trimming_applicable','days_allowed_for_green','relations_with_nominee','distributor_join_emails','credit_manager_email_id','when_id_becomes_green','when_id_becomes_orange','credit_request_approve_email','credit_request_processing_email'));
 		$form->addSubmit('update');
 		if($form->isSubmitted()){
 			$form->Update();

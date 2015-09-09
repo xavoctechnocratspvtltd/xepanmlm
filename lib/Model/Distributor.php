@@ -535,7 +535,18 @@ class Model_Distributor extends \Model_Document {
 			$subject= $config_model['welcome_email_subject']." ".$this['name'];
 			$email_body = $this->parseEmailBody();
 
-			$this->sendEmail($distributer_mail,$subject,$email_body,null,null);
+			$cc = array();
+			$emails = $config_model['distributor_join_emails'];
+			$emails=explode(",", $emails);
+			$email = $emails[0];
+			// unset($emails[0]);
+			$emails = array_values($emails);
+			$cc = $emails;
+
+			// throw new \Exception(print_r($cc,true), 1);
+			
+
+			$this->sendEmail($distributer_mail,$subject,$email_body,$cc,null);
 		}		
 	}
 

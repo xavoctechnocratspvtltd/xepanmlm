@@ -19,6 +19,7 @@ class Model_Configuration extends \SQL_Model {
 		$this->addField('include_generation')->type('boolean')->defaultValue(true);
 		$this->addField('trimming_applicable')->type('boolean')->defaultValue(true);
 		$this->addField('credit_manager_email_id')->type('text')->defaultValue(true);
+		$this->addField('distributor_join_emails')->type('text')->defaultValue(true);
 		$this->addField('when_id_becomes_green')->type('text');
 		$this->addField('when_id_becomes_orange')->type('text');
 		$this->addField('credit_request_approve_email')->type('text');
