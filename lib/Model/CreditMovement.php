@@ -64,7 +64,7 @@ class Model_CreditMovement extends \Model_Document {
 			// throw new \Exception("coming", 1);
 			$cc = $emails;
 
-			if(!$email) throw new \Exception("Email not found ".$email, 1);
+			// if(!$email) throw new \Exception("Email not found ".$email, 1);
 			
 			$config_model=$this->add('xMLM/Model_Configuration');
 			$config_model->tryLoadAny();
@@ -188,7 +188,7 @@ class Model_CreditMovement extends \Model_Document {
 			// throw new \Exception("coming", 1);
 			$cc = $emails;
 
-			if(!$email) throw new \Exception("not found ".$email, 1);
+			if(!$email) return; //throw new \Exception("not found ".$email, 1);
 			
 			$config_model=$this->add('xMLM/Model_Configuration');
 			$config_model->tryLoadAny();
