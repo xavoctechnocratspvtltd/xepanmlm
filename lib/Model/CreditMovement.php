@@ -249,16 +249,6 @@ class Model_CreditMovement extends \Model_Document {
 		unset($emails[0]);
 		$emails = array_values($emails);
 		$cc = $emails;
-
-		$cc = array();
-			$emails = $this->add('xMLM/Model_Configuration')->tryLoadANy()->get('when_id_becomes_orange');
-			$emails=explode(",", $emails);
-			$email = $emails[0];
-			// unset($emails[0]);
-			$emails = array_values($emails);
-			// throw new \Exception("coming", 1);
-			$cc = $emails;
-
 		if(!$email) return;
 
 		$config_model=$this->add('xMLM/Model_Configuration');
