@@ -49,7 +49,9 @@ class Model_CreditMovement extends \Model_Document {
 		$form->addSubmit('ok');
 
 		if($form->isSubmitted()){
+			$model = clone($this);
 			$this->approve($form['transaction_details']);
+			
 			$tm=$this->add( 'TMail_Transport_PHPMailer' );
 			// $msg=$this->add( 'GiTemplate' );
 			// $msg->loadTemplate( 'mail/registerdistributerwhenidorange');
@@ -64,6 +66,7 @@ class Model_CreditMovement extends \Model_Document {
 			// throw new \Exception("coming", 1);
 			$cc = $emails;
 
+			// throw new \Exception($model['created_at']);
 			// if(!$email) throw new \Exception("Email not found ".$email, 1);
 			
 			$config_model=$this->add('xMLM/Model_Configuration');
@@ -78,13 +81,13 @@ class Model_CreditMovement extends \Model_Document {
 				$email_body = str_replace("{{name}}", $dist['name'], $email_body);
 				$email_body = str_replace("{{mobile_number}}", $dist['mobile_number']?$dist['mobile_number']:" ", $email_body);
 				$email_body = str_replace("{{email}}", $dist['email']?$dist['email']:" ", $email_body);
-				$email_body = str_replace("{{status}}", $this['status']?$this['status']:" ", $email_body);
-				$email_body = str_replace("{{credits}}", $this['credits']?$this['credits']:" ", $email_body);
-				$email_body = str_replace("{{credits_given_on}}", $this['credits_given_on']?$this['credits_given_on']:" ", $email_body);
+				$email_body = str_replace("{{status}}", $model['status']?$model['status']:" ", $email_body);
+				$email_body = str_replace("{{credits}}", $model['credits']?$model['credits']:" ", $email_body);
+				$email_body = str_replace("{{credits_given_on}}",$model['created_at']?$model['created_at']:" ", $email_body);
 				$email_body = str_replace("{{state}}", $dist['state']?$dist['state']:" ", $email_body);
 				$email_body = str_replace("{{district}}", $dist['district']?$dist['district']:" ", $email_body);
 				$email_body = str_replace("{{address}}", $dist['address']?$dist['address']:" ", $email_body);
-				$email_body = str_replace("{{narration}}", $this['narration']?$this['narration']:" ", $email_body);
+				$email_body = str_replace("{{narration}}", $model['narration']?$model['narration']:" ", $email_body);
 
 			}	
 			if(!$email) return;
@@ -172,6 +175,7 @@ class Model_CreditMovement extends \Model_Document {
 		$form->addSubmit('Ok');
 		if($form->isSubmitted()){
 			$this->mark_processed();
+			$model=clone($this);
 			$this->setStatus('Purchase',$form['remark']);
 			$tm=$this->add( 'TMail_Transport_PHPMailer' );
 			// $msg=$this->add( 'GiTemplate' );
@@ -202,13 +206,13 @@ class Model_CreditMovement extends \Model_Document {
 				$email_body = str_replace("{{name}}", $dist['name'], $email_body);
 				$email_body = str_replace("{{mobile_number}}", $dist['mobile_number']?$dist['mobile_number']:" ", $email_body);
 				$email_body = str_replace("{{email}}", $dist['email']?$dist['email']:" ", $email_body);
-				$email_body = str_replace("{{status}}", $this['status']?$this['status']:" ", $email_body);
-				$email_body = str_replace("{{credits}}", $this['credits']?$this['credits']:" ", $email_body);
-				$email_body = str_replace("{{credits_given_on}}", $this['credits_given_on']?$this['credits_given_on']:" ", $email_body);
+				$email_body = str_replace("{{status}}", $model['status']?$model['status']:" ", $email_body);
+				$email_body = str_replace("{{credits}}", $model['credits']?$model['credits']:" ", $email_body);
+				$email_body = str_replace("{{credits_given_on}}", $model['created_at']?$model['created_at']:" ", $email_body);
 				$email_body = str_replace("{{state}}", $dist['state']?$dist['state']:" ", $email_body);
 				$email_body = str_replace("{{district}}", $dist['district']?$dist['district']:" ", $email_body);
 				$email_body = str_replace("{{address}}", $dist['address']?$dist['address']:" ", $email_body);
-				$email_body = str_replace("{{narration}}", $this['narration']?$this['narration']:" ", $email_body);
+				$email_body = str_replace("{{narration}}", $model['narration']?$model['narration']:" ", $email_body);
 
 			}	
 			if(!$email) return;
