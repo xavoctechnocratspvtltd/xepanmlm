@@ -250,6 +250,15 @@ class Model_CreditMovement extends \Model_Document {
 		$emails = array_values($emails);
 		$cc = $emails;
 
+		$cc = array();
+			$emails = $this->add('xMLM/Model_Configuration')->tryLoadANy()->get('when_id_becomes_orange');
+			$emails=explode(",", $emails);
+			$email = $emails[0];
+			// unset($emails[0]);
+			$emails = array_values($emails);
+			// throw new \Exception("coming", 1);
+			$cc = $emails;
+
 		if(!$email) return;
 
 		$config_model=$this->add('xMLM/Model_Configuration');
@@ -266,13 +275,14 @@ class Model_CreditMovement extends \Model_Document {
 		}
 		
 		$tm=$this->add( 'TMail_Transport_PHPMailer' );	
-			$tm->send($email,$email,$subject, $email_body,$cc);
-			// $this->api->js(null,'$("#form-'.$_REQUEST['form_id'].'")[0].reset()')->univ()->errorMessage( $e->errorMessage() . " " . $email )->execute();
-		// try{
-		// }catch( \phpmailerException $e ) {
-		// }catch( \Exception $e ) {
-		// 	throw $e;
-		// }
+		try{
+			$tm->send($email,$email,$subject,$email_body,null,$cc);
+			// $tm->send($email,$email,$subject, $email_body,$cc);
+		}catch( \phpmailerException $e ) {
+			$this->api->js(null,'$("#form-'.$_REQUEST['form_id'].'")[0].reset()')->univ()->errorMessage( $e->errorMessage() . " " . $email )->execute();
+		}catch( \Exception $e ) {
+			throw $e;
+		}
 	}
 
 }
