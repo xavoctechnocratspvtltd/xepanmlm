@@ -125,7 +125,7 @@ class Model_CreditMovement extends \Model_Document {
 
 		$dist=$this->distributor();
 		$distributer_mail=$this->distributor()->get('email');
-
+		
 		$config_model=$this->add('xMLM/Model_Configuration');
 		$config_model->tryLoadAny();
 				
@@ -137,7 +137,7 @@ class Model_CreditMovement extends \Model_Document {
 		$email_body = str_replace("{{email}}", $dist['email']?$dist['email']:" ", $email_body);
 		$email_body = str_replace("{{status}}", $this['status']?$this['status']:" ", $email_body);
 		$email_body = str_replace("{{credits}}", $this['credits']?$this['credits']:" ", $email_body);
-		$email_body = str_replace("{{credits_given_on}}", $this['credits_given_on']?$this['credits_given_on']:" ", $email_body);
+		$email_body = str_replace("{{credits_given_on}}", $this['created_at']?$this['created_at']:" ", $email_body);
 		$email_body = str_replace("{{state}}", $dist['state']?$dist['state']:" ", $email_body);
 		$email_body = str_replace("{{district}}", $dist['district']?$dist['district']:" ", $email_body);
 		$email_body = str_replace("{{address}}", $dist['address']?$dist['address']:" ", $email_body);
@@ -252,8 +252,9 @@ class Model_CreditMovement extends \Model_Document {
 
 		if(!$email) return;
 
+		$config_model=$this->add('xMLM/Model_Configuration');
+		$config_model->tryLoadAny();
 		if(!$total){
-			$config_model=$this->add('xMLM/Model_Configuration');
 			$subject = $config_model['credit_movement_email_subject']. ":: ". $this['distributor']. ' :: ' . $this['distributor_id'];
 			// $email_body = $config_model['credit_movement_email_matter'];			
 			$email_body=$this->parseEmailBody();
@@ -263,15 +264,15 @@ class Model_CreditMovement extends \Model_Document {
 			$subject ="Credit Request Pending::".$pendings; //$config_model['credit_movement_email_subject'];
 			$email_body="Hi<br/>There are $pendings Credit Request Pending<br/><br/> Please Check<br/><br/>--Regards <br/><a href='http://xepan.org'>xEpan</a> System";//$this->parseEmailBody();
 		}
-
+		
 		$tm=$this->add( 'TMail_Transport_PHPMailer' );	
-		try{
 			$tm->send($email,$email,$subject, $email_body,$cc);
-		}catch( \phpmailerException $e ) {
-			$this->api->js(null,'$("#form-'.$_REQUEST['form_id'].'")[0].reset()')->univ()->errorMessage( $e->errorMessage() . " " . $email )->execute();
-		}catch( \Exception $e ) {
-			throw $e;
-		}
+			// $this->api->js(null,'$("#form-'.$_REQUEST['form_id'].'")[0].reset()')->univ()->errorMessage( $e->errorMessage() . " " . $email )->execute();
+		// try{
+		// }catch( \phpmailerException $e ) {
+		// }catch( \Exception $e ) {
+		// 	throw $e;
+		// }
 	}
 
 }
