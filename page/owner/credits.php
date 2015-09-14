@@ -4,6 +4,7 @@
 class page_xMLM_page_owner_credits extends page_xMLM_page_owner_main {
 	
 	function page_index(){
+		$this->add('xMLM/Controller_Acl');
 
 		$this->app->title='Credits Management';
 		$this->app->layout->template->trySetHTML('page_title','<i class="fa fa-dashboard icon-gauge"></i> Credits Management');

@@ -105,7 +105,7 @@ class page_xMLM_page_owner_xmlm_mybookings_request extends page_xMLM_page_owner_
 		
 		$city = $this->add('xMLM/Model_City');
 		if($this->api->StickyGET('location_2')){
-			$city->addCondition('location_id',$_GET['city_2']);
+			$city->addCondition('location_id',$_GET['location_2']);
 		}
 
 

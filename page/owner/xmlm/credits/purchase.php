@@ -12,6 +12,6 @@ class page_xMLM_page_owner_xmlm_credits_purchase extends page_xMLM_page_owner_ma
 			$crud->form->getElement('distributor_id')->getModel()->addCondition('status','paid');
 		}
 
-		$crud->add('xHR/Controller_Acl',array('override'=>array('can_view'=>'All')));
+		$crud->add('xHR/Controller_Acl'/*,array('override'=>array('can_view'=>'All'))*/);
 	}
 }

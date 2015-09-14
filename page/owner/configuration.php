@@ -22,7 +22,7 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 		$basic_tab = $tabs->addTab('Business Info');
 
 		$form = $basic_tab->add('Form_Stacked');
-		$form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('admin_charge','other_charge_name','other_charge','tail_pv','minimum_payout_amount','include_generation','trimming_applicable','days_allowed_for_green','relations_with_nominee','distributor_join_emails','credit_manager_email_id','when_id_becomes_green','when_id_becomes_orange','credit_request_approve_email','credit_request_processing_email'));
+		$form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('admin_charge','other_charge_name','other_charge','tail_pv','minimum_payout_amount','include_generation','trimming_applicable','days_allowed_for_green','relations_with_nominee'/*,'distributor_join_emails','credit_manager_email_id','when_id_becomes_green','when_id_becomes_orange','credit_request_approve_email','credit_request_processing_email'*/));
 		$form->addSubmit('update');
 		if($form->isSubmitted()){
 			$form->Update();
@@ -57,7 +57,7 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 		$mt=$mail_tab->add('Tabs');
 		$wt=$mt->addTab('Wel-Come mail Configuration');
 		$mail_form = $wt->add('Form_Stacked');
-		$mail_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('welcome_email_subject','welcome_email_matter'));
+		$mail_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('distributor_join_emails','welcome_email_subject','welcome_email_matter'));
 		$mail_form->addSubmit('update');
 		if($mail_form->isSubmitted()){
 			$mail_form->Update();
@@ -66,7 +66,7 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 
 		$ct=$mt->addTab('Credit movement mail');
 		$credit_form = $ct->add('Form_Stacked');
-		$credit_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('credit_movement_email_subject','credit_movement_email_matter'));
+		$credit_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('credit_manager_email_id','credit_movement_email_subject','credit_movement_email_matter'));
 		$credit_form->addSubmit('update');
 		if($credit_form->isSubmitted()){
 			$credit_form->Update();
@@ -88,7 +88,7 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 		
 		$orange_admin=$dis_mail->addTab('Orange Admin mail');
 		$orange_admin_form =$orange_admin->add('Form_Stacked');
-		$orange_admin_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('orange_email_subject','orange_email_matter'));
+		$orange_admin_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('when_id_becomes_orange','orange_email_subject','orange_email_matter'));
 		$orange_admin_form->addSubmit('update');
 		if($orange_admin_form->isSubmitted()){
 			$orange_admin_form->Update();
@@ -97,7 +97,7 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 
 		$green_admin=$dis_mail->addTab('Green Admin mail');
 		$green_admin_form = $green_admin->add('Form_Stacked');
-		$green_admin_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('green_email_subject','green_email_matter'));
+		$green_admin_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('when_id_becomes_green','green_email_subject','green_email_matter'));
 		$green_admin_form->addSubmit('update');
 		if($green_admin_form->isSubmitted()){
 			$green_admin_form->Update();
@@ -128,7 +128,7 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 
 		$approve_credit_request=$mt->addTab('Credit Request Approved mail');
 		$approve_credit_request_form = $approve_credit_request->add('Form_Stacked');
-		$approve_credit_request_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('credit_approve_email_subject','credit_approve_email_matter'));
+		$approve_credit_request_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('credit_request_approve_email','credit_approve_email_subject','credit_approve_email_matter'));
 		$approve_credit_request_form->addSubmit('update');
 		if($approve_credit_request_form->isSubmitted()){
 			$approve_credit_request_form->Update();
@@ -137,7 +137,7 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 
 		$processed_credit_request=$mt->addTab('Credit Request Processed mail');
 		$processed_credit_request_form = $processed_credit_request->add('Form_Stacked');
-		$processed_credit_request_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('credit_processed_email_subject','credit_processed_email_matter'));
+		$processed_credit_request_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('credit_request_processing_email','credit_processed_email_subject','credit_processed_email_matter'));
 		$processed_credit_request_form->addSubmit('update');
 		if($processed_credit_request_form->isSubmitted()){
 			$processed_credit_request_form->Update();
