@@ -3,8 +3,8 @@
 
 class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 	
-	function init(){
-		parent::init();
+	function page_index(){
+		// parent::init();
 
 		$this->add('xMLM/Controller_Acl');
 
@@ -54,89 +54,107 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 		$banks_crud->grid->addPaginator($ipp=50);
 
 		$mail_tab = $tabs->addTab('Mail configuration');
+		
 		$mt=$mail_tab->add('Tabs');
-		$wt=$mt->addTab('Wel-Come mail Configuration');
-		$mail_form = $wt->add('Form_Stacked');
+
+		$mt->addTabURL('./welComeMailConfig','Wel-Come mail Configuration');
+		$mt->addTabURL('./creditRequestEmail','Credit movement mail');
+		$mt->addTabURL('./bookingApproveEmail','Booking approve mail');
+		$mt->addTabURL('./distributorConfig','Distributor Configuration');
+		$mt->addTabURL('./creditApproveEmail','Credit Request Approved mail');
+		$mt->addTabURL('./creditProcessedEmail','Credit Request Processed mail');
+	}
+	function page_welComeMailConfig(){
+		$mail_form = $this->add('Form_Stacked');
 		$mail_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('distributor_join_emails','welcome_email_subject','welcome_email_matter'));
 		$mail_form->addSubmit('update');
 		if($mail_form->isSubmitted()){
 			$mail_form->Update();
 			$mail_form->js(null,$mail_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
 		}
-
-		$ct=$mt->addTab('Credit movement mail');
-		$credit_form = $ct->add('Form_Stacked');
+	}
+	function page_creditRequestEmail(){
+		$credit_form = $this->add('Form_Stacked');
 		$credit_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('credit_manager_email_id','credit_movement_email_subject','credit_movement_email_matter'));
 		$credit_form->addSubmit('update');
 		if($credit_form->isSubmitted()){
 			$credit_form->Update();
 			$credit_form->js(null,$credit_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
 		}
-		
+	}
 
-		$bt=$mt->addTab('Booking approve mail');
-		$booking_form = $bt->add('Form_Stacked');
+	function page_bookingApproveEmail(){
+		$booking_form = $this->add('Form_Stacked');
 		$booking_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('booking_approve_email_subject','booking_approve_email_matter'));
 		$booking_form->addSubmit('update');
 		if($booking_form->isSubmitted()){
 			$booking_form->Update();
 			$booking_form->js(null,$booking_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
 		}
+	}
 
-		$dis_tab=$mt->addTab('Distributor Configuration');
-		$dis_mail=$dis_tab->add('Tabs');	
+	function page_distributorConfig(){
+
+		$dis_mail=$this->add('Tabs');	
+		$dis_mail->addTabURL('../orageAdminEmail','Orange Admin mail');
+		$dis_mail->addTabURL('../greenAdminEmail','Green Admin mail');
+		$dis_mail->addTabURL('../orangeDistributorEmail','Orange Distributor mail');
+		$dis_mail->addTabURL('../greenDistributorEmail','Green Distributor mail');
+	}
 		
-		$orange_admin=$dis_mail->addTab('Orange Admin mail');
-		$orange_admin_form =$orange_admin->add('Form_Stacked');
+
+	function page_orageAdminEmail(){
+		$orange_admin_form =$this->add('Form_Stacked');
 		$orange_admin_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('when_id_becomes_orange','orange_email_subject','orange_email_matter'));
 		$orange_admin_form->addSubmit('update');
 		if($orange_admin_form->isSubmitted()){
 			$orange_admin_form->Update();
 			$orange_admin_form->js(null,$orange_admin_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
 		}
+	}
 
-		$green_admin=$dis_mail->addTab('Green Admin mail');
-		$green_admin_form = $green_admin->add('Form_Stacked');
+	function page_greenAdminEmail(){
+		$green_admin_form = $this->add('Form_Stacked');
 		$green_admin_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('when_id_becomes_green','green_email_subject','green_email_matter'));
 		$green_admin_form->addSubmit('update');
 		if($green_admin_form->isSubmitted()){
 			$green_admin_form->Update();
 			$green_admin_form->js(null,$green_admin_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
 		}
+	}
 
-		$orange_dis=$dis_mail->addTab('Orange Distributor mail');
-		$orange_form =$orange_dis->add('Form_Stacked');
+	function page_orangeDistributorEmail(){
+		$orange_form =$this->add('Form_Stacked');
 		$orange_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('orange_distributor_email_subject','orange_distributor_mail_matter'));
 		$orange_form->addSubmit('update');
 		if($orange_form->isSubmitted()){
 			$orange_form->Update();
 			$orange_form->js(null,$orange_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
 		}
+	}
 
-		$green_dis=$dis_mail->addTab('Green Distributor mail');
-		$green_form = $green_dis->add('Form_Stacked');
+	function page_greenDistributorEmail(){
+		$green_form = $this->add('Form_Stacked');
 		$green_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('green_distributor_email_subject','green_distributor_mail_matter'));
 		$green_form->addSubmit('update');
 		if($green_form->isSubmitted()){
 			$green_form->Update();
 			$green_form->js(null,$green_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
 		}
+	}
 
-
-
-
-
-		$approve_credit_request=$mt->addTab('Credit Request Approved mail');
-		$approve_credit_request_form = $approve_credit_request->add('Form_Stacked');
+	function page_creditApproveEmail(){
+		$approve_credit_request_form = $this->add('Form_Stacked');
 		$approve_credit_request_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('credit_request_approve_email','credit_approve_email_subject','credit_approve_email_matter'));
 		$approve_credit_request_form->addSubmit('update');
 		if($approve_credit_request_form->isSubmitted()){
 			$approve_credit_request_form->Update();
 			$approve_credit_request_form->js(null,$approve_credit_request_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
 		}
+	}
 
-		$processed_credit_request=$mt->addTab('Credit Request Processed mail');
-		$processed_credit_request_form = $processed_credit_request->add('Form_Stacked');
+	function page_creditProcessedEmail(){
+		$processed_credit_request_form = $this->add('Form_Stacked');
 		$processed_credit_request_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('credit_request_processing_email','credit_processed_email_subject','credit_processed_email_matter'));
 		$processed_credit_request_form->addSubmit('update');
 		if($processed_credit_request_form->isSubmitted()){
