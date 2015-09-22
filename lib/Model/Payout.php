@@ -369,6 +369,8 @@ class Model_Payout extends \SQL_Model {
 					d.greened_on is null
 					OR
 					p.net_amount < $min_payout
+					OR
+					d.is_active = 0
 				)
 		";
 		$this->query($q); //yes
