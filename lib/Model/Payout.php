@@ -355,6 +355,8 @@ class Model_Payout extends \SQL_Model {
 				xmlm_payouts p
 			JOIN
 				xmlm_distributors d on p.distributor_id = d.id
+			JOIN 
+				xshop_memberdetails m on d.customer_id = m.id
 			SET
 				p.carried_amount = (p.previous_carried_amount + pair_income + introduction_income + generation_difference_income + generation_royalty_income + generation_active_royalty_income + bonus),
 				p.TDS=0,
@@ -370,7 +372,7 @@ class Model_Payout extends \SQL_Model {
 					OR
 					p.net_amount < $min_payout
 					OR
-					d.is_active = 0
+					m.is_active = 0
 				)
 		";
 		$this->query($q); //yes
