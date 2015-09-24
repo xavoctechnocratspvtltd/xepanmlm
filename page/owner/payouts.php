@@ -129,6 +129,10 @@ class page_xMLM_page_owner_payouts extends page_xMLM_page_owner_main {
 			$payout_grid->addGrandTotals(array('pair_income','introduction_income','tds','admin_charge','net_amount','carried_amount'));
 		}
 
+		//Add Print
+		$print_all_btn = $payout_grid->addButton('Print All');
+		$print_all_btn->js('click')->univ()->newWindow($this->api->url('xMLM_page_owner_print',array('on_date'=>$g_on_date,'distributor_id'=>$g_dist_id,'cut_page'=>0)));
+
 		$payout_grid->addPaginator(100);
 		$payout_grid->addSno();
 

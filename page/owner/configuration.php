@@ -63,7 +63,26 @@ class page_xMLM_page_owner_configuration extends page_xMLM_page_owner_main {
 		$mt->addTabURL('./distributorConfig','Distributor Configuration');
 		$mt->addTabURL('./creditApproveEmail','Credit Request Approved mail');
 		$mt->addTabURL('./creditProcessedEmail','Credit Request Processed mail');
+
+
+		//Payout Print Format
+		$payout_tab = $tabs->addTab('Print Format');
+		$pt=$payout_tab->add('Tabs');
+		$pt->addTabURL('./payoutprint','Payout Print Format');
+
+
 	}
+
+	function page_payoutprint(){
+		$print_form = $this->add('Form_Stacked');
+		$print_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('payout_print_format'));
+		$print_form->addSubmit('update');
+		if($print_form->isSubmitted()){
+			$print_form->Update();
+			$print_form->js(null,$print_form->js()->reload())->univ()->successMessage('Update Successfully')->execute();
+		}
+	}
+
 	function page_welComeMailConfig(){
 		$mail_form = $this->add('Form_Stacked');
 		$mail_form->setModel($this->add('xMLM/Model_Configuration')->tryLoadAny(),array('distributor_join_emails','welcome_email_subject','welcome_email_matter'));
