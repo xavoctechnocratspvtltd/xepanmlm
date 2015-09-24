@@ -135,6 +135,16 @@ class Model_Configuration extends \SQL_Model {
 													 {{kit}}, {{leg}}');
 
 		
+		$this->addField('payout_print_format')->type('text')->display(array('form'=>'RichText'))
+													->hint('{{distributor_id}},{{distributor_name}},
+															{{distributor_address}},{{distributor_city}},
+															{{distributor_state}},{{distributor_pin_code}},
+															{{distributor_mobile_number}},{{pairs}},{{pair_income}},
+															{{tds}},{{admin_charge}},{{net_amount}},
+															{{bonus}},{{carried_amount}},{{introduction_income}},
+															{{previous_carried_amount}}
+															');
+
 		$this->add('dynamic_model/Controller_AutoCreator');
 
 	}
