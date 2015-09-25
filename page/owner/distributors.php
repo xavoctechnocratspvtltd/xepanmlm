@@ -135,7 +135,7 @@ class page_xMLM_page_owner_distributors extends page_xMLM_page_owner_main {
 			$crud->grid->removeColumn('greened_on');
 		}
 
-		$crud->add('xHR/Controller_Acl');
+		$crud->add('xHR/Controller_Acl',array('override'=>array('can_view'=>'All')));
 	}
 
 	function page_kyc(){
