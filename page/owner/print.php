@@ -6,6 +6,7 @@ class page_xMLM_page_owner_print extends page_xMLM_page_owner_main {
 	
 	if(!$_GET['on_date']){
 		$this->add('View_Error')->set('No Result Found');
+		return;
 	}
 
 	$payout_model = $this->add('xMLM/Model_Payout');
@@ -22,6 +23,7 @@ class page_xMLM_page_owner_print extends page_xMLM_page_owner_main {
 
 	if(!$payout_model->count()->getOne()){
 		$this->add('View')->set('No Record Found');
+		return;
 	}
 
 	foreach ($payout_model as $key => $value) {
