@@ -94,6 +94,9 @@ class Grid_Payout extends \Grid {
 		if(!$this->hide_distributor and $this->hasColumn('distributor')){
 			$this->addFormatter('distributor','distributor');
 		}
+		if($this->hasColumn('on_date')){
+			$this->addFormatter('on_date','on_date');
+		}
 		// $this->addFormatter('introduction_income','introduction_income');
 		
 		if($this->hasColumn('greened_on')) $this->removeColumn('greened_on');
@@ -196,10 +199,18 @@ class Grid_Payout extends \Grid {
 
 	}
 
-	function format_totals_distributor($field){
-		$this->current_row_html[$field]="<b>Total</b>";
+	function format_totals_on_date($field){
+		$this->current_row_html[$field]="<b style='color:red;'>Total</b>";
 	}
 
+	function format_on_date($field){
+		// if(!$this->model['greened_on']) {
+		// 	$this->setTDparam($field,'style/color','red');
+		// }else{
+		// 	$this->setTDparam($field,'style/color','');
+		// }
+
+	}
 
 	function updateGrandTotals()
     {

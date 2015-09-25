@@ -23,8 +23,9 @@ class page_xMLM_page_owner_xmlm_mypayout extends page_xMLM_page_owner_xmlm_main{
 			$grid->setModel('xMLM/Payout')
 					->addCondition('distributor_id',$distributor->id);
 			$grid->addPaginator(1);
-			$grid->addTotals(array());
+			// $grid->addTotals(array('total_pay','tds','admin_charge','net_amount','previous_carried_amount','pair_income','generation_royalty_income','introduction_income','generation_active_royalty_income','generation_difference_income','total_deduction','carried_amount'));
 			$grid->addGrandTotals(array('total_pay','tds','admin_charge','net_amount'));
+			
 		}
 
 
