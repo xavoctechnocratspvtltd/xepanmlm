@@ -128,6 +128,7 @@ class Model_Distributor extends \Model_Document {
 		$this->addHook('beforeSave',array($this,'beforeSaveDistributor'));
 		$this->addHook('afterSave',array($this,'afterSaveDistributor'));
 		$this->addHook('beforeDelete',array($this,'beforeDeleteDistributor'));
+		$this->addHook('afterInsert',$this);
 
 		$this->add('Controller_Validator');
 		$this->is(array(
@@ -140,10 +141,20 @@ class Model_Distributor extends \Model_Document {
 		$this->setOrder('greened_on','desc');
 		$this->getElement('created_at')->caption('Joining date');
 		// $this->api->auth->addEncryptionHook($this);
-		$this->add('dynamic_model/Controller_AutoCreator');
+		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	
+	function afterInsert(){
+		$m_no=$this['mobile_number'];
+		$message= 'Thank you for joining Nebula! We have send your login Credentials on your registered email ID. Please Call us '\n' on 18004192299 for any assistance. Happy Networking!
+    				'\n'Best Regards,
+    				'\n'
+    				'\n'
+    				Nebula Team - Reach Beyond';
+		
+		$this->add('Controller_Sms')->sendMessage($m_no,$message);
+	}
+
 	function beforeSaveDistributor(){
 
 		// if( trim($this['password']) !== trim($this['re_password']))
@@ -351,6 +362,8 @@ class Model_Distributor extends \Model_Document {
 				$this->memorize('leg',$this['Leg']);
 			}
 		}
+
+
 	}
 
 	function afterSaveDistributor(){
