@@ -144,15 +144,8 @@ class Model_Distributor extends \Model_Document {
 		// $this->add('dynamic_model/Controller_AutoCreator');
 	}
 
-	function afterInsert(){
-		$m_no=$this['mobile_number'];
-		$message= 'Thank you for joining Nebula! We have send your login Credentials on your registered email ID. Please Call us '\n' on 18004192299 for any assistance. Happy Networking!
-    				'\n'Best Regards,
-    				'\n'
-    				'\n'
-    				Nebula Team - Reach Beyond';
+	function afterInsert($obj){
 		
-		$this->add('Controller_Sms')->sendMessage($m_no,$message);
 	}
 
 	function beforeSaveDistributor(){
@@ -360,6 +353,7 @@ class Model_Distributor extends \Model_Document {
 				}
 				$this['path'] = $sponsor->path() . $this['Leg'];
 				$this->memorize('leg',$this['Leg']);
+				$this->memorize('raw_password',$this['password']);
 			}
 		}
 
@@ -370,7 +364,12 @@ class Model_Distributor extends \Model_Document {
 		if($leg = $this->recall('leg',false)){
 			$sponsor = $this->sponsor();
 			$sponsor[($leg=='A'?'left':'right').'_id'] = $this->id;
-			$sponsor->saveAndUnload();
+			try{
+				$sponsor->saveAndUnload();
+			}catch(\Exception $e){
+				throw $e;
+				
+			}
 			// if($this['greened_on']){
 			// 	$kit=$this->kit();
 			// 	$this->updateAnsestors($kit->getPV(),$kit->getBV());
@@ -378,6 +377,13 @@ class Model_Distributor extends \Model_Document {
 			// 	$introducer->addSessionIntro($kit->getIntro());
 			// }
 			$this->welcomeDistributor();
+
+			$m_no=$this['mobile_number'];
+		
+    		$message= "Thank you for joining Nebula! We have send your login Credentials on your registered email ID. Please Call us \n on 18004192299 for any assistance. Happy Networking!\nBest Regards,\nNebula Team - Reach Beyond";
+		
+			$this->add('Controller_Sms')->sendMessage($m_no,$message);
+
 			$this->forget('leg');
 
 			$this->api->db->dsql()->table('xshop_memberdetails')->where('id',$this['customer_id'])->set('users_id',$this['user_id'])->update();
@@ -509,7 +515,7 @@ class Model_Distributor extends \Model_Document {
 		$email_body = str_replace("{{first_name}}", $this['first_name'], $email_body);
 		$email_body = str_replace("{{last_name}}", $this['last_name'], $email_body);
 		$email_body = str_replace("{{Username}}", $this['username'], $email_body);
-		$email_body = str_replace("{{password}}", $this['password'], $email_body);
+		$email_body = str_replace("{{password}}", $this->recall('raw_password',$this['password']), $email_body);
 		$email_body = str_replace("{{mobile_number}}", $this['mobile_number']?$this['mobile_number']:" ", $email_body);
 		$email_body = str_replace("{{email}}", $this['email']?$this['email']:" ", $email_body);
 		$email_body = str_replace("{{date_of_birth}}", $this['date_of_birth']?$this['date_of_birth']:" ", $email_body);
@@ -533,11 +539,15 @@ class Model_Distributor extends \Model_Document {
 		$email_body = str_replace("{{kit}}", $this['kit_item']?$this['kit_item']:" ", $email_body);
 		$email_body = str_replace("{{leg}}", $this['Leg']?$this['Leg']:" ", $email_body);
 
+		$this->forget('raw_password');
+
 		return $email_body;
 	}
 
 
 	function welcomeDistributor(){
+		// throw new \Exception("Error Processing Request", 1);
+		
 		if(!$this->loaded()) throw $this->exception('Model Must Be Loaded Before Email Send');
 		
 		$config_model=$this->add('xMLM/Model_Configuration');

@@ -24,58 +24,66 @@ class page_xMLM_page_owner_xmlm_credits_report extends page_xMLM_page_owner_main
 		$credit_mov->getElement('credits')->caption('Request Amount ');	
 
 		$grid=$this->add('xMLM/Grid_CreditMovement');
-			$this->api->stickyGET('distributor_id');
-			$this->api->stickyGET('from_date');
-			$this->api->stickyGET('to_date');
-			$this->api->stickyGET('status');
 
 			$q = $credit_mov->dsql();
 
-			$distributor_name="";
-			if($_GET['distributor_id']){
-				$credit_mov->addCondition('distributor_id',$_GET['distributor_id']);
-				$distributor_name=$this->add('xMLM/Model_Distributor')->load($_GET['distributor_id'])->get('name');
-			}
 
-			if($_GET['from_date']){
-				$credit_mov->addCondition(
-						$q->orExpr()
-							->where(
-									$q->andExpr()
-										->where('status','Purchase')
-										->where('credits_given_on','>=',$_GET['from_date'])
-								)
-							->where(
-									$q->andExpr()
-										->where('status','Consumed')
-										->where('created_at','>=',$_GET['from_date'])
-								)
-					);
-			}
 
-			if($_GET['to_date']){
-				$credit_mov->addCondition(
-						$q->orExpr()
-							->where(
-									$q->andExpr()
-										->where('status','Purchase')
-										->where('credits_given_on','<',$this->api->nextDate($_GET['to_date']))
-								)
-							->where(
-									$q->andExpr()
-										->where('status','Consumed')
-										->where('created_at','<',$this->api->nextDate($_GET['to_date']))
-								)
-					);
-			}
-	
-			if($_GET['status']){
-				$credit_mov->addCondition('status',$_GET['status']);
-			}
+		$distributor_name="";
+		
+		$this->api->stickyGET('distributor_id');
+		$this->api->stickyGET('from_date');
+		$this->api->stickyGET('to_date');
+		$this->api->stickyGET('status');
 
-		$grid->setModel($credit_mov);
+		if($_GET['distributor_id']){
+			$credit_mov->addCondition('distributor_id',$_GET['distributor_id']);
+			$distributor_name=$this->add('xMLM/Model_Distributor')->load($_GET['distributor_id'])->get('name');
+		}
+
+		if($_GET['from_date']){
+			$credit_mov->addCondition(
+					$q->orExpr()
+						->where(
+								$q->andExpr()
+									// ->where('status','Purchase')
+									->where('credits_given_on','>=',$_GET['from_date'])
+							)
+						->where(
+								$q->andExpr()
+									// ->where('status','Consumed')
+									->where('created_at','>=',$_GET['from_date'])
+							)
+				);
+		}
+
+		if($_GET['to_date']){
+			$credit_mov->addCondition(
+					$q->orExpr()
+						->where(
+								$q->andExpr()
+									// ->where('status','Purchase')
+									->where('credits_given_on','<',$this->api->nextDate($_GET['to_date']))
+							)
+						->where(
+								$q->andExpr()
+									// ->where('status','Consumed')
+									->where('created_at','<',$this->api->nextDate($_GET['to_date']))
+							)
+				);
+		}
+		
+
+
+		if($_GET['status']){
+			$credit_mov->addCondition('status',$_GET['status']);
+		}
+
+			
+
+		$grid->setModel($credit_mov->debug());
 		$grid->add('xMLM/Controller_Export',
-				array('output_filename'=>'credit Report'.$_GET['from_date']."_".$_GET['to_date']."_".$distributor_name.'.csv','model'=>$credit_mov,
+				array('output_filename'=>'credit Report'.$form['from_date']."_".$form['to_date']."_".$distributor_name.'.csv','model'=>$credit_mov,
 					'fields'=>array('distributor','status',
 									'created_at','credits_given_on',
 									'credit','debit','credits'
