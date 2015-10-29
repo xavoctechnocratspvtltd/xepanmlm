@@ -81,7 +81,7 @@ class page_xMLM_page_owner_xmlm_credits_report extends page_xMLM_page_owner_main
 
 			
 
-		$grid->setModel($credit_mov->debug());
+		$grid->setModel($credit_mov);
 		$grid->add('xMLM/Controller_Export',
 				array('output_filename'=>'credit Report'.$form['from_date']."_".$form['to_date']."_".$distributor_name.'.csv','model'=>$credit_mov,
 					'fields'=>array('distributor','status',
