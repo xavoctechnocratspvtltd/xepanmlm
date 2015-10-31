@@ -54,8 +54,19 @@ class page_xMLM_page_owner_xmlm_newjoining extends page_xMLM_page_owner_xmlm_mai
 			// $form->error('password','Password doesn\'t match');
 			if($form['password']!=$form['re_password'])
 				$form->error('password','Password doesn\'t match');
-			$form->save();
-
+			try{
+				$this->api->db->beginTransaction();
+					$form->save();
+					// throw new \Exception($form->model['name'], 1);
+				$this->api->db->commit();
+			}catch(\Exception $e){
+				$this->api->db->rollback();
+				if($this->api->getConfig('developer_mode'))
+					throw $e;
+				else
+					$this->js()->univ()->errorMessage($e->getMessage())->execute();
+			}
+						
 			$form->js(null,array($form->js()->reload(),$cr_view->js()->reload()))->univ()->successMessage('Entry Done')->execute();
 		}
 		$form->add('Controller_FormBeautifier');
